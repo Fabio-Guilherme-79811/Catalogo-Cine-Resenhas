@@ -8,3 +8,14 @@
 
 ## Stack Utilizada
   - **Node.js + Typescript** - Runtime e Linguagem base.
+  - **Express** - Framework web para rotas e middlewares
+  - **OOP (Orientação a Objetos)** — Classes com atributos privados, getters/setters, validações e métodos `fromJSON()` / `toJSON()`.
+  - **Repository Pattern** — Camada de persistência desacoplada em arquivos `.json`.
+  - **Autenticação & Segurança** — `bcrypt` para criptografia de senhas e `express-session` para controle de sessão/login.
+  - **Upload de Arquivos** — `Multer` para gerenciamento de capas de filmes e séries.
+  - **Testes Automatizados** — `Jest` para testes unitários e de integração.
+
+## Front-end
+  - **EJS (Embedded JavaScript)** — Renderização de templates HTML dinâmicos.
+  - **CSS3 Customizado** — Estilização própria, responsiva e focada em usabilidade (sem dependência exclusiva de frameworks externos).
+  - **JavaScript Vanilla (`public/js/`)** — Consumo interno de rotas via `fetch API`, manipulando o DOM e fornecendo estados de *loading* e validação sem recarregar a página.
