@@ -29,7 +29,7 @@
   | **Fábio Guilherme Soares Saldanha** | Líder Técnico | Arquitetura MVC, padrão OOP, revisão de Pull Requests e suporte de merge | 
   | **Oséias da Costa Moura Filho** | Desenvolvedor Back-end | Implementação dos Repositories JSON, Controllers, Auth e middlewares |
   | **Adonis França Bezerra** | Desenvolvedor Front-end | Views em EJS, estilos em CSS, controle visual e scripts com `fetch` API |
-  | **João Felipe Bezerra** | QA / Testes / Documentação | Testes unitários/integração com Jest, criação do README e diagramas UML |
+  | **João Felipe Bezerra da Silva** | QA / Testes / Documentação | Testes unitários/integração com Jest, criação do README e diagramas UML |
   **Nota** - Apesar da definição de funções, todos os participantes transitam entre funções para a progressão do projeto.
 
 
