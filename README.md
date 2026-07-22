@@ -34,7 +34,7 @@
 
 
 ## Estrutura de Pastas
-  larp-flix/
+  larp-flix/  
   ├── docs/                      # Diagramas UML e documentação complementar
   │   ├── caso-de-uso.png
   │   └── sequencia-get-filmes.png
