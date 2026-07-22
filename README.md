@@ -34,7 +34,8 @@
 
 
 ## Estrutura de Pastas
-  larp-flix/
+```
+larp-flix/  
   ├── docs/                      # Diagramas UML e documentação complementar
   │   ├── caso-de-uso.png
   │   └── sequencia-get-filmes.png
@@ -64,3 +65,35 @@
   ├── tsconfig.json              # Configuração do TypeScript
   ├── package.json
   └── README.md
+```
+## Guia de Execução 
+  ### Pré-Requisitos 
+   -Node.js (versão 22 ou superior)
+   -NPM ou Yarn 
+  ### Passo a Passo
+   1. Clonar o Repositório:
+```bash
+git clone https://github.com/Fabio-Guilherme-79811/Catalogo-Larp-Flix.git
+cd larp-flix
+```
+   2. Instalar as Depêndencias:
+```
+npm install
+```
+   3. Executar em modo de desenvolvimento:
+```
+npm run dev
+```
+   4. Executar os testes automatizados:
+```
+npm test
+``` 
+
+
+
+
+
+
+
+
+
