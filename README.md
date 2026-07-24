@@ -1,4 +1,4 @@
-# Catálogo-Larp-FLix
+# Catálogo-Cine-Resenhas
   Repositório de Back-end + Web para o projeto *Cine-Resenhas*, projeto o qual possui o objetivo de catalogar, avaliar e gerenciar filmes e séries diversos. 
   O sistema permite que os usuários explorem produções, filtrem por gênero, façam avaliações com notas e comentários, além de disponibilizar uma área administrativa restrita para gestão de mídias e upload de capas e títulos.
 
