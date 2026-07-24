@@ -41,6 +41,11 @@ class Conteudo {
     }
 
     get id() { return this._id; }
+    get sinopse() {return this._sinopse}
+    get capaUrl() {return this._capaUrl}
+    get genero() {return this._genero}
+    get tipo() {return this._tipo}
+    get direcao() {return this._direcao}
     get titulo() { return this._titulo; }
     get anoLancamento() { return this._anoLancamento; }
     get diretor() { return this._diretor; }
@@ -54,7 +59,7 @@ class Conteudo {
 
     set anoLancamento(anoLancamento: number){
         this.validarAnoLancamento(anoLancamento);
-        this.anoLancamento = anoLancamento
+        this.anoLancamento = anoLancamento;
     }
 
     private validarTitulo(titulo: string) {
@@ -63,4 +68,10 @@ class Conteudo {
         }
     }
 
+    private validarAnoLancamento(ano:number){
+        const anoAtual = new Date().getFullYear();
+        if (!ano || ano < 1888 || ano > anoAtual + 5){
+            throw new Error('Ano de lançamento inválido.');
+        }
+    }
 }
