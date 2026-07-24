@@ -1,5 +1,5 @@
 # Catálogo-Cine-Resenhas
-  Repositório de Back-end + Web para o projeto *Cine-Resenhas*, projeto o qual possui o objetivo de catalogar, avaliar e gerenciar filmes e séries diversos. 
+  Repositório de Back-end + Web para o projeto *Cine-Resenhas*, projeto o qual possui o objetivo de catalogar, avaliar e gerenciar filmes diversos. 
   O sistema permite que os usuários explorem produções, filtrem por gênero, façam avaliações com notas e comentários, além de disponibilizar uma área administrativa restrita para gestão de mídias e upload de capas e títulos.
 
 
@@ -13,7 +13,7 @@
   - **OOP (Orientação a Objetos)** — Classes com atributos privados, getters/setters, validações e métodos `fromJSON()` / `toJSON()`.
   - **Repository Pattern** — Camada de persistência desacoplada em arquivos `.json`.
   - **Autenticação & Segurança** — `bcrypt` para criptografia de senhas e `express-session` para controle de sessão/login.
-  - **Upload de Arquivos** — `Multer` para gerenciamento de capas de filmes e séries.
+  - **Upload de Arquivos** — `Multer` para gerenciamento de capas de filmes.
   - **Testes Automatizados** — `Jest` para testes unitários e de integração.
 
 ### Front-end
