@@ -4,7 +4,8 @@
   "description": "Repositório de Back-end + Web para o projeto *Larp-Flix*, projeto o qual possui o objetivo de catalogar, avaliar e gerenciar filmes e séries diversos. \r   O sistema permite que os usuários explorem produções, filtrem por gênero, façam avaliações com notas e comentários, além de disponibilizar uma área administrativa restrita para gestão de mídias e upload de capas e títulos.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node-dev --respaw src/app.ts"
   },
   "repository": {
     "type": "git",
