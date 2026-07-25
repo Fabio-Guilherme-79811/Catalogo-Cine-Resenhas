@@ -19,7 +19,7 @@ router.get("/", (_req:Request, res:Response) => {
         }
     })
 });
-
+    
 router.get("/login", (_req:Request, res:Response) => {
     res.redirect(302, APP_URLS.LOGIN);
 });
