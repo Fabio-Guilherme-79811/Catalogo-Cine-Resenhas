@@ -1,5 +1,5 @@
 import express, {Request,Response, NextFunction,Application}  from 'express';
-import landingRoutes from './routes/routes-landing';
+import landingRoutes from './routes/landing-routes';
 const app: Application = express();
 
 
