@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
-import { isAuthenticated, isAdmin, AuthenticatedRequest } from '../middlewares/auth-middlewares';
-
+import { isAuthenticated, isAdmin, AuthenticatedRequest } from '../middlewares/auth-middleware';
+import { upload, montarUrlArquivo } from '../middlewares/upload.middleware';
+ 
 const router = Router();
 
 export interface Filme {

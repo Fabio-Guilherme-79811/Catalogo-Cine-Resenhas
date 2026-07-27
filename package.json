@@ -2,7 +2,7 @@
   "name": "catalogo-larp-flix",
   "version": "1.0.0",
   "description": "Repositório de Back-end + Web para o projeto *Larp-Flix*, projeto o qual possui o objetivo de catalogar, avaliar e gerenciar filmes e séries diversos. \r   O sistema permite que os usuários explorem produções, filtrem por gênero, façam avaliações com notas e comentários, além de disponibilizar uma área administrativa restrita para gestão de mídias e upload de capas e títulos.",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
     "test": "jest",
     "dev": "ts-node-dev --respaw src/app.ts"
@@ -20,9 +20,12 @@
   },
   "homepage": "https://github.com/Fabio-Guilherme-79811/Catalogo-Larp-Flix#readme",
   "dependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/multer": "^2.2.0",
     "bcryptjs": "^3.0.3",
     "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3"
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.2.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
