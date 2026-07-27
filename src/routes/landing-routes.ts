@@ -5,10 +5,10 @@ const router = Router();
 
 router.get("/", (_req:Request, res:Response) => {
     res.json({
-        page:"landig",
-        tittle:"Bem-Vindo!",
+        page:"landing",
+        title:"Bem-Vindo!",
         cta:{
-            loging:{
+            login:{
                 label:"Entrar",
                 url:APP_URLS.LOGIN,
             },

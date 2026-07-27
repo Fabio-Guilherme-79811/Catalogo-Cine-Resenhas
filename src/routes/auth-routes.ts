@@ -18,4 +18,13 @@ router.get('/register', (req:Request, res:Response) =>{
     res.redirect('/cadastro');
 });
 
+router.post('/registro', (req: Request, res: Response) => {
+
+    const { nome, email, senha } = req.body;
+
+    console.log(nome, email, senha);
+
+    res.redirect('/login');
+});
+
 export default router;
