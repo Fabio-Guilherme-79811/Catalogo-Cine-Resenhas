@@ -1,8 +1,6 @@
 import express, {Request,Response, NextFunction,Application}  from 'express';
-import landingRoutes from './routes/landing-routes';
+import landingRoutes from './routes/routes-lading';
 const app: Application = express();
-
-
 
 
 app.use(express.json());
