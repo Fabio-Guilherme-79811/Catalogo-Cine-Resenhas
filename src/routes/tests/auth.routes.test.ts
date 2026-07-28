@@ -2,7 +2,7 @@ const request = require("supertest");
 import app from "../../app";
 
 describe("Auth routes", () => {
-
+    // Testa se a rota de login redireciona corretamente para a página de login
     test("GET/login deve redirecionar para a página de login", async () => {
         const response = await request(app)
             .get("/login");
@@ -11,7 +11,7 @@ describe("Auth routes", () => {
         console.log(response.headers.location);
     });
 
-
+     // Testa se a página de cadastro é acessada corretamente
     test("GET/registro deve retornar a página de cadastro", async () => {
         const response = await request(app)
             .get("/cadastro");
@@ -19,7 +19,7 @@ describe("Auth routes", () => {
         expect(response.statusCode).toBe(302);
     });
 
-
+     // Testa se um novo usuário consegue se cadastrar com dados válidos
     test("POST/registro deve cadastrar usuário", async () => {
         const response = await request(app)
             .post("/registro")
