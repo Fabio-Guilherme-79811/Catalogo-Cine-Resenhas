@@ -1,9 +1,27 @@
 import { Router, Request, Response } from 'express';
 import { isAuthenticated, isAdmin, AuthenticatedRequest } from '../middlewares/auth-middleware';
-import { upload, montarUrlArquivo } from '../middlewares/upload.middleware';
- 
+import { upload, montarUrlArquivo, ArquivoEnviado } from '../middlewares/upload.middleware';
+
+/**
+ * Requisição autenticada que também pode conter um arquivo enviado via multer.
+ * Usa a interface própria ArquivoEnviado (ver upload.middleware.ts) em vez do
+ * namespace `Express.Multer.File`, que depende de um merge de tipos que pode
+ * não estar disponível em todos os ambientes.
+ */
+interface RequisicaoComArquivo extends AuthenticatedRequest {
+  file?: ArquivoEnviado;
+}
+
 const router = Router();
 
+/* ------------------------------------------------------------------ */
+/*  FILMES (catálogo)                                                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Mock do catálogo de filmes.
+ * Substitua por uma consulta real ao banco de dados.
+ */
 export interface Filme {
   id: string;
   titulo: string;
@@ -35,6 +53,11 @@ export const filmes: Filme[] = [
   },
 ];
 
+/**
+ * GET /conteudo/filmes
+ * Lista o catálogo de filmes publicados. Rota pública.
+ * Suporta filtro opcional por gênero via query string (?genero=Drama).
+ */
 router.get('/filmes', (req: Request, res: Response) => {
   const { genero } = req.query;
 
@@ -48,6 +71,10 @@ router.get('/filmes', (req: Request, res: Response) => {
   res.json(resultado);
 });
 
+/**
+ * GET /conteudo/filmes/:id
+ * Detalhe de um filme específico do catálogo. Rota pública.
+ */
 router.get('/filmes/:id', (req: Request, res: Response) => {
   const filme = filmes.find((f) => f.id === req.params.id && f.publicado);
 
@@ -59,6 +86,10 @@ router.get('/filmes/:id', (req: Request, res: Response) => {
   res.json(filme);
 });
 
+/**
+ * POST /conteudo/filmes
+ * Adiciona um novo filme ao catálogo. Restrito a administradores.
+ */
 router.post('/filmes', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res: Response) => {
   const { titulo, sinopse, genero, anoLancamento, posterUrl, publicado } = req.body;
 
@@ -83,6 +114,10 @@ router.post('/filmes', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res
   res.status(201).json(novoFilme);
 });
 
+/**
+ * PUT /conteudo/filmes/:id
+ * Atualiza os dados de um filme do catálogo. Restrito a administradores.
+ */
 router.put('/filmes/:id', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res: Response) => {
   const filme = filmes.find((f) => f.id === req.params.id);
 
@@ -102,6 +137,10 @@ router.put('/filmes/:id', isAuthenticated, isAdmin, (req: AuthenticatedRequest, 
   res.json(filme);
 });
 
+/**
+ * DELETE /conteudo/filmes/:id
+ * Remove um filme do catálogo. Restrito a administradores.
+ */
 router.delete('/filmes/:id', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res: Response) => {
   const index = filmes.findIndex((f) => f.id === req.params.id);
 
@@ -114,133 +153,32 @@ router.delete('/filmes/:id', isAuthenticated, isAdmin, (req: AuthenticatedReques
   res.json({ mensagem: 'Filme removido do catálogo com sucesso.' });
 });
 
-export interface Opiniao {
-  id: string;
-  filmeId: string;
-  usuarioId: string;
-  usuarioNome: string;
-  nota: number; 
-  comentario: string;
-  criadoEm: string;
-}
+/**
+ * POST /conteudo/filmes/:id/poster
+ * Faz upload da imagem de pôster de um filme. Restrito a administradores.
+ * Envie o arquivo em multipart/form-data, no campo "poster".
+ */
+router.post(
+  '/filmes/:id/poster',
+  isAuthenticated,
+  isAdmin,
+  upload.single('poster'),
+  (req: RequisicaoComArquivo, res: Response) => {
+    const filme = filmes.find((f) => f.id === req.params.id);
 
-const opinioes: Opiniao[] = [];
-
-const JANELA_EDICAO_HORAS = 24;
-
-function dentroDaJanelaDeEdicao(opiniao: Opiniao): boolean {
-  const criadoEm = new Date(opiniao.criadoEm).getTime();
-  const limiteMs = JANELA_EDICAO_HORAS * 60 * 60 * 1000;
-  return Date.now() - criadoEm <= limiteMs;
-}
-
-router.get('/opinioes/filme/:filmeId', (req: Request, res: Response) => {
-  const filmeId = String(req.params.filmeId);
-
-  const filmeExiste = filmes.some((f) => f.id === filmeId);
-  if (!filmeExiste) {
-    res.status(404).json({ mensagem: 'Filme não encontrado.' });
-    return;
-  }
-
-  const opinioesDoFilme = opinioes.filter((o) => o.filmeId === filmeId);
-  res.json(opinioesDoFilme);
-});
-
-router.post('/opinioes/filme/:filmeId', isAuthenticated, (req: AuthenticatedRequest, res: Response) => {
-  const filmeId = String(req.params.filmeId);
-  const { nota, comentario } = req.body;
-
-  const filme = filmes.find((f) => f.id === filmeId && f.publicado);
-  if (!filme) {
-    res.status(404).json({ mensagem: 'Filme não encontrado.' });
-    return;
-  }
-
-  if (!nota || nota < 1 || nota > 5) {
-    res.status(400).json({ mensagem: 'Informe uma nota entre 1 e 5.' });
-    return;
-  }
-
-  if (!comentario || comentario.trim().length === 0) {
-    res.status(400).json({ mensagem: 'Escreva um comentário com sua opinião.' });
-    return;
-  }
-
-  const jaOpinou = opinioes.some(
-    (o) => o.filmeId === filmeId && o.usuarioId === req.user?.id
-  );
-  if (jaOpinou) {
-    res.status(409).json({
-      mensagem: 'Você já avaliou esse filme. Utilize a edição para alterar sua avaliação (disponível por um tempo limitado).',
-    });
-    return;
-  }
-
-  const novaOpiniao: Opiniao = {
-    id: String(opinioes.length + 1),
-    filmeId,
-    usuarioId: String(req.user!.id),
-    usuarioNome: String(req.user!.nome),
-    nota,
-    comentario,
-    criadoEm: new Date().toISOString(),
-  };
-
-  opinioes.push(novaOpiniao);
-  res.status(201).json(novaOpiniao);
-});
-
-router.put('/opinioes/:id', isAuthenticated, (req: AuthenticatedRequest, res: Response) => {
-  const opiniao = opinioes.find((o) => o.id === req.params.id);
-
-  if (!opiniao) {
-    res.status(404).json({ mensagem: 'Opinião não encontrada.' });
-    return;
-  }
-
-  const ehAutor = opiniao.usuarioId === req.user?.id;
-  const ehAdmin = req.user?.role === 'admin';
-
-  if (!ehAdmin && !ehAutor) {
-    res.status(403).json({ mensagem: 'Você só pode editar a sua própria avaliação.' });
-    return;
-  }
-
-  if (!ehAdmin && ehAutor && !dentroDaJanelaDeEdicao(opiniao)) {
-    res.status(403).json({
-      mensagem: `O prazo de ${JANELA_EDICAO_HORAS}h para edição já expirou. Entre em contato com um administrador para alterar essa avaliação.`,
-    });
-    return;
-  }
-
-  const { nota, comentario } = req.body;
-
-  if (nota !== undefined) {
-    if (nota < 1 || nota > 5) {
-      res.status(400).json({ mensagem: 'A nota deve estar entre 1 e 5.' });
+    if (!filme) {
+      res.status(404).json({ mensagem: 'Filme não encontrado.' });
       return;
     }
-    opiniao.nota = nota;
+
+    if (!req.file) {
+      res.status(400).json({ mensagem: 'Nenhum arquivo enviado. Use o campo "poster".' });
+      return;
+    }
+
+    filme.posterUrl = montarUrlArquivo(req.file.filename);
+    res.json({ mensagem: 'Pôster atualizado com sucesso.', filme });
   }
-
-  if (comentario !== undefined) {
-    opiniao.comentario = comentario;
-  }
-
-  res.json(opiniao);
-});
-
-router.delete('/opinioes/:id', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res: Response) => {
-  const index = opinioes.findIndex((o) => o.id === req.params.id);
-
-  if (index === -1) {
-    res.status(404).json({ mensagem: 'Opinião não encontrada.' });
-    return;
-  }
-
-  opinioes.splice(index, 1);
-  res.json({ mensagem: 'Opinião removida com sucesso.' });
-});
+);
 
 export default router;
