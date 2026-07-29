@@ -1,23 +1,43 @@
+// Importação da entidade Genero e da interface do repositório
 import { Genero } from '../../../entities/Genero';
 import { IGeneroRepository } from '../IGeneroRepository';
 
+/**
+ * Implementação em memória do repositório de Gêneros.
+ * Utilizado para simular a persistência de dados nos testes unitários.
+ */
 class GeneroRepositoryInMemory implements IGeneroRepository {
+  // Array interno para armazenar os gêneros em memória
   public items: Genero[] = [];
 
+  /**
+   * Adiciona e armazena um novo gênero no repositório.
+   */
   async criar(genero: Genero): Promise<Genero> {
     this.items.push(genero);
     return genero;
   }
 
+  /**
+   * Retorna todos os gêneros cadastrados.
+   */
   async listarTodos(): Promise<Genero[]> {
     return this.items;
   }
 
+  /**
+   * Busca um gênero pelo seu ID único.
+   * Retorna o gênero encontrado ou null caso não exista.
+   */
   async buscarPorId(id: string): Promise<Genero | null> {
     const genero = this.items.find((item) => item.id === id);
     return genero || null;
   }
 
+  /**
+   * Busca um gênero pelo nome (sem diferenciar maiúsculas e minúsculas).
+   * Retorna o gênero encontrado ou null caso não exista.
+   */
   async buscarPorNome(nome: string): Promise<Genero | null> {
     const genero = this.items.find(
       (item) => item.nome.toLowerCase() === nome.toLowerCase()
@@ -25,6 +45,10 @@ class GeneroRepositoryInMemory implements IGeneroRepository {
     return genero || null;
   }
 
+  /**
+   * Atualiza um gênero existente pelo seu ID.
+   * Retorna o gênero atualizado ou null se o ID não for encontrado.
+   */
   async atualizar(id: string, genero: Genero): Promise<Genero | null> {
     const index = this.items.findIndex((item) => item.id === id);
 
@@ -36,6 +60,10 @@ class GeneroRepositoryInMemory implements IGeneroRepository {
     return genero;
   }
 
+  /**
+   * Remove um gênero pelo seu ID.
+   * Retorna true se foi removido com sucesso ou false se o ID não for encontrado.
+   */
   async remover(id: string): Promise<boolean> {
     const index = this.items.findIndex((item) => item.id === id);
 
@@ -48,9 +76,11 @@ class GeneroRepositoryInMemory implements IGeneroRepository {
   }
 }
 
+// Suíte de testes unitários para o repositório de gêneros
 describe('IGeneroRepository Testes', () => {
   let repository: GeneroRepositoryInMemory;
 
+  // Função auxiliar (factory) para gerar mocks de gênero nos testes
   const criarGeneroMock = (dados: Partial<Genero> = {}): Genero => {
     return {
       id: '1',
@@ -59,10 +89,12 @@ describe('IGeneroRepository Testes', () => {
     } as Genero;
   };
 
+  // Instancia um novo repositório limpo antes de cada teste
   beforeEach(() => {
     repository = new GeneroRepositoryInMemory();
   });
 
+  // Testes para o método criar
   describe('criar', () => {
     it('deve criar e armazenar um novo gênero', async () => {
       const genero = criarGeneroMock();
@@ -74,6 +106,7 @@ describe('IGeneroRepository Testes', () => {
     });
   });
 
+  // Testes para o método listarTodos
   describe('listarTodos', () => {
     it('deve retornar uma lista vazia quando não houver gêneros', async () => {
       const resultado = await repository.listarTodos();
@@ -95,6 +128,7 @@ describe('IGeneroRepository Testes', () => {
     });
   });
 
+  // Testes para o método buscarPorId
   describe('buscarPorId', () => {
     it('deve encontrar um gênero existente pelo ID', async () => {
       const genero = criarGeneroMock({ id: 'gen-123' });
@@ -112,6 +146,7 @@ describe('IGeneroRepository Testes', () => {
     });
   });
 
+  // Testes para o método buscarPorNome
   describe('buscarPorNome', () => {
     it('deve encontrar um gênero existente pelo nome', async () => {
       const genero = criarGeneroMock({ nome: 'Terror' });
@@ -138,6 +173,7 @@ describe('IGeneroRepository Testes', () => {
     });
   });
 
+  // Testes para o método atualizar
   describe('atualizar', () => {
     it('deve atualizar um gênero existente', async () => {
       const generoOriginal = criarGeneroMock({ id: '1', nome: 'Nome Antigo' });
@@ -160,6 +196,10 @@ describe('IGeneroRepository Testes', () => {
     });
   });
 
+
+
+  
+  // Testes para o método remover
   describe('remover', () => {
     it('deve remover um gênero existente e retornar true', async () => {
       const genero = criarGeneroMock({ id: '1' });
@@ -178,3 +218,4 @@ describe('IGeneroRepository Testes', () => {
     });
   });
 });
+
