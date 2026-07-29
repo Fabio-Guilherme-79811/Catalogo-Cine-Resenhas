@@ -1,6 +1,16 @@
 import { Genero, GeneroJSON } from '../Genero';
 
+// Testes unitários da entidade Genero.
+// Cobrem: construção/validação de nome, getters/setters, nomeNormalizado,
+// fromJSON (incluindo entrada em string e objeto) e toJSON.
+// As regras RNLF20 (unicidade) e RNLF21 (não remover se em uso) NÃO são
+// testadas aqui, pois dependem da coleção completa e pertencem ao
+// GeneroRepository (fora do escopo desta entidade).
+
 describe('Genero', () => {
+    // ---------------------------------------------------------------------
+    // Construtor / validação de nome
+    // ---------------------------------------------------------------------
     describe('constructor', () => {
         it('deve criar um Genero com os valores informados', () => {
             const genero = new Genero({
@@ -54,6 +64,9 @@ describe('Genero', () => {
         });
     });
 
+    // ---------------------------------------------------------------------
+    // Getters / setters
+    // ---------------------------------------------------------------------
     describe('setters', () => {
         it('deve atualizar o nome com trim e validação', () => {
             const genero = new Genero({ id: '1', nome: 'Drama' });
@@ -88,12 +101,15 @@ describe('Genero', () => {
 
         it('id deve ser somente leitura (sem setter em tempo de compilação)', () => {
             const genero = new Genero({ id: '1', nome: 'Drama' });
-            // @ts-expect-error
+            // @ts-expect-error - id não possui setter, garantindo imutabilidade
             genero.id = '2';
             expect(genero.id).toBe('1');
         });
     });
 
+    // ---------------------------------------------------------------------
+    // nomeNormalizado
+    // ---------------------------------------------------------------------
     describe('nomeNormalizado', () => {
         it('deve retornar o nome em minúsculas e sem espaços extras', () => {
             const genero = new Genero({ id: '1', nome: 'AÇÃO' });
@@ -107,6 +123,9 @@ describe('Genero', () => {
         });
     });
 
+    // ---------------------------------------------------------------------
+    // fromJSON
+    // ---------------------------------------------------------------------
     describe('fromJSON', () => {
         const jsonValido: GeneroJSON = {
             id: '10',
@@ -187,6 +206,9 @@ describe('Genero', () => {
         });
     });
 
+    // ---------------------------------------------------------------------
+    // toJSON
+    // ---------------------------------------------------------------------
     describe('toJSON', () => {
         it('deve serializar corretamente todos os campos', () => {
             const genero = new Genero({
