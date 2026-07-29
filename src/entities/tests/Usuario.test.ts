@@ -9,6 +9,7 @@ describe('Entidade Usuario', () => {
         senhaHash: 'hash123',
         role: 'comum' as const,
         criadoEm: '2026-01-01T00:00:00.000Z'
+
     };
 
     test('deve criar um usuário válido', () => {
