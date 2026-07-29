@@ -2,10 +2,13 @@ import { UsuarioRepository } from '../UsuarioRepository';
 import { Usuario } from '../../entities/Usuario';
 import { JsonFileHandler } from '../JsonFileHandler';
 
+// Mockamos o JsonFileHandler inteiro para que os testes não dependam
+// de leitura/escrita real em disco. Assim testamos só a lógica do repositório.
 jest.mock('../JsonFileHandler');
 
 const JsonFileHandlerMock = JsonFileHandler as jest.MockedClass<typeof JsonFileHandler>;
 
+// Helper para criar um usuário de teste rapidamente, evitando repetição
 function criarUsuarioMock(overrides: Partial<{
     id: string;
     nome: string;
@@ -26,12 +29,17 @@ function criarUsuarioMock(overrides: Partial<{
 
 describe('UsuarioRepository', () => {
     let repository: UsuarioRepository;
+    // Referências aos métodos mockados de ler/escrever do "arquivo" interno
     let lerMock: jest.Mock;
     let escreverMock: jest.Mock;
 
     beforeEach(() => {
+        // Limpa todos os mocks entre os testes para evitar que um teste
+        // influencie o resultado de outro (estado "vazando")
         jest.clearAllMocks();
 
+        // Como `arquivo` é `private readonly` e instanciado dentro da classe,
+        // pegamos a instância mockada criada automaticamente pelo jest.mock
         repository = new UsuarioRepository();
         const instanciaMockada = JsonFileHandlerMock.mock.instances[0] as jest.Mocked<JsonFileHandler<any>>;
         lerMock = instanciaMockada.ler as jest.Mock;
@@ -40,19 +48,25 @@ describe('UsuarioRepository', () => {
 
     describe('listarTodos', () => {
         it('deve retornar lista vazia quando não há usuários no arquivo', async () => {
+            // Arrange: simula arquivo vazio
             lerMock.mockResolvedValue([]);
 
+            // Act
             const resultado = await repository.listarTodos();
 
+            // Assert
             expect(resultado).toEqual([]);
         });
 
         it('deve converter os dados JSON em instâncias de Usuario', async () => {
+            // Arrange
             const usuario = criarUsuarioMock();
             lerMock.mockResolvedValue([usuario.toJSON()]);
 
+            // Act
             const resultado = await repository.listarTodos();
 
+            // Assert: cada item retornado deve ser uma instância real de Usuario
             expect(resultado).toHaveLength(1);
             expect(resultado[0]).toBeInstanceOf(Usuario);
             expect(resultado[0].email).toBe(usuario.email);
@@ -81,9 +95,11 @@ describe('UsuarioRepository', () => {
 
     describe('buscarPorEmail (RNLF01)', () => {
         it('deve encontrar usuário normalizando o e-mail (trim + lowercase)', async () => {
+            // O e-mail salvo já deve estar normalizado dentro da entidade Usuario
             const usuario = criarUsuarioMock({ email: 'teste@dominio.com' });
             lerMock.mockResolvedValue([usuario.toJSON()]);
 
+            // Buscamos com espaços e caixa alta para validar a normalização na busca
             const resultado = await repository.buscarPorEmail('  TESTE@DOMINIO.COM  ');
 
             expect(resultado).not.toBeNull();
@@ -107,6 +123,7 @@ describe('UsuarioRepository', () => {
 
             const resultado = await repository.criar(novoUsuario);
 
+            // Deve ter persistido o novo usuário
             expect(escreverMock).toHaveBeenCalledTimes(1);
             expect(resultado.email).toBe('novo@teste.com');
             expect(resultado).toBeInstanceOf(Usuario);
@@ -114,6 +131,7 @@ describe('UsuarioRepository', () => {
 
         it('deve lançar erro (RNLF01) quando já existe usuário com o mesmo e-mail', async () => {
             const usuarioExistente = criarUsuarioMock({ email: 'duplicado@teste.com' });
+            // Simula que a busca por e-mail (chamada internamente por listarTodos) já retorna esse usuário
             lerMock.mockResolvedValue([usuarioExistente.toJSON()]);
 
             const novoUsuario = criarUsuarioMock({ id: 'outro-id', email: 'duplicado@teste.com' });
@@ -121,12 +139,16 @@ describe('UsuarioRepository', () => {
             await expect(repository.criar(novoUsuario)).rejects.toThrow(
                 'Já existe um usuário cadastrado com este e-mail.'
             );
+            // Não deve ter tentado escrever no arquivo, já que a criação falhou
             expect(escreverMock).not.toHaveBeenCalled();
         });
 
+
+        
         it('deve gerar um id automaticamente quando o usuário não possui um', async () => {
             lerMock.mockResolvedValue([]);
             escreverMock.mockResolvedValue(undefined);
+            // Criamos um usuário sem id para forçar o uso do randomUUID interno
             const usuarioSemId = criarUsuarioMock({ id: '' });
 
             const resultado = await repository.criar(usuarioSemId);
@@ -176,6 +198,7 @@ describe('UsuarioRepository', () => {
             const usuario2 = criarUsuarioMock({ id: '2', email: 'usuario2@teste.com' });
             lerMock.mockResolvedValue([usuario1.toJSON(), usuario2.toJSON()]);
 
+            // Tenta atualizar o usuário 1 usando o e-mail que já pertence ao usuário 2
             const dadosConflitantes = criarUsuarioMock({ id: '1', email: 'usuario2@teste.com' });
 
             await expect(repository.atualizar('1', dadosConflitantes)).rejects.toThrow(
@@ -194,6 +217,7 @@ describe('UsuarioRepository', () => {
             const resultado = await repository.remover('1');
 
             expect(resultado).toBe(true);
+            // Verifica que a lista escrita não contém mais o usuário removido
             expect(escreverMock).toHaveBeenCalledWith([]);
         });
 
@@ -203,6 +227,7 @@ describe('UsuarioRepository', () => {
             const resultado = await repository.remover('nao-existe');
 
             expect(resultado).toBe(false);
+            // Não deve ter tentado escrever, já que nada foi removido
             expect(escreverMock).not.toHaveBeenCalled();
         });
     });
