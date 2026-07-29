@@ -2,6 +2,7 @@ import { Usuario } from '../Usuario';
 
 describe('Entidade Usuario', () => {
 
+    // Usuário usado como base na maioria dos testes
     const usuarioValido = {
         id: '1',
         nome: 'João',
@@ -9,10 +10,10 @@ describe('Entidade Usuario', () => {
         senhaHash: 'hash123',
         role: 'comum' as const,
         criadoEm: '2026-01-01T00:00:00.000Z'
-
     };
 
-    test('deve criar um usuário válido', () => {
+    // Verifica se o construtor cria o usuário corretamente
+    it('deve criar um usuário válido', () => {
         const usuario = new Usuario(usuarioValido);
 
         expect(usuario.id).toBe('1');
@@ -23,7 +24,8 @@ describe('Entidade Usuario', () => {
         expect(usuario.criadoEm).toBe('2026-01-01T00:00:00.000Z');
     });
 
-    test('deve definir role comum por padrão', () => {
+    // Se a role não for informada, o padrão deve ser "comum"
+    it('deve definir role comum por padrão', () => {
         const usuario = new Usuario({
             id: '1',
             nome: 'Maria',
@@ -34,13 +36,15 @@ describe('Entidade Usuario', () => {
         expect(usuario.role).toBe('comum');
     });
 
-    test('ehAdmin deve retornar false para usuário comum', () => {
+    // Confere se um usuário comum não é admin
+    it('ehAdmin deve retornar false para usuário comum', () => {
         const usuario = new Usuario(usuarioValido);
 
         expect(usuario.ehAdmin).toBe(false);
     });
 
-    test('ehAdmin deve retornar true para admin', () => {
+    // Confere se um administrador é reconhecido corretamente
+    it('ehAdmin deve retornar true para admin', () => {
         const usuario = new Usuario({
             ...usuarioValido,
             role: 'admin'
@@ -49,7 +53,8 @@ describe('Entidade Usuario', () => {
         expect(usuario.ehAdmin).toBe(true);
     });
 
-    test('deve lançar erro para nome inválido', () => {
+    // Não deve aceitar nome muito curto
+    it('deve lançar erro para nome inválido', () => {
         expect(() =>
             new Usuario({
                 ...usuarioValido,
@@ -58,7 +63,8 @@ describe('Entidade Usuario', () => {
         ).toThrow('O nome do usuário deve ter no mínimo 2 caracteres.');
     });
 
-    test('deve lançar erro para email inválido', () => {
+    // Não deve aceitar e-mail inválido
+    it('deve lançar erro para email inválido', () => {
         expect(() =>
             new Usuario({
                 ...usuarioValido,
@@ -67,7 +73,8 @@ describe('Entidade Usuario', () => {
         ).toThrow('Informe um e-mail válido.');
     });
 
-    test('deve lançar erro para senhaHash vazio', () => {
+    // O hash da senha é obrigatório
+    it('deve lançar erro para senhaHash vazia', () => {
         expect(() =>
             new Usuario({
                 ...usuarioValido,
@@ -76,7 +83,8 @@ describe('Entidade Usuario', () => {
         ).toThrow('O hash de senha é obrigatório.');
     });
 
-    test('setter nome deve funcionar', () => {
+    // Testa alteração do nome
+    it('setter nome deve funcionar', () => {
         const usuario = new Usuario(usuarioValido);
 
         usuario.nome = 'Carlos';
@@ -84,7 +92,8 @@ describe('Entidade Usuario', () => {
         expect(usuario.nome).toBe('Carlos');
     });
 
-    test('setter email deve converter para minúsculo', () => {
+    // O e-mail deve ser salvo em letras minúsculas
+    it('setter email deve converter para minúsculo', () => {
         const usuario = new Usuario(usuarioValido);
 
         usuario.email = 'TESTE@EMAIL.COM';
@@ -92,7 +101,8 @@ describe('Entidade Usuario', () => {
         expect(usuario.email).toBe('teste@email.com');
     });
 
-    test('setter senhaHash deve alterar o hash', () => {
+    // Testa alteração do hash da senha
+    it('setter senhaHash deve alterar o hash', () => {
         const usuario = new Usuario(usuarioValido);
 
         usuario.senhaHash = 'novoHash';
@@ -100,7 +110,8 @@ describe('Entidade Usuario', () => {
         expect(usuario.senhaHash).toBe('novoHash');
     });
 
-    test('setter role deve alterar para admin', () => {
+    // Deve permitir trocar a role para admin
+    it('setter role deve alterar para admin', () => {
         const usuario = new Usuario(usuarioValido);
 
         usuario.role = 'admin';
@@ -108,7 +119,8 @@ describe('Entidade Usuario', () => {
         expect(usuario.role).toBe('admin');
     });
 
-    test('setter role inválido deve lançar erro', () => {
+    // Não pode aceitar uma role inexistente
+    it('setter role inválido deve lançar erro', () => {
         const usuario = new Usuario(usuarioValido);
 
         expect(() => {
@@ -116,25 +128,29 @@ describe('Entidade Usuario', () => {
         }).toThrow('Papel de usuário inválido. Use "admin" ou "comum".');
     });
 
-    test('validarSenhaPlana deve aceitar senha válida', () => {
+    // Senha com tamanho suficiente não deve gerar erro
+    it('validarSenhaPlana deve aceitar senha válida', () => {
         expect(() =>
             Usuario.validarSenhaPlana('123456')
         ).not.toThrow();
     });
 
-    test('validarSenhaPlana deve rejeitar senha curta', () => {
+    // Senha muito curta deve gerar erro
+    it('validarSenhaPlana deve rejeitar senha curta', () => {
         expect(() =>
             Usuario.validarSenhaPlana('123')
         ).toThrow('A senha deve ter no mínimo 6 caracteres.');
     });
 
-    test('toJSON deve retornar todos os campos', () => {
+    // Verifica se todos os dados são retornados
+    it('toJSON deve retornar todos os campos', () => {
         const usuario = new Usuario(usuarioValido);
 
         expect(usuario.toJSON()).toEqual(usuarioValido);
     });
 
-    test('toPublicJSON não deve retornar senhaHash', () => {
+    // O hash da senha não deve aparecer no retorno público
+    it('toPublicJSON não deve retornar senhaHash', () => {
         const usuario = new Usuario(usuarioValido);
 
         expect(usuario.toPublicJSON()).toEqual({
@@ -146,14 +162,16 @@ describe('Entidade Usuario', () => {
         });
     });
 
-    test('fromJSON deve criar um usuário a partir de objeto', () => {
+    // Cria um usuário usando um objeto
+    it('fromJSON deve criar um usuário a partir de objeto', () => {
         const usuario = Usuario.fromJSON(usuarioValido);
 
         expect(usuario.nome).toBe('João');
         expect(usuario.email).toBe('joao@email.com');
     });
 
-    test('fromJSON deve criar um usuário a partir de string JSON', () => {
+    // Cria um usuário usando uma string JSON
+    it('fromJSON deve criar um usuário a partir de string JSON', () => {
         const json = JSON.stringify(usuarioValido);
 
         const usuario = Usuario.fromJSON(json);
@@ -161,7 +179,8 @@ describe('Entidade Usuario', () => {
         expect(usuario.nome).toBe('João');
     });
 
-    test('fromJSON deve lançar erro para JSON inválido', () => {
+    // Deve dar erro quando os dados estiverem incompletos
+    it('fromJSON deve lançar erro para JSON inválido', () => {
         expect(() =>
             Usuario.fromJSON({
                 nome: 'João'
