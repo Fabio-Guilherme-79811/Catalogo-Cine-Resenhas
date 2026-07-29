@@ -99,12 +99,15 @@ describe('Genero', () => {
             expect(genero.ativo).toBe(false);
         });
 
-        it('id deve ser somente leitura (sem setter em tempo de compilação)', () => {
-            const genero = new Genero({ id: '1', nome: 'Drama' });
-            // @ts-expect-error - id não possui setter, garantindo imutabilidade
-            genero.id = '2';
-            expect(genero.id).toBe('1');
-        });
+        it('id deve ser somente leitura', () => {
+    const genero = new Genero({ id: '1', nome: 'Drama' });
+
+    expect(() => {
+        (genero as any).id = '2';
+    }).toThrow(TypeError);
+
+    expect(genero.id).toBe('1');
+});
     });
 
     // ---------------------------------------------------------------------
