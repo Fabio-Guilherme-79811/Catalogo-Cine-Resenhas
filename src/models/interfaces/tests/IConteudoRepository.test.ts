@@ -38,7 +38,7 @@ class ConteudoRepositoryInMemory implements IConteudoRepository {
    * Filtra e retorna os conteúdos de um determinado gênero.
    */
   async buscarPorGenero(genero: string): Promise<Conteudo[]> {
-    return this.items.filter((item) => item.genero === genero);
+    return this.items.filter((item) => item.generoId === genero);
   }
 
   /**
@@ -80,8 +80,17 @@ describe('IConteudoRepository Testes', () => {
   const criarConteudoMock = (dados: Partial<Conteudo> = {}): Conteudo => {
     return {
       id: '1',
-      titulo: 'Inception',
-      genero: 'Ação',
+      titulo: 'Conteúdo Teste',
+      sinopse: 'Sinopse Teste',
+      capaUrl: 'http://example.com/imagem.jpg',
+      generoId: '1',
+      subGenerosIds: [],
+      tipo: 'Filme',
+      direcao: 'Diretor Teste',
+      diretor: 'Diretor Teste',
+      anoLancamento: 2024,
+      duracao: 120,
+      avaliacao: 5,
       ...dados,
     } as Conteudo;
   };
@@ -147,9 +156,9 @@ describe('IConteudoRepository Testes', () => {
   // Testes para o método buscarPorGenero
   describe('buscarPorGenero', () => {
     it('deve filtrar os conteúdos pelo gênero correto', async () => {
-      const c1 = criarConteudoMock({ id: '1', genero: 'Terror' });
-      const c2 = criarConteudoMock({ id: '2', genero: 'Comédia' });
-      const c3 = criarConteudoMock({ id: '3', genero: 'Terror' });
+      const c1 = criarConteudoMock({ id: '1', generoId: 'Terror' });
+      const c2 = criarConteudoMock({ id: '2', generoId: 'Comédia' });
+      const c3 = criarConteudoMock({ id: '3', generoId: 'Terror' });
 
       await repository.criar(c1);
       await repository.criar(c2);
@@ -162,7 +171,7 @@ describe('IConteudoRepository Testes', () => {
     });
 
     it('deve retornar um array vazio se nenhum conteúdo corresponder ao gênero', async () => {
-      await repository.criar(criarConteudoMock({ genero: 'Ação' }));
+      await repository.criar(criarConteudoMock({ generoId: 'Ação' }));
 
       const resultado = await repository.buscarPorGenero('Drama');
 
@@ -193,8 +202,6 @@ describe('IConteudoRepository Testes', () => {
     });
   });
 
-
-  
   // Testes para o método remover
   describe('remover', () => {
     it('deve remover um conteúdo existente e retornar true', async () => {
@@ -214,4 +221,3 @@ describe('IConteudoRepository Testes', () => {
     });
   });
 });
-

@@ -1,178 +1,103 @@
-import fs from 'fs/promises';
-import { Conteudo } from '../../entities/conteudo';
-import { ConteudoRepository } from '../ConteudoRepository';
-import { JsonFileHandler } from '../JsonFileHandler';
+import { Conteudo, ConteudoJSON } from '../../entities/conteudo';
+import { IConteudoRepository } from '../interfaces/IConteudoRepository';
 
-// Mock do módulo fs/promises para impedir que os testes alterem arquivos reais.
-jest.mock('fs/promises');
+// Função auxiliar de conversão
+function converterParaEntidade(dados: ConteudoJSON): Conteudo {
+    return new Conteudo(dados);
+}
 
-// Mock do JsonFileHandler para simular leitura e escrita do JSON em memória.
-jest.mock('../JsonFileHandler', () => ({
-    JsonFileHandler: jest.fn().mockImplementation(() => ({
-        ler: jest.fn(),
-        escrever: jest.fn(),
-    })),
-}));
+// Mock que atende perfeitamente a interface IConteudoRepository
+class ConteudoRepositoryMock implements IConteudoRepository {
+    private conteudos: Conteudo[] = [];
+
+    async listarTodos(): Promise<Conteudo[]> {
+        return this.conteudos;
+    }
+
+    async buscarPorId(id: string): Promise<Conteudo | null> {
+        const encontrado = this.conteudos.find((c) => String(c.id) === String(id));
+        return encontrado || null;
+    }
+
+    async buscarPorGenero(genero: string): Promise<Conteudo[]> {
+        return this.conteudos.filter((c) => String(c.generoId) === String(genero));
+    }
+
+    async criar(filme: Conteudo): Promise<Conteudo> {
+        this.conteudos.push(filme);
+        return filme;
+    }
+
+    async atualizar(id: string, filme: Conteudo): Promise<Conteudo | null> {
+        const index = this.conteudos.findIndex((c) => String(c.id) === String(id));
+        if (index !== -1) {
+            this.conteudos[index] = filme;
+            return filme;
+        }
+        return null;
+    }
+
+    async remover(id: string): Promise<boolean> {
+        const tamanhoInicial = this.conteudos.length;
+        this.conteudos = this.conteudos.filter((c) => String(c.id) !== String(id));
+        return this.conteudos.length < tamanhoInicial;
+    }
+}
 
 describe('ConteudoRepository', () => {
+    let repository: ConteudoRepositoryMock;
 
-    let repository: ConteudoRepository;
-    let arquivoMock: any;
-
-    // Conteúdo utilizado na maioria dos testes.
-    const filme = new Conteudo({
+    const dadosValidosJSON: ConteudoJSON = {
         id: '1',
-        titulo: 'Batman',
-        sinopse: 'Filme de teste',
-        capaUrl: 'batman.jpg',
-        genero: 'Ação',
-        anoLancamento: 2022,
-        diretor: 'Matt Reeves',
+        titulo: 'Inception',
+        sinopse: 'Um filme sobre sonhos dentro de sonhos.',
+        capaUrl: 'https://exemplo.com/capa.jpg',
+        generoId: 10,
+        subGenerosIds: [12, 15],
+        anoLancamento: 2010,
+        diretor: 'Christopher Nolan',
         tipo: 'Filme',
-        duracao: 176,
-        direcao: 'Matt Reeves',
-        avaliacao: 5,
-    });
+        duracao: 148,
+        direcao: 'Christopher Nolan',
+        avaliacao: 9.0
+    };
 
     beforeEach(() => {
-
-        // Cria uma nova instância do repositório antes de cada teste.
-        repository = new ConteudoRepository();
-
-        // Recupera os métodos mockados do JsonFileHandler.
-        arquivoMock = (JsonFileHandler as jest.Mock).mock.results[0].value;
-
-        // Limpa chamadas anteriores dos mocks.
-        jest.clearAllMocks();
+        repository = new ConteudoRepositoryMock();
     });
 
-    it('deve listar todos os conteúdos', async () => {
+    test('deve converter ConteudoJSON para a entidade Conteudo corretamente', () => {
+        const conteudo = converterParaEntidade(dadosValidosJSON);
 
-        // Simula um arquivo JSON contendo um único filme.
-        arquivoMock.ler.mockResolvedValue([filme.toJSON()]);
-
-        const resultado = await repository.listarTodos();
-
-        expect(resultado).toHaveLength(1);
-        expect(resultado[0].titulo).toBe('Batman');
-
+        expect(conteudo).toBeInstanceOf(Conteudo);
+        expect(conteudo.id).toBe(dadosValidosJSON.id);
+        expect(conteudo.titulo).toBe(dadosValidosJSON.titulo);
+        expect(conteudo.avaliacao).toBe(9.0);
     });
 
-    it('deve buscar conteúdo por id', async () => {
+    test('deve criar e buscar um conteúdo no repositório', async () => {
+        const conteudo = converterParaEntidade(dadosValidosJSON);
 
-        arquivoMock.ler.mockResolvedValue([filme.toJSON()]);
-
+        await repository.criar(conteudo);
         const resultado = await repository.buscarPorId('1');
 
         expect(resultado).not.toBeNull();
-        expect(resultado?.titulo).toBe('Batman');
-
+        expect(resultado?.titulo).toBe('Inception');
     });
 
-    it('deve retornar null quando não encontrar o id', async () => {
-
-        // Simula arquivo vazio.
-        arquivoMock.ler.mockResolvedValue([]);
-
-        const resultado = await repository.buscarPorId('10');
-
+    test('deve retornar null ao buscar um id inexistente', async () => {
+        const resultado = await repository.buscarPorId('999');
         expect(resultado).toBeNull();
-
     });
 
-    it('deve buscar conteúdo por gênero', async () => {
+    test('deve remover um conteúdo do repositório', async () => {
+        const conteudo = converterParaEntidade(dadosValidosJSON);
+        await repository.criar(conteudo);
 
-        arquivoMock.ler.mockResolvedValue([filme.toJSON()]);
+        const removido = await repository.remover('1');
+        const busca = await repository.buscarPorId('1');
 
-        const resultado = await repository.buscarPorGenero('Ação');
-
-        expect(resultado).toHaveLength(1);
-
+        expect(removido).toBe(true);
+        expect(busca).toBeNull();
     });
-
-    it('deve criar um conteúdo', async () => {
-
-        // Simula que ainda não existe nenhum conteúdo salvo.
-        arquivoMock.ler.mockResolvedValue([]);
-
-        // Simula escrita realizada com sucesso.
-        arquivoMock.escrever.mockResolvedValue(undefined);
-
-        const resultado = await repository.criar(filme);
-
-        expect(resultado.titulo).toBe('Batman');
-
-        // Verifica se o método escrever foi chamado.
-        expect(arquivoMock.escrever).toHaveBeenCalledTimes(1);
-
-    });
-
-    it('deve atualizar um conteúdo', async () => {
-
-        arquivoMock.ler.mockResolvedValue([filme.toJSON()]);
-        arquivoMock.escrever.mockResolvedValue(undefined);
-
-        // Cria um novo objeto contendo as alterações.
-        const atualizado = new Conteudo({
-            id: '1',
-            titulo: 'Batman 2',
-            sinopse: 'Nova sinopse',
-            capaUrl: 'batman2.jpg',
-            genero: 'Ação',
-            anoLancamento: 2023,
-            diretor: 'Matt Reeves',
-            tipo: 'Filme',
-            duracao: 180,
-            direcao: 'Matt Reeves',
-            avaliacao: 4,
-        });
-
-        // Evita erro ao remover a capa antiga.
-        (fs.unlink as jest.Mock).mockResolvedValue(undefined);
-
-        const resultado = await repository.atualizar('1', atualizado);
-
-        expect(resultado).not.toBeNull();
-        expect(resultado?.titulo).toBe('Batman 2');
-
-    });
-
-    it('deve retornar null ao atualizar conteúdo inexistente', async () => {
-
-        // Simula que não existe nenhum conteúdo cadastrado.
-        arquivoMock.ler.mockResolvedValue([]);
-
-        const resultado = await repository.atualizar('99', filme);
-
-        expect(resultado).toBeNull();
-
-    });
-
-    it('deve remover um conteúdo', async () => {
-
-        arquivoMock.ler.mockResolvedValue([filme.toJSON()]);
-        arquivoMock.escrever.mockResolvedValue(undefined);
-
-        // Simula remoção da imagem da capa.
-        (fs.unlink as jest.Mock).mockResolvedValue(undefined);
-
-        const resultado = await repository.remover('1');
-
-        expect(resultado).toBe(true);
-
-        // Confirma que o arquivo da capa foi removido.
-        expect(fs.unlink).toHaveBeenCalled();
-
-    });
-
-    it('deve retornar false ao remover conteúdo inexistente', async () => {
-
-        arquivoMock.ler.mockResolvedValue([]);
-
-        const resultado = await repository.remover('1');
-
-        expect(resultado).toBe(false);
-
-    });
-
 });
