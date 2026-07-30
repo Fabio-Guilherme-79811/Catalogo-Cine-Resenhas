@@ -1,6 +1,8 @@
 import express, { Express } from 'express';
 import request from 'supertest';
 
+// Mock do módulo de conteúdo (filmes) para controlar os dados usados nos testes,
+// sem depender da implementação real de conteudo-routes.
 jest.mock('../conteudo-routes', () => ({
   filmes: [
     { id: '1', publicado: true, titulo: 'Filme Publicado' },
@@ -8,6 +10,12 @@ jest.mock('../conteudo-routes', () => ({
   ],
 }));
 
+// Mock do middleware de autenticação: permite simular diferentes usuários
+// enviando o header "x-mock-user" com um JSON (ex: { id, nome, role }).
+// Se nenhum header for enviado, assume um usuário comum padrão.
+// IMPORTANTE: o caminho aqui precisa resolver para o MESMO arquivo físico
+// que o router importa. Ajuste '../../middlewares/auth-middleware' se a
+// estrutura de pastas do seu projeto for diferente.
 jest.mock('../../middlewares/auth-middleware', () => ({
   isAuthenticated: (req: any, _res: any, next: any) => {
     req.user = req.headers['x-mock-user']
@@ -24,8 +32,10 @@ jest.mock('../../middlewares/auth-middleware', () => ({
   },
 }));
 
+// Importa o router só depois dos mocks acima, para que ele use as versões mockadas
 import avaliacoesRouter from '../avaliacao-routes';
 
+// Helper que monta uma instância nova do app Express para cada teste
 function makeApp(): Express {
   const app = express();
   app.use(express.json());
@@ -33,13 +43,20 @@ function makeApp(): Express {
   return app;
 }
 
+// Header pronto para simular um usuário administrador
 const adminHeader = { 'x-mock-user': JSON.stringify({ id: 'admin1', nome: 'Admin', role: 'admin' }) };
+// Header pronto para simular um segundo usuário comum, diferente do padrão
 const outroUsuarioHeader = { 'x-mock-user': JSON.stringify({ id: 'user2', nome: 'Outro Usuário', role: 'user' }) };
 
 describe('Rotas de Avaliações', () => {
   let app: Express;
 
   beforeEach(() => {
+    // Como o "banco" de avaliações é um array em memória dentro do módulo,
+    // recriamos o app a cada teste, mas o estado das avaliações persiste
+    // entre testes dentro do mesmo arquivo — por isso cada bloco que precisa
+    // criar avaliações usa um autor único (evita colidir com a regra de
+    // "usuário já avaliou esse filme").
     app = makeApp();
   });
 
@@ -97,6 +114,7 @@ describe('Rotas de Avaliações', () => {
     });
 
     it('cria a avaliação com sucesso e retorna 201 com os dados corretos', async () => {
+      // Usuário único, só para não colidir com o teste de duplicidade abaixo
       const header = { 'x-mock-user': JSON.stringify({ id: `post-ok-${Date.now()}`, nome: 'Usuário Teste', role: 'user' }) };
 
       const res = await request(app)
@@ -117,11 +135,13 @@ describe('Rotas de Avaliações', () => {
     it('retorna 409 ao tentar avaliar o mesmo filme duas vezes com o mesmo usuário', async () => {
       const header = { 'x-mock-user': JSON.stringify({ id: `post-duplicado-${Date.now()}`, nome: 'Usuário Teste', role: 'user' }) };
 
+      // Primeira avaliação (deve ter sucesso)
       await request(app)
         .post('/avaliacoes/filme/1')
         .set(header)
         .send({ nota: 4, comentario: 'Muito bom' });
 
+      // Segunda tentativa do mesmo usuário no mesmo filme (deve falhar)
       const res = await request(app)
         .post('/avaliacoes/filme/1')
         .set(header)
@@ -136,6 +156,8 @@ describe('Rotas de Avaliações', () => {
     let autorHeader: { [key: string]: string };
 
     beforeEach(async () => {
+      // Gera um autor único a cada teste para nunca colidir com a regra
+      // de "usuário já avaliou esse filme" (409), que persiste no array em memória.
       const autorId = `autor-${Date.now()}-${Math.random()}`;
       autorHeader = {
         'x-mock-user': JSON.stringify({ id: autorId, nome: 'Autor Teste', role: 'user' }),
@@ -192,6 +214,7 @@ describe('Rotas de Avaliações', () => {
 
     it('bloqueia edição pelo autor após a janela de 24h expirar', async () => {
       jest.useFakeTimers();
+      // Avança o relógio em 25 horas para simular que o prazo de edição passou
       jest.setSystemTime(Date.now() + 25 * 60 * 60 * 1000);
 
       const res = await request(app)
@@ -210,6 +233,7 @@ describe('Rotas de Avaliações', () => {
     let avaliacaoId: string;
 
     beforeEach(async () => {
+      // Autor único aqui também, pelo mesmo motivo do bloco PUT acima.
       const autorId = `autor-delete-${Date.now()}-${Math.random()}`;
       const criar = await request(app)
         .post('/avaliacoes/filme/1')
@@ -238,6 +262,7 @@ describe('Rotas de Avaliações', () => {
       expect(res.status).toBe(200);
       expect(res.body.mensagem).toMatch(/removida/i);
 
+      // Confirma que a avaliação não aparece mais na listagem do filme
       const listagem = await request(app).get('/avaliacoes/filme/1');
       const idsRestantes = listagem.body.map((a: any) => a.id);
       expect(idsRestantes).not.toContain(avaliacaoId);
