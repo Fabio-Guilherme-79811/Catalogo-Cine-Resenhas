@@ -5,7 +5,8 @@ interface ConteudoJSON {
     titulo: string;
     sinopse: string;
     capaUrl: string;
-    genero: string | number;
+    generoId: string | number;
+    subGenerosIds: (string | number)[];
     anoLancamento: number;
     diretor: string;
     tipo: string;
@@ -20,7 +21,8 @@ class Conteudo {
     private _titulo: string;
     private _sinopse: string;
     private _capaUrl: string;
-    private _genero: string | number;
+    private _generoId: string | number;
+    private _subGenerosIds: (string | number)[];
     private _anoLancamento: number;
     private _diretor: string;
     private _tipo: string;
@@ -33,7 +35,8 @@ class Conteudo {
         id: string;
         sinopse: string;
         capaUrl: string;
-        genero: string | number;
+        generoId: string | number;
+        subGenerosIds: (string | number)[];
         tipo: string;
         direcao: string;
         titulo: string;
@@ -49,7 +52,8 @@ class Conteudo {
         this._id = params.id;
         this._sinopse = params.sinopse;
         this._capaUrl = params.capaUrl;
-        this._genero = params.genero;
+        this._generoId = params.generoId;
+        this._subGenerosIds = params.subGenerosIds;
         this._tipo = params.tipo;
         this._direcao = params.direcao;
         this._titulo = params.titulo;
@@ -64,7 +68,8 @@ class Conteudo {
     get id() { return this._id; }
     get sinopse() { return this._sinopse; }
     get capaUrl() { return this._capaUrl; }
-    get genero() { return this._genero; }
+    get generoId() { return this._generoId; }
+    get subGenerosIds() { return this._subGenerosIds; }
     get tipo() { return this._tipo; }
     get direcao() { return this._direcao; }
     get titulo() { return this._titulo; }
@@ -123,9 +128,19 @@ class Conteudo {
                 throw new Error(`Campo "${campo}" é obrigatório e deve ser uma string.`);
             }
         }
-// "genero" aceita tanto string quanto número (ex: "Ação" ou um código numérico)
-        if (typeof obj.genero !== 'string' && typeof obj.genero !== 'number') {
-            throw new Error('Campo "genero" é obrigatório e deve ser string ou número.');
+// "generoId" aceita tanto string quanto número (ex: "Ação" ou um código numérico)
+        if (typeof obj.generoId !== 'string' && typeof obj.generoId !== 'number') {
+            throw new Error('Campo "generoId" é obrigatório e deve ser string ou número.');
+        }
+// "subGenerosIds" é uma lista de gêneros extras que o conteúdo também pertence,
+        // cada item podendo ser string ou número, assim como o generoId
+        if (!Array.isArray(obj.subGenerosIds)) {
+            throw new Error('Campo "subGenerosIds" é obrigatório e deve ser um array.');
+        }
+        for (const sub of obj.subGenerosIds) {
+            if (typeof sub !== 'string' && typeof sub !== 'number') {
+                throw new Error('Cada item de "subGenerosIds" deve ser string ou número.');
+            }
         }
  // anoLancamento e duracao devem ser numéricos
         if (typeof obj.anoLancamento !== 'number') {
@@ -161,7 +176,8 @@ class Conteudo {
             titulo: parsed.titulo,
             sinopse: parsed.sinopse,
             capaUrl: parsed.capaUrl,
-            genero: parsed.genero,
+            generoId: parsed.generoId,
+            subGenerosIds: parsed.subGenerosIds,
             anoLancamento: parsed.anoLancamento,
             diretor: parsed.diretor,
             tipo: parsed.tipo,
@@ -180,7 +196,8 @@ class Conteudo {
             titulo: this._titulo,
             sinopse: this._sinopse,
             capaUrl: this._capaUrl,
-            genero: this._genero,
+            generoId: this._generoId,
+            subGenerosIds: this._subGenerosIds,
             anoLancamento: this._anoLancamento,
             diretor: this._diretor,
             tipo: this._tipo,
