@@ -1,4 +1,8 @@
 // Formato esperado do JSON que representa um Conteudo
+// Formato esperado do JSON que representa um Conteudo
+/**
+ * Formato bruto de {@link Conteudo} utilizado para persistência/serialização em JSON.
+ */
 interface ConteudoJSON {
     id: string;
     titulo: string;
@@ -13,6 +17,9 @@ interface ConteudoJSON {
     avaliacao?: number;
 }
 
+/**
+ * Entidade que representa um conteúdo (filme/série) do catálogo.
+ */
 class Conteudo {
     private readonly _id: string | number;
     private _titulo: string;
@@ -26,6 +33,23 @@ class Conteudo {
     private _direcao: string;
     private _avaliacao: number;
 
+     /**
+     * Cria uma nova instância de {@link Conteudo}, validando título e ano de lançamento.
+     *
+     * @param params - Dados do conteúdo.
+     * @param params.id - Identificador único do conteúdo.
+     * @param params.titulo - Título do conteúdo (não pode ser vazio).
+     * @param params.sinopse - Sinopse do conteúdo.
+     * @param params.capaUrl - URL da imagem de capa.
+     * @param params.genero - Identificador do gênero (string ou número).
+     * @param params.anoLancamento - Ano de lançamento (entre 1888 e o ano atual + 5).
+     * @param params.diretor - Nome do diretor.
+     * @param params.tipo - Tipo do conteúdo (ex: filme, série).
+     * @param params.duracao - Duração, em minutos.
+     * @param params.direcao - Direção do conteúdo.
+     * @param params.avaliacao - Avaliação/nota do conteúdo. Padrão: `0`.
+     * @throws {Error} Caso o título seja vazio ou o ano de lançamento seja inválido.
+     */
     constructor(params: {
         id: string;
         sinopse: string;
@@ -55,34 +79,62 @@ class Conteudo {
         this._avaliacao = params.avaliacao ?? 0;
     }
 
+    /** Identificador único do conteúdo. */
     get id() { return this._id; }
+    /** Sinopse do conteúdo. */
     get sinopse() { return this._sinopse; }
+    /** URL da imagem de capa. */
     get capaUrl() { return this._capaUrl; }
+    /** Identificador do gênero associado. */
     get genero() { return this._genero; }
+    /** Tipo do conteúdo (ex: filme, série). */
     get tipo() { return this._tipo; }
+    /** Direção do conteúdo. */
     get direcao() { return this._direcao; }
+    /** Título do conteúdo. */
     get titulo() { return this._titulo; }
+    /** Ano de lançamento do conteúdo. */
     get anoLancamento() { return this._anoLancamento; }
+    /** Nome do diretor. */
     get diretor() { return this._diretor; }
+    /** Duração, em minutos. */
     get duracao() { return this._duracao; }
+    /** Avaliação/nota do conteúdo. */
     get avaliacao() { return this._avaliacao; }
 
+    /**
+     * Atualiza o título do conteúdo, validando o novo valor.
+     * @throws {Error} Caso o título seja vazio.
+     */
     set titulo(titulo: string) {
         Conteudo.validarTitulo(titulo);
         this._titulo = titulo; // antes chamava o próprio setter (loop infinito)
     }
 
+     /**
+     * Atualiza o ano de lançamento do conteúdo, validando o novo valor.
+     * @throws {Error} Caso o ano seja inválido (fora do intervalo permitido).
+     */
     set anoLancamento(anoLancamento: number) {
         Conteudo.validarAnoLancamento(anoLancamento);
         this._anoLancamento = anoLancamento; // antes chamava o próprio setter (loop infinito)
     }
 
+     /**
+     * Valida se o título foi informado e não é vazio.
+     * @throws {Error} Caso o título seja vazio ou não informado.
+     */
     private static validarTitulo(titulo: string) {
         if (!titulo || titulo.trim().length === 0) {
             throw new Error('O titulo do filme é obrigatório.');
         }
     }
 
+       /**
+     * Valida se o ano de lançamento está dentro do intervalo permitido
+     * (entre 1888 e o ano atual + 5).
+     * @throws {Error} Caso o ano seja inválido.
+     */
     private static validarAnoLancamento(ano: number) {
         const anoAtual = new Date().getFullYear();
         if (!ano || ano < 1888 || ano > anoAtual + 5) {
