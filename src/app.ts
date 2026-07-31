@@ -14,6 +14,7 @@
 
 import express, {Request,Response, NextFunction,Application}  from 'express';
 import routes from "./routes/index-routes";
+
 /**
  * Instância principal da aplicação Express.
  */
@@ -23,7 +24,9 @@ const app: Application = express();
  * Permite receber requisições com corpo em formato JSON.
  */
 app.use(express.json());
-
+//Vizualizar ejs//
+app.set("view engine", "ejs");
+app.set("views", "./src/views");
 /**
  * Permite receber dados enviados por formulários HTML.
  */

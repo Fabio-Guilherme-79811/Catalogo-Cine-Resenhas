@@ -1,0 +1,43 @@
+
+/* ===========================
+   Layout
+=========================== */
+
+.layout{
+    display: flex;
+}
+
+
+/* ===========================
+   Sidebar
+=========================== */
+
+.sidebar{
+    position: fixed;
+
+    top: 60px;
+    left: 0;
+
+    width: 60px;
+    height: calc(100vh - 60px);
+
+    background-color: #444a57;
+
+    overflow-x: hidden;
+
+    transition: width .3s;
+
+    z-index: 999;
+}
+
+.sidebar:hover{
+    width: 288px;
+}
+
+/* ===========================
+   Menu
+=========================== */
+
+.sidebar-menu{
+    list-style: none;
+}

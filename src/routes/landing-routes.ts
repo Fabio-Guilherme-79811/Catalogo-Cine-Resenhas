@@ -12,21 +12,20 @@ const router = Router();
  * @param res - resposta HTTP contendo o indentificador da página, título e os
  * CTAs (call-to-action) de login e cadastro, com seus respectivos labels e URLs
  */
-router.get("/", (_req:Request, res:Response) => {
-    res.json({
-        page:"landing", // identificador da página
-        title:"Bem-Vindo!",// título exibido na landing page
-        cta:{// call-to-action: botões/links de ação
-            login:{// dados do botão de login
-                label:"Entrar",// texto exibido no botão
-                url:APP_URLS.LOGIN,// URL de destino, vinda da configuração central de URLs
+router.get("/", (_req: Request, res: Response) => {
+    res.render("pages/index", {
+        title: "Bem-Vindo!",
+        cta: {
+            login: {
+                label: "Entrar",
+                url: APP_URLS.LOGIN
             },
-            register:{// dados do botão de cadastro
-                label:"Cadastrar",// texto exibido no botão
-                url: APP_URLS.REGISTER,// URL de destino, vinda da configuração central de URLs
+            register: {
+                label: "Cadastrar",
+                url: APP_URLS.REGISTER
             }
         }
-    })
+    });
 });
 
 /**
