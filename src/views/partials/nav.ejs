@@ -1,0 +1,46 @@
+<nav class="main-navbar">
+
+    <!-- Logo -->
+    <div class="nav-logo">
+        <a href="/">Cine-Resenhas</a>
+    </div>
+
+    <!-- Pesquisa !--> 
+<div class=”nav-search”> 
+    <form action="/buscar" method="GET" class="nav-search-form">
+        <input type="text" name="query" placeholder="Pesquisar filmes..." class="nav-search-input">
+
+        <button type="submit" class="nav-search-button">
+            Buscar
+        </button>
+    </form>
+<div class="search-dropdown"> <label for="tags">Tags</label> <select id="tags" name="tag">
+ <option value="">Todas</option>
+ <option>Ação</option> 
+ <option>Drama</option>
+ <option>Terror</option> 
+ <option>Comédia</option>
+ </select> 
+</div>
+</div>
+
+    <!-- Navegação -->
+    <ul class="nav-links">
+        <li><a href="/conteudo/filmes">Catálogo</a></li>
+
+        <% if (usuario && usuario.isAdmin) { %>
+            <li><a href="/">Painel</a></li>
+        <% } %>
+    </ul>
+
+    <!-- Autenticação -->
+    <div class="nav-auth">
+        <% if (usuario) { %>
+            <span>Olá, <%= usuario.nome %></span>
+            <a href="/logout" class="btn-logout">Sair</a>
+        <% } else { %>
+            <a href="/login" class="btn-login">Entrar</a>
+        <% } %>
+    </div>
+
+</nav>
