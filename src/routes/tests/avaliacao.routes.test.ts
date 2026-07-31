@@ -36,6 +36,12 @@ jest.mock('../../middlewares/auth-middleware', () => ({
 import avaliacoesRouter from '../avaliacao-routes';
 
 // Helper que monta uma instância nova do app Express para cada teste
+/**
+ * Monta uma nova instância do app Express, com o parser de JSON e o
+ * router de avaliações montado em `/avaliacoes`, para uso isolado em cada teste.
+ *
+ * @returns Uma instância de `Express` pronta para receber requisições via `supertest`.
+ */
 function makeApp(): Express {
   const app = express();
   app.use(express.json());
