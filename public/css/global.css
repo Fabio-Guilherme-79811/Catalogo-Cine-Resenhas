@@ -1,16 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&display=swap');
 body {
-    font-family: ()
+    font-family: var(--fonte)
 }
+ /*Variáveis*/
 :root{
     /*fontes*/
-    font-family: "Open Sans", sans-serif;
+    --fonte: "Open Sans", sans-serif;
     --cor-texto-fundo-escuro: #ffffff; 
     --cor-texto-fundo-claro: #000000; 
+
     /* Cores */
-    --primary: #000000;
+    --primary: #d00000;
     --secondary: #485060; 
-    --tertiary: #d00000;
+    --tertiary: #000000;
     --quartenary:#7e0000;
     --background:#d4d4d4;
   
@@ -24,10 +26,12 @@ body {
    --container-max: 1200px;
    --navbar-altura: 70px;
    --largura-card: 280px;
+
    /*transições*/
     --transicao-rapida: 0.2s ease;
     --transicao-normal: 0.3s ease;
     --transicao-lenta: 0.5s ease;
+
     /*espaçamentos*/
     --esp-1: 4px;
     --esp-2: 8px;
@@ -35,12 +39,28 @@ body {
     --esp-4: 24px;
     --esp-5: 32px;
 }
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
 }
 .container{
-    width:max(--container-max);
+    width: max(100%, var(--container-max));
+    padding: 106px;
     margin:auto;
+  
+}
+.btn{
+    display:inline-block;
+    border: var(--tertiary);
+    border-radius:var(--raio-grande);
+    border-width: 2px;
+    cursor: pointer;
+    transition: var(--transicao-rapida);
+    background-color: var(--background);
+}
+.btn:hover{
+    opacity: .9;
+    background-color: var(--secondary);
 }

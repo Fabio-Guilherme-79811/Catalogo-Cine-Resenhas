@@ -13,9 +13,7 @@
  */
 
 import express, {Request,Response, NextFunction,Application}  from 'express';
-import landingRoutes from './routes/landing-routes';
-import authRoutes from './routes/auth-routes';
-
+import routes from "./routes/index-routes";
 /**
  * Instância principal da aplicação Express.
  */
@@ -40,14 +38,8 @@ app.use(express.urlencoded({extended:true}));
  */
 app.use(express.static("public"));
 
-/**
- * Rotas relacionadas à página inicial da aplicação.
- */
-app.use("/", landingRoutes);
+/*Rota para as páginas*/
+app.use("/", routes);
 
-/**
- * Rotas relacionadas à autenticação de usuários.
- */
-app.use("/", authRoutes);
 
 export default app;
