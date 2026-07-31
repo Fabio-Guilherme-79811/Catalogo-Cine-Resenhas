@@ -21,26 +21,26 @@ export class ConteudoRepository implements IConteudoRepository {
 
     async buscarPorGenero(genero: string): Promise<Conteudo[]> {
         const filmes = await this.listarTodos();
-        return filmes.filter((filme) => String(filme.genero) === genero);
+        return filmes.filter((filme) => String(filme.generoId) === genero);
     }
 
     async criar(filme: Conteudo): Promise<Conteudo> {
         const filmes = await this.listarTodos();
 
         const novoFilme = new Conteudo({
-            id: String(filme.id || randomUUID()),
-            titulo: filme.titulo,
-            sinopse: filme.sinopse,
-            capaUrl: filme.capaUrl,
-            genero: filme.genero,
-            anoLancamento: filme.anoLancamento,
-            diretor: filme.diretor,
-            tipo: filme.tipo,
-            duracao: filme.duracao,
-            direcao: filme.direcao,
-            avaliacao: filme.avaliacao,
-        });
-
+    id: String(filme.id || randomUUID()),
+    titulo: filme.titulo,
+    sinopse: filme.sinopse,
+    capaUrl: filme.capaUrl,
+    generoId: filme.generoId,
+    subGenerosIds: filme.subGenerosIds,
+    anoLancamento: filme.anoLancamento,
+    diretor: filme.diretor,
+    tipo: filme.tipo,
+    duracao: filme.duracao,
+    direcao: filme.direcao,
+    avaliacao: filme.avaliacao,
+});
         filmes.push(novoFilme);
 
         await this.arquivo.escrever(
@@ -60,18 +60,19 @@ export class ConteudoRepository implements IConteudoRepository {
         const filmeAntigo = filmes[indice];
 
         const filmeAtualizado = new Conteudo({
-            id,
-            titulo: dados.titulo,
-            sinopse: dados.sinopse,
-            capaUrl: dados.capaUrl,
-            genero: dados.genero,
-            anoLancamento: dados.anoLancamento,
-            diretor: dados.diretor,
-            tipo: dados.tipo,
-            duracao: dados.duracao,
-            direcao: dados.direcao,
-            avaliacao: dados.avaliacao,
-        });
+    id,
+    titulo: dados.titulo,
+    sinopse: dados.sinopse,
+    capaUrl: dados.capaUrl,
+    generoId: dados.generoId,
+    subGenerosIds: dados.subGenerosIds,
+    anoLancamento: dados.anoLancamento,
+    diretor: dados.diretor,
+    tipo: dados.tipo,
+    duracao: dados.duracao,
+    direcao: dados.direcao,
+    avaliacao: dados.avaliacao,
+});
 
         if (
             filmeAntigo.capaUrl &&
