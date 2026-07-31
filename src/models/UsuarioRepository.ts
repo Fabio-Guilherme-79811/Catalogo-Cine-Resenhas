@@ -3,26 +3,57 @@ import { Usuario, UsuarioJSON } from '../entities/Usuario';
 import { JsonFileHandler } from './JsonFileHandler';
 import { IUsuarioRepository } from './interfaces/IUsuarioRepository';
 
+/**
+ * Repositorio responsável pelo persistência de {@link Usu} me arquivo JSON.
+ * 
+ * Implementa {@link IUsuarioRepository} utilizando {@link JsonFileHandler} como
+ * mecanismo de leitura e escrita em `usuarios.json`.
+ */
 export class UsuarioRepository implements IUsuarioRepository {
     private readonly arquivo = new JsonFileHandler<UsuarioJSON>('usuarios.json');
 
+    /**
+     * Lista todos os usuários cadastrados 
+     * 
+     * @return em um array com tados as instâncias de {@link usuario} persistidas
+     */
     async listarTodos(): Promise<Usuario[]> {
         const dados = await this.arquivo.ler();
         return dados.map((item) => Usuario.fromJSON(item));
     }
 
+    /**
+     * Busca um usuário pelo seu identificador único
+     * 
+     * @param id - identificador (UUID) do usuário
+     * @returns o {@link usuario} correspondente, ou `null` caso não seja encontrado.
+     */
     async buscarPorId(id: string): Promise<Usuario | null> {
         const usuarios = await this.listarTodos();
         return usuarios.find((usuario) => usuario.id === id) ?? null;
     }
 
     // RNLF01 - usado antes de criar/atualizar para garantir a unicidade de e-mail
+    /**
+     * Busca um usuário pelo e-mail (normalizado para minúsculas e sem espaços).
+     * 
+     * @param email - E-mail a ser pesquisado
+     * @returns 0 {@link usuario}corespondente, ou`null` caso não seja encontrado.
+     */
     async buscarPorEmail(email: string): Promise<Usuario | null> {
         const usuarios = await this.listarTodos();
         const emailNormalizado = email.trim().toLowerCase();
         return usuarios.find((usuario) => usuario.email === emailNormalizado) ?? null;
     }
 
+    /**
+     * Cria e persiste um novo usuário
+     * 
+     * Gera um `id` automaticamente via {@link randomUUID} caso não seja informado.
+     * 
+     * @param usuario - dados do usuário a ser criado
+     * @returns {ERROR} Caso já exista um usuário cadastrado com o mesmo e-mail (RNLF01)
+     */
     async criar(usuario: Usuario): Promise<Usuario> {
         const existente = await this.buscarPorEmail(usuario.email);
         if (existente) {
@@ -44,6 +75,17 @@ export class UsuarioRepository implements IUsuarioRepository {
         return novoUsuario;
     }
 
+    /**
+     * Atualiza os dados de um usuário existente
+     * 
+     * A data de criação  (`criadoEm`) do usuário original é sempre preservada,
+     * independente do valor informado em `dados`.
+     * 
+     * @param id - identificador do usuário a ser atualizado
+     * @param dados - Novos dados do usuário
+     * @returns o {@link usuario} atualizado, ou `null` caso o `id` não seja encontrado
+     * @throws {ERROR} Caso o novo e-mail já esteja e, uso por outro usuário (RNLF01
+     */
     async atualizar(id: string, dados: Usuario): Promise<Usuario | null> {
         const usuarios = await this.listarTodos();
         const indice = usuarios.findIndex((usuario) => usuario.id === id);
@@ -70,6 +112,12 @@ export class UsuarioRepository implements IUsuarioRepository {
         return usuarioAtualizado;
     }
 
+    /**
+     * Remove em usuário pelo seu identificador
+     * 
+     * @param id - Identificador do usuário a ser removido 
+     * @returns `true` caso o usuário tenha sido removido, `false` caso não exista.
+     */
     async remover(id: string): Promise<boolean> {
         const usuarios = await this.listarTodos();
         const restantes = usuarios.filter((usuario) => usuario.id !== id);

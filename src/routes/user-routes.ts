@@ -3,6 +3,14 @@ import { isAuthenticated, AuthenticatedRequest } from '../middlewares/auth-middl
 
 const router = Router();
 // Todas as rotas abaixo exigem autenticação
+
+/**
+ * Retorna os dados do perfil do usuário autenticado
+ * 
+ * @route GET/perfil
+ * @param req - requisição autenticada, contendo os dados do usuário em `req.user`.
+ * @param res - Resposta HTTP com o objeto  `{ id, nome, role }` do usuário logado
+ */
 router.use(isAuthenticated);
 // Retorna os dados do perfil do usuário logado
 router.get('/perfil', (req: AuthenticatedRequest, res: Response) => {
@@ -20,6 +28,15 @@ router.get('/perfil', (req: AuthenticatedRequest, res: Response) => {
         dados,
     });
 });
+
+/**
+ * Permite que  usuário autenticado altere sua senha 
+ * 
+ * @route PUT/senha
+ * @param req - Requisição autenticada contendo `senhaAtual` e `novaSenha` no corpo.
+ * @param res - Resposta HTTP: erro 400 se os dados obrigatorios forem informados,
+ * ou mensagem de sucesso caso a senha seja atualizada 
+ */
 // Permite alterar a senha do usuário
 router.put('/senha', (req: AuthenticatedRequest, res: Response) => {
     const {senhaAtual, novaSenha} = req.body;
@@ -31,6 +48,14 @@ router.put('/senha', (req: AuthenticatedRequest, res: Response) => {
 
     res.json({mensagem:'Senha atualizada com sucesso.'});
 });
+
+/**
+ * Remove a conta do usuário autenticado 
+ * 
+ * @route DELETE/conta
+ * @param req - Requisição autenticada contendo os dados do usuário em `req.user`.
+ * @param res - Resposta HTTP com mensagem de confimação da remoç
+ */
 // Remove a conta do usuário autenticado
 router.delete('/conta', (req:AuthenticatedRequest, res: Response) => {
     res.json({ mensagem: `Conta de {$req.user?.nome} removida com sucesso.`});
