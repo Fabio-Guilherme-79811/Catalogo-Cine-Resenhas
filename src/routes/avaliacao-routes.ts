@@ -5,6 +5,17 @@ import { filmes } from './conteudo-routes';
 const router = Router();
 
 // Representa uma avaliação (review) feita por um usuário sobre um filme
+/**
+ * Representa uma avaliação (review) feita por um usuário sobre um filme.
+ *
+ * @property id - Identificador único da avaliação.
+ * @property filmeId - Identificador do filme avaliado.
+ * @property usuarioId - Identificador do usuário autor da avaliação.
+ * @property usuarioNome - Nome do usuário autor da avaliação.
+ * @property nota - Nota atribuída ao filme (1 a 5).
+ * @property comentario - Comentário/texto da avaliação.
+ * @property criadoEm - Data/hora de criação, em formato ISO string.
+ */
 export interface Avaliacao {
     id: string;
     filmeId: string;
@@ -14,19 +25,47 @@ export interface Avaliacao {
     comentario: string;
     criadoEm: string;
   }
-// "Banco de dados" em memória das avaliações
+
+/// "Banco de dados" em memória das avaliações
 // OBS: como está em memória, os dados se perdem ao reiniciar o servidor
+/**
+ * "Banco de dados" em memória das avaliações.
+ *
+ * @remarks
+ * Como está em memória, os dados se perdem ao reiniciar o servidor.
+ */
 const avaliacoes: Avaliacao[] = [];
+
 // Janela de tempo (em horas) em que o autor pode editar a própria avaliação
+/**
+ * Janela de tempo (em horas) em que o autor pode editar a própria avaliação.
+ */
 const JANELA_EDICAO_HORAS = 24;
+
 // Verifica se uma avaliação ainda está dentro do prazo permitido para edição
 // pelo próprio autor (comparando a data de criação com o tempo atual)
+/**
+ * Verifica se uma avaliação ainda está dentro do prazo permitido para
+ * edição pelo próprio autor, comparando a data de criação com o tempo atual.
+ *
+ * @param avaliacao - Avaliação a ser verificada.
+ * @returns `true` se a avaliação ainda pode ser editada pelo autor, `false` caso contrário.
+ */
 function dentroDaJanelaDeEdicao(avaliacao: Avaliacao): boolean {
     const criadoEm = new Date(avaliacao.criadoEm).getTime();
     const limiteMs = JANELA_EDICAO_HORAS * 60 * 60 * 1000;
     return Date.now() - criadoEm <= limiteMs;
   }
+
 // Rota GET /filme/:filmeId: lista todas as avaliações de um filme específico
+/**
+ * Lista todas as avaliações de um filme específico.
+ *
+ * @route GET /filme/:filmeId
+ * @param req - Requisição HTTP contendo `filmeId` nos parâmetros da rota.
+ * @param res - Resposta HTTP: erro 404 se o filme não existir, ou array
+ * com as avaliações do filme.
+ */
   router.get('/filme/:filmeId', (req: Request, res: Response) => {
     const filmeId = String(req.params.filmeId);
     // Verifica se o filme existe antes de buscar as avaliações
@@ -41,6 +80,14 @@ function dentroDaJanelaDeEdicao(avaliacao: Avaliacao): boolean {
   });
    // Rota GET /filme/:filmeId/media: calcula e retorna a média das notas
   // e o total de avaliações de um filme
+  /**
+   * Calcula e retorna a média das notas e o total de avaliações de um filme.
+   *
+   * @route GET /filme/:filmeId/media
+   * @param req - Requisição HTTP contendo `filmeId` nos parâmetros da rota.
+   * @param res - Resposta HTTP com `{ media, total }`. Retorna média 0 caso
+   * o filme ainda não tenha avaliações.
+   */
   router.get('/filme/:filmeId/media', (req: Request, res: Response) => {
     const filmeId = String(req.params.filmeId);
     const avaliacoesDoFilme = avaliacoes.filter((a) => a.filmeId === filmeId);
@@ -57,6 +104,22 @@ function dentroDaJanelaDeEdicao(avaliacao: Avaliacao): boolean {
   });
     // Rota POST /filme/:filmeId: cria uma nova avaliação para um filme
   // Requer usuário autenticado
+  /**
+   * Cria uma nova avaliação para um filme. Requer usuário autenticado.
+   *
+   * @route POST /filme/:filmeId
+   * @param req - Requisição autenticada contendo `filmeId` nos parâmetros da
+   * rota e `nota`/`comentario` no corpo.
+   * @param res - Resposta HTTP: erro 404 se o filme não existir/não estiver
+   * publicado, erro 400 se a nota ou o comentário forem inválidos, erro 409
+   * se o usuário já tiver avaliado o filme, ou a avaliação criada (201).
+   *
+   * @remarks
+   * O `id` é gerado com base no tamanho do array (`avaliacoes.length + 1`),
+   * o que pode gerar ids duplicados após exclusões (ex: remover o item 3 de
+   * 3 e criar um novo gera outro id "3"). O ideal seria usar um UUID ou
+   * contador incremental à parte.
+   */
   router.post('/filme/:filmeId', isAuthenticated, (req: AuthenticatedRequest, res: Response) => {
     const filmeId = String(req.params.filmeId);
     const { nota, comentario } = req.body;
@@ -104,8 +167,26 @@ function dentroDaJanelaDeEdicao(avaliacao: Avaliacao): boolean {
     avaliacoes.push(novaAvaliacao);
     res.status(201).json(novaAvaliacao);
   });
+
 // Rota PUT /:id: edita uma avaliação existente
   // Requer usuário autenticado
+  /**
+   * Edita uma avaliação existente. Requer usuário autenticado.
+   *
+   * @route PUT /:id
+   * @param req - Requisição autenticada contendo `id` nos parâmetros da rota
+   * e `nota`/`comentario` (opcionais) no corpo.
+   * @param res - Resposta HTTP: erro 404 se a avaliação não existir, erro 403
+   * se o usuário não for o autor/admin ou se o prazo de edição tiver
+   * expirado, erro 400 se a nota estiver fora do intervalo permitido, ou a
+   * avaliação atualizada.
+   *
+   * @remarks
+   * Apenas o autor da avaliação ou um admin pode editar. O autor só pode
+   * editar dentro da janela de tempo definida por `JANELA_EDICAO_HORAS`;
+   * admins podem editar a qualquer momento. Diferente da rota POST, aqui
+   * não há validação de comentário vazio/em branco.
+   */
   router.put('/:id', isAuthenticated, (req: AuthenticatedRequest, res: Response) => {
     const avaliacao = avaliacoes.find((a) => a.id === req.params.id);
    
@@ -149,6 +230,14 @@ function dentroDaJanelaDeEdicao(avaliacao: Avaliacao): boolean {
   });
    // Rota DELETE /:id: remove uma avaliação
   // Restrita a administradores autenticados
+  /**
+   * Remove uma avaliação. Restrita a administradores autenticados.
+   *
+   * @route DELETE /:id
+   * @param req - Requisição autenticada contendo `id` nos parâmetros da rota.
+   * @param res - Resposta HTTP: erro 404 se a avaliação não existir, ou
+   * mensagem de confirmação da remoção.
+   */
   router.delete('/:id', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res: Response) => {
     const index = avaliacoes.findIndex((a) => a.id === req.params.id);
    
@@ -160,5 +249,8 @@ function dentroDaJanelaDeEdicao(avaliacao: Avaliacao): boolean {
     avaliacoes.splice(index, 1);
     res.json({ mensagem: 'Avaliação removida com sucesso.' });
   });
-   // Exporta o router para ser montado na rota /avaliacoes da aplicação principal
+  // Exporta o router para ser montado na rota /avaliacoes da aplicação principal
+  /**
+   * Router de avaliações, a ser montado na rota `/avaliacoes` da aplicação principal.
+   */
   export default router;
