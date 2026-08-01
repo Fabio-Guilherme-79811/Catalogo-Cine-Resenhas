@@ -41,7 +41,7 @@ router.get('/perfil', (req: AuthenticatedRequest, res: Response) => {
 router.put('/senha', (req: AuthenticatedRequest, res: Response) => {
     const {senhaAtual, novaSenha} = req.body;
 
-    if (!senhaAtual || novaSenha) {
+    if (!senhaAtual || !novaSenha) {
         res.status(400).json({mensagem: 'Informe a seunha atual e a nova senha.'});
         return;
     }
