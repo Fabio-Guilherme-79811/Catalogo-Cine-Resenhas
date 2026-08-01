@@ -5,7 +5,7 @@
 
 <script src="/js/main.js"></script>
 
-<% if(js){ %>
+<% if(typeof js !== 'undefined' && js){ %>
 <script src="/js/<%= js %>"></script>
 <% } %>
 

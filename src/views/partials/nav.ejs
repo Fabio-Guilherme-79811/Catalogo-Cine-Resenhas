@@ -6,7 +6,7 @@
     </div>
 
     <!-- Pesquisa !--> 
-<div class=”nav-search”> 
+<div class="nav-search"> 
     <form action="/buscar" method="GET" class="nav-search-form">
         <input type="text" name="query" placeholder="Pesquisar filmes..." class="nav-search-input">
 
@@ -28,14 +28,14 @@
     <ul class="nav-links">
         <li><a href="/conteudo/filmes">Catálogo</a></li>
 
-        <% if (usuario && usuario.isAdmin) { %>
-            <li><a href="/">Painel</a></li>
+        <% if (typeof usuario !== 'undefined' && usuario && usuario.role === 'admin') { %>
+            <li><a href="/painel-admin">Painel</a></li>
         <% } %>
     </ul>
 
     <!-- Autenticação -->
     <div class="nav-auth">
-        <% if (usuario) { %>
+        <% if (typeof usuario !== 'undefined' && usuario) { %>
             <span>Olá, <%= usuario.nome %></span>
             <a href="/logout" class="btn-logout">Sair</a>
         <% } else { %>
