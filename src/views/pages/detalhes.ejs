@@ -1,0 +1,96 @@
+<%- include('../partials/header', { title: (typeof filme !== 'undefined' ? filme.titulo : 'Filme') + ' - Cine-Resenhas', css: 'detalhes', sidebar: true }) %>
+
+<main>
+    <div class="container detalhes">
+
+        <% if (typeof filme === 'undefined' || !filme) { %>
+            <p class="genero__vazio">Filme não encontrado.</p>
+        <% } else { %>
+
+        <section class="detalhes__topo">
+            <img class="detalhes__capa" src="<%= filme.capaUrl %>" alt="Capa de <%= filme.titulo %>">
+
+            <div class="detalhes__info">
+                <h1 class="detalhes__titulo"><%= filme.titulo %></h1>
+
+                <div class="detalhes__meta">
+                    <span><%= filme.anoLancamento %></span>
+                    <span><%= filme.duracao %> min</span>
+                    <span><%= filme.genero %></span>
+                    <span>Direção: <%= filme.direcao || filme.diretor %></span>
+                </div>
+
+                <div class="detalhes__nota-media">
+                    &#9733; <%= (filme.avaliacao || 0).toFixed(1) %>
+                    <span class="form__ajuda">(<%= typeof totalAvaliacoes !== 'undefined' ? totalAvaliacoes : 0 %> avaliações)</span>
+                </div>
+
+                <p class="detalhes__sinopse"><%= filme.sinopse %></p>
+
+                <div class="detalhes__acoes">
+                    <a class="btn btn-primario" href="#avaliar">Avaliar este filme</a>
+                    <% if (typeof usuario !== 'undefined' && usuario && usuario.role === 'admin') { %>
+                        <a class="btn btn-secundario" href="/admin/filmes/<%= filme.id %>/editar">Editar filme</a>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+
+        <section class="avaliar" id="avaliar">
+            <div class="painel">
+                <h2 class="admin__titulo">Avaliar filme</h2>
+
+                <form class="form" id="form-avaliacao" data-filme-id="<%= filme.id %>">
+                    <div class="form__grupo avaliar__estrelas-linha">
+                        <label class="form__label">Sua nota</label>
+                        <div class="estrelas estrelas--interativo" id="estrelas-avaliacao" data-nota="0">
+                            <i data-valor="1">&#9734;</i>
+                            <i data-valor="2">&#9734;</i>
+                            <i data-valor="3">&#9734;</i>
+                            <i data-valor="4">&#9734;</i>
+                            <i data-valor="5">&#9734;</i>
+                        </div>
+                    </div>
+                    <input type="hidden" name="nota" id="input-nota" value="0">
+
+                    <div class="form__grupo avaliar__campo">
+                        <label class="form__label" for="comentario">Descrição da resenha/sinopse</label>
+                        <textarea class="form__textarea" id="comentario" name="comentario" placeholder="Conte o que você achou do filme..." required></textarea>
+                        <span class="form__erro" data-erro-para="comentario"></span>
+                    </div>
+
+                    <button class="btn btn-alerta" type="submit">Adicionar resenha</button>
+                </form>
+            </div>
+
+            <div class="painel">
+                <h2 class="admin__titulo">Resenhas da comunidade</h2>
+                <div class="opinioes" id="lista-opinioes">
+                    <% if (typeof opinioes !== 'undefined' && opinioes.length) { %>
+                        <% opinioes.forEach(function(opiniao){ %>
+                            <article class="opiniao" data-opiniao-id="<%= opiniao.id %>">
+                                <div class="opiniao__cabecalho">
+                                    <span class="opiniao__autor"><%= opiniao.usuarioNome %></span>
+                                    <span class="estrelas">&#9733; <%= opiniao.nota %></span>
+                                </div>
+                                <p class="opiniao__texto"><%= opiniao.comentario %></p>
+                                <% if (typeof usuario !== 'undefined' && usuario && (usuario.id === opiniao.usuarioId || usuario.role === 'admin')) { %>
+                                    <div class="opiniao__acoes">
+                                        <button type="button" class="btn-editar-opiniao">Editar</button>
+                                        <button type="button" class="btn-excluir-opiniao">Excluir</button>
+                                    </div>
+                                <% } %>
+                            </article>
+                        <% }) %>
+                    <% } else { %>
+                        <p class="genero__vazio">Ainda não há resenhas para este filme. Seja o primeiro a avaliar!</p>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+
+        <% } %>
+    </div>
+</main>
+
+<%- include('../partials/footer', { js: 'avaliacao-fetch.js' }) %>

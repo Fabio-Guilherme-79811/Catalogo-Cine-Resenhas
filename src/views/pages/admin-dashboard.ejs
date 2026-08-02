@@ -1,0 +1,75 @@
+<%- include('../partials/header', { title: 'Painel administrativo - Cine-Resenhas', css: 'admin', sidebar: true, usuario: typeof usuario !== 'undefined' ? usuario : null }) %>
+
+<main>
+    <div class="admin">
+        <aside class="admin__menu">
+            <a class="admin__menu-item ativo" href="/admin">Dashboard</a>
+            <a class="admin__menu-item" href="/admin/filmes">Filmes</a>
+            <a class="admin__menu-item" href="/admin/usuarios">Usuários</a>
+            <a class="admin__menu-item" href="/config">Configurações</a>
+            <a class="admin__menu-item admin__menu-rodape" href="/ajuda">Ajuda</a>
+        </aside>
+
+        <section class="admin__conteudo">
+            <h1 class="admin__titulo">Bem-vindo(a), <%= (typeof usuario !== 'undefined' && usuario) ? usuario.nome : 'administrador(a)' %></h1>
+
+            <div class="admin__stats">
+                <div class="admin__stat-card">
+                    <p class="admin__stat-valor"><%= typeof estatisticas !== 'undefined' ? estatisticas.totalUsuario : 0 %></p>
+                    <p class="admin__stat-label">Usuários cadastrados</p>
+                </div>
+                <div class="admin__stat-card">
+                    <p class="admin__stat-valor"><%= typeof estatisticas !== 'undefined' ? estatisticas.novosCadastrosSemana : 0 %></p>
+                    <p class="admin__stat-label">Novos cadastros na semana</p>
+                </div>
+                <div class="admin__stat-card">
+                    <p class="admin__stat-valor"><%= typeof estatisticas !== 'undefined' ? estatisticas.visitasLandingPage : 0 %></p>
+                    <p class="admin__stat-label">Visitas na landing page</p>
+                </div>
+                <div class="admin__stat-card">
+                    <p class="admin__stat-valor"><%= typeof totalFilmes !== 'undefined' ? totalFilmes : (typeof filmes !== 'undefined' ? filmes.length : 0) %></p>
+                    <p class="admin__stat-label">Filmes no catálogo</p>
+                </div>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: var(--esp-3);">
+                <h2 class="admin__titulo" style="margin-bottom:0;">Filmes cadastrados</h2>
+                <a class="btn btn-alerta" href="/admin/filmes/novo">Adicionar filme</a>
+            </div>
+
+            <div class="admin__tabela-wrap">
+                <table class="admin__tabela">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Gênero</th>
+                            <th>Ano</th>
+                            <th>Avaliação</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-filmes-corpo">
+                        <% if (typeof filmes !== 'undefined' && filmes.length) { %>
+                            <% filmes.forEach(function(filme){ %>
+                                <tr data-filme-id="<%= filme.id %>">
+                                    <td><%= filme.titulo %></td>
+                                    <td><%= filme.genero %></td>
+                                    <td><%= filme.anoLancamento %></td>
+                                    <td>&#9733; <%= (filme.avaliacao || 0).toFixed(1) %></td>
+                                    <td class="admin__tabela-acoes">
+                                        <a class="btn btn-secundario" href="/admin/filmes/<%= filme.id %>/editar">Editar</a>
+                                        <button type="button" class="btn btn-perigo btn-excluir-filme" data-id="<%= filme.id %>">Deletar</button>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr><td colspan="5">Nenhum filme cadastrado ainda.</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</main>
+
+<%- include('../partials/footer', { js: 'admin-actions-fetch.js' }) %>

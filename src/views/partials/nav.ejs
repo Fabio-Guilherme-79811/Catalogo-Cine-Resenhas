@@ -1,46 +1,92 @@
-<nav class="main-navbar">
-
-    <!-- Logo -->
-    <div class="nav-logo">
-        <a href="/">Cine-Resenhas</a>
-    </div>
-
-    <!-- Pesquisa !--> 
-<div class="nav-search"> 
-    <form action="/buscar" method="GET" class="nav-search-form">
-        <input type="text" name="query" placeholder="Pesquisar filmes..." class="nav-search-input">
-
-        <button type="submit" class="nav-search-button">
-            Buscar
+<%
+    // locals opcionais vindos das rotas:
+    // usuario -> { nome, role } quando autenticado
+    // sidebar -> true para exibir a sidebar lateral (áreas logadas)
+    const usuarioAtual = typeof usuario !== 'undefined' ? usuario : null;
+    const temSidebar = typeof sidebar !== 'undefined' ? sidebar : false;
+%>
+<header class="navbar">
+    <div class="navbar__inner">
+        <button class="navbar__menu-toggle" id="btn-menu-toggle" aria-label="Abrir menu" aria-expanded="false">
+            &#9776;
         </button>
-    </form>
-<div class="search-dropdown"> <label for="tags">Tags</label> <select id="tags" name="tag">
- <option value="">Todas</option>
- <option>Ação</option> 
- <option>Drama</option>
- <option>Terror</option> 
- <option>Comédia</option>
- </select> 
-</div>
-</div>
 
-    <!-- Navegação -->
-    <ul class="nav-links">
-        <li><a href="/conteudo/filmes">Catálogo</a></li>
+        <a href="/" class="navbar__marca">
+            <span class="navbar__marca-icone">&#9733;</span>
+            <span>Cine-Resenhas</span>
+        </a>
 
-        <% if (typeof usuario !== 'undefined' && usuario && usuario.role === 'admin') { %>
-            <li><a href="/painel-admin">Painel</a></li>
-        <% } %>
-    </ul>
+        <form class="navbar__busca" action="/catalogo" method="get" id="form-busca" role="search">
+            <input
+                type="search"
+                name="busca"
+                id="input-busca"
+                placeholder="Procure pela SINOPSE ou pelo TITULO"
+                autocomplete="off"
+                value="<%= typeof busca !== 'undefined' ? busca : '' %>"
+            >
+            <button type="submit" aria-label="Pesquisar">&#128269;</button>
 
-    <!-- Autenticação -->
-    <div class="nav-auth">
-        <% if (typeof usuario !== 'undefined' && usuario) { %>
-            <span>Olá, <%= usuario.nome %></span>
-            <a href="/logout" class="btn-logout">Sair</a>
-        <% } else { %>
-            <a href="/login" class="btn-login">Entrar</a>
-        <% } %>
+            <div class="navbar__tags oculto" id="navbar-tags">
+                <div class="navbar__tags-titulo">TAGS</div>
+                <div class="navbar__tags-lista" id="navbar-tags-lista">
+                    <% if (typeof generos !== 'undefined' && generos && generos.length) { %>
+                        <% generos.forEach(function(genero){ %>
+                            <button type="button" data-tag="<%= genero.nome || genero %>"><%= genero.nome || genero %></button>
+                        <% }) %>
+                    <% } else { %>
+                        <button type="button" data-tag="Ação">Ação</button>
+                        <button type="button" data-tag="Drama">Drama</button>
+                        <button type="button" data-tag="Comédia">Comédia</button>
+                        <button type="button" data-tag="Terror">Terror</button>
+                    <% } %>
+                </div>
+            </div>
+        </form>
+
+        <nav class="navbar__acoes">
+            <% if (usuarioAtual) { %>
+                <div class="navbar__usuario" id="menu-usuario">
+                    <button class="navbar__usuario-botao" id="btn-usuario" aria-expanded="false">
+                        <span class="navbar__avatar"><%= usuarioAtual.nome ? usuarioAtual.nome.charAt(0).toUpperCase() : 'U' %></span>
+                        <span class="oculto-mobile"><%= usuarioAtual.nome %></span>
+                    </button>
+                    <div class="navbar__usuario-menu oculto" id="dropdown-usuario">
+                        <a href="/usuario/perfil">Meu perfil</a>
+                        <a href="/config">Configurações</a>
+                        <% if (usuarioAtual.role === 'admin') { %>
+                            <a href="/admin">Painel administrativo</a>
+                        <% } %>
+                        <form action="/logout" method="post">
+                            <button type="submit">Sair</button>
+                        </form>
+                    </div>
+                </div>
+            <% } else { %>
+                <a href="/login" class="navbar__link-auth">Entrar/Cadastrar</a>
+            <% } %>
+        </nav>
     </div>
+</header>
 
-</nav>
+<% if (temSidebar) { %>
+<aside class="sidebar" id="sidebar">
+    <% if (usuarioAtual) { %>
+    <div class="sidebar__perfil">
+        <span class="sidebar__perfil-avatar"></span>
+        <span class="sidebar__perfil-nome"><%= usuarioAtual.nome %></span>
+    </div>
+    <% } %>
+    <nav class="sidebar__nav">
+        <a class="sidebar__link" href="/catalogo"><span class="sidebar__link-icone">&#128269;</span><span class="sidebar__link-texto">Catálogo</span></a>
+        <a class="sidebar__link" href="/usuario/perfil"><span class="sidebar__link-icone">&#128100;</span><span class="sidebar__link-texto">Perfil</span></a>
+        <a class="sidebar__link" href="/usuario/avaliacoes"><span class="sidebar__link-icone">&#128221;</span><span class="sidebar__link-texto">Minhas avaliações</span></a>
+        <a class="sidebar__link" href="/usuario/historico"><span class="sidebar__link-icone">&#128340;</span><span class="sidebar__link-texto">Histórico</span></a>
+        <% if (usuarioAtual && usuarioAtual.role === 'admin') { %>
+        <a class="sidebar__link" href="/admin"><span class="sidebar__link-icone">&#9881;&#65039;</span><span class="sidebar__link-texto">Administração</span></a>
+        <% } %>
+        <a class="sidebar__link" href="/config"><span class="sidebar__link-icone">&#9881;</span><span class="sidebar__link-texto">Configurações</span></a>
+    </nav>
+    <button class="sidebar__toggle" id="btn-sidebar-toggle" aria-label="Expandir/recolher menu">&#8677;</button>
+</aside>
+<% } %>

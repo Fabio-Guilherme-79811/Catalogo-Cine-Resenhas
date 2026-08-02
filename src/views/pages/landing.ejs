@@ -1,0 +1,56 @@
+<%- include('../partials/header', { title: 'Cine-Resenhas - Catalogue, avalie e descubra filmes' }) %>
+
+<main>
+    <section class="hero">
+        <div class="hero__conteudo">
+            <h1 class="hero__titulo">Catalogue, avalie e descubra filmes</h1>
+            <p class="hero__sinopse">O Cine-Resenhas reúne produções de diversos gêneros para você explorar, avaliar com notas e comentários e organizar sua própria lista de filmes.</p>
+            <div class="hero__acoes">
+                <a class="btn btn-primario" href="/cadastro">Cadastrar-se</a>
+                <a class="btn btn-secundario" href="/login">Já tenho conta</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container" style="padding-block: var(--esp-5);">
+
+        <section class="genero">
+            <div class="genero__cabecalho">
+                <h2 class="genero__titulo">Em destaque</h2>
+            </div>
+            <div class="genero__carrossel">
+                <% if (typeof destaques !== 'undefined' && destaques.length) { %>
+                    <% destaques.forEach(function(filme){ %>
+                        <%- include('../partials/card-filme', { filme: filme }) %>
+                    <% }) %>
+                <% } else { %>
+                    <p class="genero__vazio">Em breve, novos destaques por aqui.</p>
+                <% } %>
+            </div>
+        </section>
+
+        <section class="genero">
+            <div class="genero__cabecalho">
+                <h2 class="genero__titulo">Mais bem avaliados</h2>
+            </div>
+            <div class="genero__carrossel">
+                <% if (typeof maisBemAvaliados !== 'undefined' && maisBemAvaliados.length) { %>
+                    <% maisBemAvaliados.forEach(function(filme){ %>
+                        <%- include('../partials/card-filme', { filme: filme }) %>
+                    <% }) %>
+                <% } else { %>
+                    <p class="genero__vazio">Assim que houver avaliações, os melhores filmes aparecerão aqui.</p>
+                <% } %>
+            </div>
+        </section>
+
+        <section class="painel text-center" style="margin-top: var(--esp-5);">
+            <h2 class="hero__titulo" style="color: var(--primary);">Pronto para começar?</h2>
+            <p style="margin-block: var(--esp-2) var(--esp-3); color: var(--secondary);">Crie sua conta gratuita e comece a avaliar seus filmes favoritos agora mesmo.</p>
+            <a class="btn btn-primario" href="/cadastro">Cadastrar-se</a>
+        </section>
+
+    </div>
+</main>
+
+<%- include('../partials/footer', { js: '' }) %>

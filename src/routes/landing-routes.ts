@@ -15,7 +15,7 @@ const router = Router();
 router.get("/", (_req: Request, res: Response) => {
     res.render("pages/index", {
         title: "Bem-Vindo!",
-        css: "home",
+        css: "index",
         cta: {
             login: {
                 label: "Entrar",
