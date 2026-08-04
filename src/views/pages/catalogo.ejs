@@ -1,0 +1,74 @@
+<%- include('../partials/header', { title: title || 'Catálogo - Cine-Resenhas', css: 'catalogo', sidebar: true }) %>
+
+<main>
+    <section class="hero <%= typeof destaque === 'undefined' ? 'hero--secundario' : '' %>"
+        <% if (typeof destaque !== 'undefined' && destaque && destaque.capaUrl) { %>
+            style="background-image:url('<%= destaque.capaUrl %>');"
+        <% } %>
+    >
+        <div class="hero__conteudo">
+            <% if (typeof destaque !== 'undefined' && destaque) { %>
+                <h1 class="hero__titulo"><%= destaque.titulo %></h1>
+                <p class="hero__sinopse"><%= destaque.sinopse %></p>
+                <div class="hero__acoes">
+                    <a class="btn btn-primario" href="/filmes/<%= destaque.id %>">Ver detalhes</a>
+                    <a class="btn btn-secundario" href="/filmes/<%= destaque.id %>/avaliar">Avaliar</a>
+                </div>
+            <% } else { %>
+                <h1 class="hero__titulo">Bem-vindo ao Cine-Resenhas</h1>
+                <p class="hero__sinopse">Explore filmes por gênero, avalie o que assistiu e descubra novas produções.</p>
+            <% } %>
+        </div>
+    </section>
+
+    <div class="container catalogo">
+
+        <% if (typeof busca !== 'undefined' && busca) { %>
+            <p class="catalogo__resultado-titulo">Resultados para "<%= busca %>"</p>
+            <div class="catalogo__grid" id="grid-resultado-busca">
+                <% if (typeof resultados !== 'undefined' && resultados.length) { %>
+                    <% resultados.forEach(function(filme){ %>
+                        <%- include('../partials/card-filme', { filme: filme }) %>
+                    <% }) %>
+                <% } else { %>
+                    <p class="genero__vazio">Nenhum filme encontrado para essa busca.</p>
+                <% } %>
+            </div>
+        <% } else { %>
+
+            <% if (typeof generos !== 'undefined' && generos && generos.length) { %>
+                <% generos.forEach(function(genero){ %>
+                    <section class="genero">
+                        <div class="genero__cabecalho">
+                            <h2 class="genero__titulo"><%= genero.nome %></h2>
+                            <a class="genero__ver-todos" href="/catalogo?genero=<%= encodeURIComponent(genero.nome) %>">Ver todos</a>
+                        </div>
+                        <div class="genero__carrossel">
+                            <% if (genero.filmes && genero.filmes.length) { %>
+                                <% genero.filmes.forEach(function(filme){ %>
+                                    <a class="card-filme-link" href="/filmes/<%= filme.id %>">
+                                        <article class="card-filme">
+                                            <img class="card-filme__capa" src="<%= filme.capaUrl %>" alt="Capa de <%= filme.titulo %>">
+                                            <span class="card-filme__nota">&#9733; <%= (filme.avaliacao || 0).toFixed(1) %></span>
+                                            <div class="card-filme__info">
+                                                <p class="card-filme__titulo"><%= filme.titulo %></p>
+                                                <p class="card-filme__meta"><%= filme.anoLancamento %></p>
+                                            </div>
+                                        </article>
+                                    </a>
+                                <% }) %>
+                            <% } else { %>
+                                <p class="genero__vazio">Nenhum filme cadastrado nesse gênero ainda.</p>
+                            <% } %>
+                        </div>
+                    </section>
+                <% }) %>
+            <% } else { %>
+                <p class="genero__vazio">Nenhum gênero disponível no momento.</p>
+            <% } %>
+
+        <% } %>
+    </div>
+</main>
+
+<%- include('../partials/footer', { js: 'search-debounce.js' }) %>

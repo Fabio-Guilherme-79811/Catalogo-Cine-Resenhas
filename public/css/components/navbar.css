@@ -1,0 +1,212 @@
+.navbar{
+    background-color: var(--primary);
+    padding: 10px 20px;
+}
+
+.navbar__inner{
+    display: flex;
+    align-items: center;
+    gap: var(--esp-3);
+    flex-wrap: wrap;
+}
+
+.navbar__menu-toggle{
+    background: none;
+    border: none;
+    color: var(--cor-texto-fundo-escuro);
+    font-size: 20px;
+    cursor: pointer;
+    display: none; /* aparece só no mobile, ver media query abaixo */
+}
+
+.navbar__marca{
+    display: flex;
+    align-items: center;
+    gap: var(--esp-1);
+    color: var(--cor-texto-fundo-escuro);
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.navbar__marca-icone{
+    font-size: 18px;
+}
+
+/* ===== Busca ===== */
+.navbar__busca{
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    max-width: 400px;
+}
+
+.navbar__busca input{
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #999;
+    border-radius: var(--raio-grande) 0 0 var(--raio-grande);
+    outline: none;
+}
+
+.navbar__busca input:focus{
+    outline: 2px solid var(--secondary);
+    outline-offset: -2px;
+}
+
+.navbar__busca button[type="submit"]{
+    padding: 8px 14px;
+    border: 1px solid #999;
+    border-left: none;
+    border-radius: 0 var(--raio-grande) var(--raio-grande) 0;
+    background: var(--cor-texto-fundo-escuro);
+    cursor: pointer;
+    transition: var(--transicao-rapida);
+}
+
+.navbar__busca button[type="submit"]:hover{
+    background: var(--secondary);
+    color: var(--cor-texto-fundo-escuro);
+}
+
+/* Dropdown de tags */
+.navbar__tags{
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 100%;
+    background: var(--cor-texto-fundo-escuro);
+    border-radius: var(--raio-medio);
+    padding: var(--esp-2);
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    z-index: 10;
+}
+
+.navbar__tags-titulo{
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--secondary);
+    margin-bottom: var(--esp-1);
+}
+
+.navbar__tags-lista{
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-1);
+}
+
+.navbar__tags-lista button{
+    padding: 4px 10px;
+    border: 1px solid #ccc;
+    border-radius: var(--raio-grande);
+    background: var(--cor-texto-fundo-escuro);
+    cursor: pointer;
+    font-size: 13px;
+    transition: var(--transicao-rapida);
+}
+
+.navbar__tags-lista button:hover{
+    background: var(--primary);
+    color: var(--cor-texto-fundo-escuro);
+    border-color: var(--primary);
+}
+
+/* ===== Ações (login / usuário) ===== */
+.navbar__acoes{
+    margin-left: auto;
+}
+
+.navbar__link-auth{
+    color: var(--cor-texto-fundo-escuro);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 16px;
+    border: 2px solid var(--cor-texto-fundo-escuro);
+    border-radius: var(--raio-medio);
+    transition: var(--transicao-rapida);
+    white-space: nowrap;
+}
+
+.navbar__link-auth:hover{
+    background-color: var(--cor-texto-fundo-escuro);
+    color: var(--primary);
+}
+
+.navbar__usuario{
+    position: relative;
+}
+
+.navbar__usuario-botao{
+    display: flex;
+    align-items: center;
+    gap: var(--esp-2);
+    background: none;
+    border: none;
+    color: var(--cor-texto-fundo-escuro);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.navbar__avatar{
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cor-texto-fundo-escuro);
+    color: var(--primary);
+    border-radius: 50%;
+    font-weight: 700;
+}
+
+.navbar__usuario-menu{
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    background: var(--cor-texto-fundo-escuro);
+    border-radius: var(--raio-medio);
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    min-width: 180px;
+    padding: var(--esp-2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-1);
+    z-index: 10;
+}
+
+.navbar__usuario-menu a,
+.navbar__usuario-menu button{
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 8px;
+    border-radius: var(--raio-pequeno);
+    cursor: pointer;
+    color: var(--tertiary);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.navbar__usuario-menu a:hover,
+.navbar__usuario-menu button:hover{
+    background: var(--background);
+}
+
+/* Classe utilitária de visibilidade usada no nav.ejs */
+.oculto{
+    display: none !important;
+}
+
+@media (max-width: 768px){
+    .navbar__menu-toggle{
+        display: block;
+    }
+
+    .navbar__busca{
+        order: 3;
+        max-width: 100%;
+        flex-basis: 100%;
+    }
+}

@@ -1,0 +1,66 @@
+<%- include('../partials/header', { title: 'Configurações - Cine-Resenhas', css: 'admin', sidebar: true, usuario: typeof usuario !== 'undefined' ? usuario : null }) %>
+
+<main>
+    <div class="admin">
+        <aside class="admin__menu">
+            <button type="button" class="admin__menu-item ativo" data-aba="conta">Alterar conta</button>
+            <button type="button" class="admin__menu-item" data-aba="notificacoes">Notificações de push</button>
+            <button type="button" class="admin__menu-item" data-aba="autenticacao">Autenticação</button>
+            <button type="button" class="admin__menu-item admin__menu-rodape" data-aba="ajuda">Ajuda</button>
+        </aside>
+
+        <section class="admin__conteudo">
+            <h1 class="admin__titulo">Configurações</h1>
+
+            <form class="admin__form" id="form-config" action="/config" method="post">
+                <div class="form__grupo form__grupo--linha">
+                    <div>
+                        <label class="form__label">Notificações por e-mail</label>
+                        <p class="form__ajuda">Receba avisos sobre respostas às suas resenhas.</p>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" name="notificacoesEmail" <%= (typeof preferencias !== 'undefined' && preferencias.notificacoesEmail) ? 'checked' : '' %>>
+                        <span class="toggle__trilho"></span>
+                    </label>
+                </div>
+
+                <div class="form__grupo form__grupo--linha">
+                    <div>
+                        <label class="form__label">Notificações push</label>
+                        <p class="form__ajuda">Receba avisos em tempo real no navegador.</p>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" name="notificacoesPush" <%= (typeof preferencias !== 'undefined' && preferencias.notificacoesPush) ? 'checked' : '' %>>
+                        <span class="toggle__trilho"></span>
+                    </label>
+                </div>
+
+                <div class="form__grupo form__grupo--linha">
+                    <div>
+                        <label class="form__label">Perfil público</label>
+                        <p class="form__ajuda">Permitir que outros usuários vejam suas avaliações.</p>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" name="perfilPublico" <%= (typeof preferencias !== 'undefined' && preferencias.perfilPublico) ? 'checked' : '' %>>
+                        <span class="toggle__trilho"></span>
+                    </label>
+                </div>
+
+                <div class="form__grupo form__grupo--linha">
+                    <div>
+                        <label class="form__label">Autenticação em duas etapas</label>
+                        <p class="form__ajuda">Adicione uma camada extra de segurança à sua conta.</p>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" name="autenticacaoDoisFatores" <%= (typeof preferencias !== 'undefined' && preferencias.autenticacaoDoisFatores) ? 'checked' : '' %>>
+                        <span class="toggle__trilho"></span>
+                    </label>
+                </div>
+
+                <button class="btn btn-primario" type="submit" style="align-self:flex-start;">Salvar alterações</button>
+            </form>
+        </section>
+    </div>
+</main>
+
+<%- include('../partials/footer', { js: '' }) %>

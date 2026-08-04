@@ -12,48 +12,14 @@ const router = Router();
  */
 const AUTH_BASE_URL = process.env.AUTH_BASE_URL || '';
 
-// Rota GET /login: redireciona para o serviço externo de login (se configurado)
-// ou para a rota local /auth/login como fallback
-/**
- * Redireciona para o serviço externo de login, se `AUTH_BASE_URL` estiver
- * configurada, ou para a rota local `/auth/login` como fallback.
- *
- * @route GET /login
- * @param req - Requisição HTTP.
- * @param res - Resposta HTTP com redirecionamento para o destino calculado.
- */
-router.get('/login', (req:Request, res:Response) =>{
-
-    const destino = AUTH_BASE_URL ? '${AUTH_BASE_URL}/login' : '/auth/login';
-    res.redirect(destino);
-});
-
-// Rota GET /cadastro: redireciona para o serviço externo de cadastro (se configurado)
-// ou para a rota local /auth/cadastro como fallback
-/**
- * Redireciona para o serviço externo de cadastro, se `AUTH_BASE_URL` estiver
- * configurada, ou para a rota local `/auth/cadastro` como fallback.
- *
- * @route GET /cadastro
- * @param req - Requisição HTTP.
- * @param res - Resposta HTTP com redirecionamento para o destino calculado.
- */
-router.get('/cadastro', (req:Request, res:Response) =>{
-    const destino = AUTH_BASE_URL ? '${AUTH_BASE_URL}/login' : '/auth/cadastro';
-    res.redirect(destino);
-});
-
-/// Rota GET /register: apenas um alias em inglês que redireciona para /cadastro
-/**
- * Alias em inglês que redireciona para `/cadastro`.
- *
- * @route GET /register
- * @param req - Requisição HTTP.
- * @param res - Resposta HTTP com redirecionamento para `/cadastro`.
- */
-router.get('/register', (req:Request, res:Response) =>{
-    res.redirect('/cadastro');
-});
+// As rotas GET /login, GET /cadastro e GET /register que existiam aqui
+// foram removidas: a renderização dessas páginas agora é responsabilidade
+// exclusiva de `paginas-routes.ts` (ver GET /login e GET /cadastro lá),
+// para não haver dois handlers concorrendo pelo mesmo caminho. Este
+// router fica só com as rotas que efetivamente processam autenticação
+// (ex: POST /registro abaixo). AUTH_BASE_URL permanece disponível caso
+// a lógica de submissão do formulário precise delegar para um serviço
+// externo de autenticação.
 
 // Rota POST /registro: recebe os dados de cadastro do usuário
 /**

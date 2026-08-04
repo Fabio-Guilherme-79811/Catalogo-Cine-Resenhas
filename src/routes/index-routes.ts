@@ -1,4 +1,5 @@
 import {Router} from 'express';
+import paginasRoutes from './paginas-routes';
 import landingRoutes from './landing-routes';
 import authRoutes from './auth-routes';
 import adminRoutes from './admin-routes';
@@ -24,7 +25,22 @@ const router = Router();
 // Router principal que agrega (monta) todas as sub-rotas da aplicação
 
 /**
- * Rotas da landing page (ex: `/`, `/login`, `/register`), montadas na raiz.
+ * Rotas de páginas (views EJS: `/login`, `/cadastro`, `/catalogo`,
+ * `/filmes/:id`, `/painel-admin`...), montadas na raiz.
+ *
+ * @remarks
+ * Precisa ser montado ANTES de `landingRoutes`/`authRoutes`: como o
+ * Express usa o primeiro handler que casar com a rota, se essas rotas
+ * fossem montadas depois, os handlers de `/login`/`/register` que ainda
+ * restam em `landingRoutes`/`authRoutes` (apenas redirecionamentos)
+ * seriam executados no lugar da renderização da página.
+ *
+ * @see {@link paginasRoutes}
+ */
+router.use('/', paginasRoutes);
+
+/**
+ * Rotas da landing page (ex: `/`), montadas na raiz.
  * @see {@link landingRoutes}
  */
 router.use('/', landingRoutes);

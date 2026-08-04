@@ -1,0 +1,57 @@
+<%- include("../partials/header") %>
+
+<main>
+
+    <section class="hero">
+        <div class="hero-texto">
+            <h1>Encontre os melhores filmes</h1>
+            <p>Avalie, descubra e compartilhe suas opiniões sobre seus filmes favoritos.</p>
+            <a href="/catalogo" class="btn btn-cadastro">Explorar filmes</a>
+        </div>
+        <div class="hero-imagem">
+            <img src="/images/banner-filmes.png" alt="Cartazes de filmes em destaque">
+        </div>
+    </section>
+
+    <hr class="divisor">
+
+    <section class="sobre">
+        <div class="sobre-texto">
+            <h2>Sua próxima maratona começa aqui</h2>
+            <p>Reúna suas resenhas, monte listas de filmes assistidos e descubra o que combina com seu gosto a partir das avaliações da comunidade.</p>
+        </div>
+        <div class="sobre-imagem-col">
+            <img src="/images/comunidade-filmes.png" alt="Pessoas assistindo filme">
+            <span class="sobre-detalhe"></span>
+        </div>
+    </section>
+
+    <section class="destaques">
+        <h2>Filmes em destaque</h2>
+        <div class="cards">
+            <% const filmesDestaque = typeof filmes !== 'undefined' ? filmes : [
+                { titulo: "Festa da salsicha",   ano: 2016, nota: 4.5, poster: "/images/posters/placeholder-1.png" },
+                { titulo: "Motoqueiro fantasma ",     ano: 2007, nota: 4.2, poster: "/images/posters/placeholder-2.png" },
+                { titulo: "Coringa 2",           ano: 2024, nota: 4.8, poster: "/images/posters/placeholder-3.png" },
+                { titulo: "Minions ",       ano: 2015, nota: 3.9, poster: "/images/posters/placeholder-4.png" }
+            ]; %>
+            <% filmesDestaque.forEach(function(filme){ %>
+                <a href="/conteudo/filmes" class="card">
+                    <img src="<%= filme.poster %>" alt="Pôster de <%= filme.titulo %>">
+                    <div class="card-info">
+                        <h3><%= filme.titulo %></h3>
+                        <p><%= filme.ano %> · ⭐ <%= filme.nota %></p>
+                    </div>
+                </a>
+            <% }) %>
+        </div>
+    </section>
+
+    <section class="cta">
+        <p>Ainda não tem conta? Cadastre-se e comece a avaliar seus filmes favoritos.</p>
+        <button class="btn btn-cadastro">Cadastrar-se</button>
+    </section>
+
+</main>
+
+<%- include("../partials/footer") %>
