@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "id": "740c3548-9508-4c72-82f7-cc9f16624967",
+    "nome": "Neri",
+    "email": "adonisbezerra5@gmail.com",
+    "senhaHash": "$2b$10$GtT.lHfEmoJ6FssSSUt9HuRcVu9n7FHZm6.9fxD/WOA53SdfrwHQW",
+    "role": "comum",
+    "criadoEm": "2026-08-04T19:26:57.579Z"
+  }
+]
