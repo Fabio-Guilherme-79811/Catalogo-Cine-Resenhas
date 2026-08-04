@@ -1,0 +1,48 @@
+<%- include('../partials/header', { title: title || 'Meu perfil - Cine-Resenhas', css: 'admin', sidebar: true, usuario: typeof usuario !== 'undefined' ? usuario : null }) %>
+
+<main>
+    <div class="admin">
+        <section class="admin__conteudo">
+            <h1 class="admin__titulo">Meu perfil</h1>
+
+            <% if (typeof perfil !== 'undefined' && perfil) { %>
+                <div class="admin__form" style="max-width: 480px;">
+                    <div class="form__grupo">
+                        <label class="form__label">Nome</label>
+                        <p><%= perfil.nome %></p>
+                    </div>
+                    <div class="form__grupo">
+                        <label class="form__label">E-mail</label>
+                        <p><%= perfil.email %></p>
+                    </div>
+                    <div class="form__grupo">
+                        <label class="form__label">Tipo de conta</label>
+                        <p><%= perfil.role === 'admin' ? 'Administrador(a)' : 'Usuário(a) comum' %></p>
+                    </div>
+                    <div class="form__grupo">
+                        <label class="form__label">Membro desde</label>
+                        <p><%= new Date(perfil.criadoEm).toLocaleDateString('pt-BR') %></p>
+                    </div>
+                </div>
+            <% } else { %>
+                <p class="genero__vazio">Não foi possível carregar os dados do perfil.</p>
+            <% } %>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; margin: var(--esp-3) 0;">
+                <h2 class="admin__titulo" style="margin-bottom:0;">Filmes favoritados</h2>
+            </div>
+
+            <div class="catalogo__grid">
+                <% if (typeof filmesFavoritos !== 'undefined' && filmesFavoritos.length) { %>
+                    <% filmesFavoritos.forEach(function(filme){ %>
+                        <%- include('../partials/card-filme', { filme: filme }) %>
+                    <% }) %>
+                <% } else { %>
+                    <p class="genero__vazio">Você ainda não favoritou nenhum filme.</p>
+                <% } %>
+            </div>
+        </section>
+    </div>
+</main>
+
+<%- include('../partials/footer', { js: '' }) %>
