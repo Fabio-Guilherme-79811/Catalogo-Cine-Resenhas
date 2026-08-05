@@ -1,10 +1,3 @@
-<%
-    // locals opcionais vindos das rotas:
-    // usuario -> { nome, role } quando autenticado
-    // sidebar -> true para exibir a sidebar lateral (áreas logadas)
-    const usuarioAtual = typeof usuario !== 'undefined' ? usuario : null;
-    const temSidebar = typeof sidebar !== 'undefined' ? sidebar : false;
-%>
 <header class="navbar">
     <div class="navbar__inner">
         <button class="navbar__menu-toggle" id="btn-menu-toggle" aria-label="Abrir menu" aria-expanded="false">
@@ -55,7 +48,7 @@
                         <a href="/usuario/perfil">Meu perfil</a>
                         <a href="/config">Configurações</a>
                         <% if (usuarioAtual.role === 'admin') { %>
-                            <a href="/admin">Painel administrativo</a>
+                            <a href="/painel-admin">Painel administrativo</a>
                         <% } %>
                         <form action="/logout" method="post">
                             <button type="submit">Sair</button>
@@ -83,7 +76,7 @@
         <a class="sidebar__link" href="/usuario/avaliacoes"><span class="sidebar__link-icone">&#128221;</span><span class="sidebar__link-texto">Minhas avaliações</span></a>
         <a class="sidebar__link" href="/usuario/historico"><span class="sidebar__link-icone">&#128340;</span><span class="sidebar__link-texto">Histórico</span></a>
         <% if (usuarioAtual && usuarioAtual.role === 'admin') { %>
-        <a class="sidebar__link" href="/admin"><span class="sidebar__link-icone">&#9881;&#65039;</span><span class="sidebar__link-texto">Administração</span></a>
+        <a class="sidebar__link" href="/painel-admin"><span class="sidebar__link-icone">&#9881;&#65039;</span><span class="sidebar__link-texto">Administração</span></a>
         <% } %>
         <a class="sidebar__link" href="/config"><span class="sidebar__link-icone">&#9881;</span><span class="sidebar__link-texto">Configurações</span></a>
     </nav>

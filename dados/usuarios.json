@@ -6,5 +6,13 @@
     "senhaHash": "$2b$10$GtT.lHfEmoJ6FssSSUt9HuRcVu9n7FHZm6.9fxD/WOA53SdfrwHQW",
     "role": "comum",
     "criadoEm": "2026-08-04T19:26:57.579Z"
+  },
+  {
+    "id": "63209524-093b-4f8d-a922-71d5bc6c5b72",
+    "nome": "adonis",
+    "email": "felipebezerra675@gmail.com",
+    "senhaHash": "$2b$10$7WWSZi03nbdpbVY.otpYlOGYT8HoH7dE1.Z3Xp60nuWXK.emlp0Py",
+    "role": "comum",
+    "criadoEm": "2026-08-04T19:59:57.037Z"
   }
 ]
