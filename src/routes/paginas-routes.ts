@@ -51,13 +51,34 @@ router.get('/cadastro', (_req: Request, res: Response) => {
  * @route GET /catalogo
  */
 router.get('/catalogo', (req: Request, res: Response) => {
-  const { genero } = req.query;
+  const { genero, busca } = req.query;
 
   let resultado = filmes.filter((f) => f.publicado);
+
   if (genero) {
     resultado = resultado.filter(
       (f) => f.genero.toLowerCase() === String(genero).toLowerCase()
     );
+  }
+
+  if (busca) {
+    const termo = String(busca).trim().toLowerCase();
+    resultado = resultado.filter(
+      (f) =>
+        f.titulo.toLowerCase().includes(termo) ||
+        f.sinopse.toLowerCase().includes(termo)
+    );
+  }
+
+  if (busca) {
+    // Modo "resultado de busca": lista simples, sem agrupar por gênero
+    // (ver catalogo.ejs, bloco `if (busca)`).
+    res.render('pages/catalogo', {
+      title: 'Catálogo',
+      busca: String(busca),
+      resultados: resultado,
+    });
+    return;
   }
 
   res.render('pages/catalogo', { title: 'Catálogo', filmes: resultado });
