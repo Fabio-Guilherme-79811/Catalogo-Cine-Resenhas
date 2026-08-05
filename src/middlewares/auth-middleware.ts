@@ -141,8 +141,13 @@ export function carregarUsuarioOpcional(
     if (usuario) {
         req.user = usuario;
         res.locals.usuario = usuario;
+        // nav.ejs (navbar + sidebar) usa o nome `usuarioAtual` — mantido
+        // igual a `res.locals.usuario` pra não quebrar quem já lê um ou
+        // outro nome.
+        res.locals.usuarioAtual = usuario;
     } else {
         res.locals.usuario = null;
+        res.locals.usuarioAtual = null;
     }
 
     next();

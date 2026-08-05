@@ -62,7 +62,7 @@
     </div>
 </header>
 
-<% if (temSidebar) { %>
+<% if (typeof sidebar !== 'undefined' && sidebar) { %>
 <aside class="sidebar" id="sidebar">
     <% if (usuarioAtual) { %>
     <div class="sidebar__perfil">
