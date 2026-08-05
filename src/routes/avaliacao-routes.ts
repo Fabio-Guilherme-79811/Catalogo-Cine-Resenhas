@@ -1,170 +1,256 @@
 import { Router, Request, Response } from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { Usuario } from '../entities/Usuario';
-import { UsuarioRepository } from '../models/UsuarioRepository';
-import { AUTH_COOKIE_NAME, JWT_SECRET, UsuarioTokenPayload } from '../middlewares/auth-middleware';
-
+import { isAuthenticated, isAdmin, AuthenticatedRequest } from '../middlewares/auth-middleware';
+import { filmes } from './conteudo-routes';
+ 
 const router = Router();
-const usuarioRepository = new UsuarioRepository();
 
-// URL base do serviço de autenticação, definida via variável de ambiente
-// Se não estiver definida, cai no fallback de rotas locais (/auth/...)
+// Representa uma avaliação (review) feita por um usuário sobre um filme
 /**
- * URL base do serviço de autenticação, definida via variável de ambiente.
+ * Representa uma avaliação (review) feita por um usuário sobre um filme.
+ *
+ * @property id - Identificador único da avaliação.
+ * @property filmeId - Identificador do filme avaliado.
+ * @property usuarioId - Identificador do usuário autor da avaliação.
+ * @property usuarioNome - Nome do usuário autor da avaliação.
+ * @property nota - Nota atribuída ao filme (1 a 5).
+ * @property comentario - Comentário/texto da avaliação.
+ * @property criadoEm - Data/hora de criação, em formato ISO string.
+ */
+export interface Avaliacao {
+    id: string;
+    filmeId: string;
+    usuarioId: string;
+    usuarioNome: string;
+    nota: number; // 1 a 5
+    comentario: string;
+    criadoEm: string;
+  }
+
+/// "Banco de dados" em memória das avaliações
+// OBS: como está em memória, os dados se perdem ao reiniciar o servidor
+/**
+ * "Banco de dados" em memória das avaliações.
  *
  * @remarks
- * Se não estiver definida, o fallback é utilizar as rotas locais (`/auth/...`).
+ * Como está em memória, os dados se perdem ao reiniciar o servidor.
  */
-const AUTH_BASE_URL = process.env.AUTH_BASE_URL || '';
+const avaliacoes: Avaliacao[] = [];
 
-// As rotas GET /login, GET /cadastro e GET /register que existiam aqui
-// foram removidas: a renderização dessas páginas agora é responsabilidade
-// exclusiva de `paginas-routes.ts` (ver GET /login e GET /cadastro lá),
-// para não haver dois handlers concorrendo pelo mesmo caminho. Este
-// router fica só com as rotas que efetivamente processam autenticação
-// (login, registro e logout). AUTH_BASE_URL permanece disponível caso
-// a lógica de submissão do formulário precise delegar para um serviço
-// externo de autenticação.
-
+// Janela de tempo (em horas) em que o autor pode editar a própria avaliação
 /**
- * Gera o cookie de sessão (JWT) para um usuário autenticado.
+ * Janela de tempo (em horas) em que o autor pode editar a própria avaliação.
  */
-function definirCookieSessao(res: Response, payload: UsuarioTokenPayload): void {
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '2h' });
+const JANELA_EDICAO_HORAS = 24;
 
-    res.cookie(AUTH_COOKIE_NAME, token, {
-        httpOnly: true,
-        sameSite: 'lax',
-        maxAge: 2 * 60 * 60 * 1000, // 2h, em ms — precisa bater com o expiresIn acima
-    });
-}
-
-// Rota POST /entrar: autentica o usuário (login)
+// Verifica se uma avaliação ainda está dentro do prazo permitido para edição
+// pelo próprio autor (comparando a data de criação com o tempo atual)
 /**
- * Autentica um usuário existente e inicia sua sessão.
+ * Verifica se uma avaliação ainda está dentro do prazo permitido para
+ * edição pelo próprio autor, comparando a data de criação com o tempo atual.
  *
- * @route POST /entrar
- * @param req - Requisição HTTP contendo `email` e `senha` no corpo.
- * @param res - Redireciona para `/painel-admin` (admin) ou `/catalogo` (comum)
- * em caso de sucesso; re-renderiza `/login` com mensagem de erro caso contrário.
+ * @param avaliacao - Avaliação a ser verificada.
+ * @returns `true` se a avaliação ainda pode ser editada pelo autor, `false` caso contrário.
  */
-router.post('/entrar', async (req: Request, res: Response) => {
-    const { email, senha } = req.body;
+function dentroDaJanelaDeEdicao(avaliacao: Avaliacao): boolean {
+    const criadoEm = new Date(avaliacao.criadoEm).getTime();
+    const limiteMs = JANELA_EDICAO_HORAS * 60 * 60 * 1000;
+    return Date.now() - criadoEm <= limiteMs;
+  }
 
-    if (!email || !senha) {
-        res.status(400).render('pages/login', {
-            title: 'Entrar',
-            erro: 'Informe e-mail e senha.',
-        });
+// Rota GET /filme/:filmeId: lista todas as avaliações de um filme específico
+/**
+ * Lista todas as avaliações de um filme específico.
+ *
+ * @route GET /filme/:filmeId
+ * @param req - Requisição HTTP contendo `filmeId` nos parâmetros da rota.
+ * @param res - Resposta HTTP: erro 404 se o filme não existir, ou array
+ * com as avaliações do filme.
+ */
+  router.get('/filme/:filmeId', (req: Request, res: Response) => {
+    const filmeId = String(req.params.filmeId);
+    // Verifica se o filme existe antes de buscar as avaliações
+    const filmeExiste = filmes.some((f) => f.id === filmeId);
+    if (!filmeExiste) {
+      res.status(404).json({ mensagem: 'Filme não encontrado.' });
+      return;
+    }
+   
+    const avaliacoesDoFilme = avaliacoes.filter((a) => a.filmeId === filmeId);
+    res.json(avaliacoesDoFilme);
+  });
+   // Rota GET /filme/:filmeId/media: calcula e retorna a média das notas
+  // e o total de avaliações de um filme
+  /**
+   * Calcula e retorna a média das notas e o total de avaliações de um filme.
+   *
+   * @route GET /filme/:filmeId/media
+   * @param req - Requisição HTTP contendo `filmeId` nos parâmetros da rota.
+   * @param res - Resposta HTTP com `{ media, total }`. Retorna média 0 caso
+   * o filme ainda não tenha avaliações.
+   */
+  router.get('/filme/:filmeId/media', (req: Request, res: Response) => {
+    const filmeId = String(req.params.filmeId);
+    const avaliacoesDoFilme = avaliacoes.filter((a) => a.filmeId === filmeId);
+   // Se não houver avaliações, retorna média 0 (evita divisão por zero)
+    if (avaliacoesDoFilme.length === 0) {
+      res.json({ media: 0, total: 0 });
+      return;
+    }
+   
+    const soma = avaliacoesDoFilme.reduce((acc, a) => acc + a.nota, 0);
+    const media = Number((soma / avaliacoesDoFilme.length).toFixed(1));
+   
+    res.json({ media, total: avaliacoesDoFilme.length });
+  });
+    // Rota POST /filme/:filmeId: cria uma nova avaliação para um filme
+  // Requer usuário autenticado
+  /**
+   * Cria uma nova avaliação para um filme. Requer usuário autenticado.
+   *
+   * @route POST /filme/:filmeId
+   * @param req - Requisição autenticada contendo `filmeId` nos parâmetros da
+   * rota e `nota`/`comentario` no corpo.
+   * @param res - Resposta HTTP: erro 404 se o filme não existir/não estiver
+   * publicado, erro 400 se a nota ou o comentário forem inválidos, erro 409
+   * se o usuário já tiver avaliado o filme, ou a avaliação criada (201).
+   *
+   * @remarks
+   * O `id` é gerado com base no tamanho do array (`avaliacoes.length + 1`),
+   * o que pode gerar ids duplicados após exclusões (ex: remover o item 3 de
+   * 3 e criar um novo gera outro id "3"). O ideal seria usar um UUID ou
+   * contador incremental à parte.
+   */
+  router.post('/filme/:filmeId', isAuthenticated, (req: AuthenticatedRequest, res: Response) => {
+    const filmeId = String(req.params.filmeId);
+    const { nota, comentario } = req.body;
+    // Só permite avaliar filmes que existem e estão publicados
+    const filme = filmes.find((f) => f.id === filmeId && f.publicado);
+    if (!filme) {
+      res.status(404).json({ mensagem: 'Filme não encontrado.' });
+      return;
+    }
+    // Validação da nota: deve existir e estar entre 1 e 5
+    if (!nota || nota < 1 || nota > 5) {
+      res.status(400).json({ mensagem: 'Informe uma nota entre 1 e 5.' });
+      return;
+    }
+   
+    // Validação do comentário: não pode ser vazio ou só espaços em branco
+    if (!comentario || comentario.trim().length === 0) {
+      res.status(400).json({ mensagem: 'Escreva um comentário com sua avaliação.' });
+      return;
+    }
+   // Impede que o mesmo usuário avalie o mesmo filme mais de uma vez
+    const jaAvaliou = avaliacoes.some(
+      (a) => a.filmeId === filmeId && a.usuarioId === req.user?.id
+    );
+    if (jaAvaliou) {
+      res.status(409).json({
+        mensagem: 'Você já avaliou esse filme. Utilize a edição para alterar sua avaliação (disponível por um tempo limitado).',
+      });
+      return;
+    }
+   // Monta a nova avaliação
+    // ATENÇÃO: o id é gerado com base no tamanho do array (avaliacoes.length + 1),
+    // o que pode gerar ids duplicados após exclusões (ex: remover o item 3 de 3
+    // e criar um novo gera outro id "3"). O ideal seria usar um UUID ou contador incremental à parte.
+    const novaAvaliacao: Avaliacao = {
+      id: String(avaliacoes.length + 1),
+      filmeId,
+      usuarioId: String(req.user!.id),
+      usuarioNome: String(req.user!.nome),
+      nota,
+      comentario,
+      criadoEm: new Date().toISOString(),
+    };
+   
+    avaliacoes.push(novaAvaliacao);
+    res.status(201).json(novaAvaliacao);
+  });
+
+// Rota PUT /:id: edita uma avaliação existente
+  // Requer usuário autenticado
+  /**
+   * Edita uma avaliação existente. Requer usuário autenticado.
+   *
+   * @route PUT /:id
+   * @param req - Requisição autenticada contendo `id` nos parâmetros da rota
+   * e `nota`/`comentario` (opcionais) no corpo.
+   * @param res - Resposta HTTP: erro 404 se a avaliação não existir, erro 403
+   * se o usuário não for o autor/admin ou se o prazo de edição tiver
+   * expirado, erro 400 se a nota estiver fora do intervalo permitido, ou a
+   * avaliação atualizada.
+   *
+   * @remarks
+   * Apenas o autor da avaliação ou um admin pode editar. O autor só pode
+   * editar dentro da janela de tempo definida por `JANELA_EDICAO_HORAS`;
+   * admins podem editar a qualquer momento. Diferente da rota POST, aqui
+   * não há validação de comentário vazio/em branco.
+   */
+  router.put('/:id', isAuthenticated, (req: AuthenticatedRequest, res: Response) => {
+    const avaliacao = avaliacoes.find((a) => a.id === req.params.id);
+   
+    if (!avaliacao) {
+      res.status(404).json({ mensagem: 'Avaliação não encontrada.' });
+      return;
+    }
+   // Verifica permissão: só o autor da avaliação ou um admin pode editar
+    const ehAutor = avaliacao.usuarioId === req.user?.id;
+    const ehAdmin = req.user?.role === 'admin';
+   
+    if (!ehAdmin && !ehAutor) {
+      res.status(403).json({ mensagem: 'Você só pode editar a sua própria avaliação.' });
+      return;
+    }
+    // Se for o autor (e não admin), só pode editar dentro da janela de tempo permitida.
+    // Admins podem editar a qualquer momento.
+    if (!ehAdmin && ehAutor && !dentroDaJanelaDeEdicao(avaliacao)) {
+      res.status(403).json({
+        mensagem: `O prazo de ${JANELA_EDICAO_HORAS}h para edição já expirou. Entre em contato com um administrador para alterar essa avaliação.`,
+      });
+      return;
+    }
+   
+    const { nota, comentario } = req.body;
+   // Atualiza a nota apenas se foi enviada, validando o intervalo permitido
+    if (nota !== undefined) {
+      if (nota < 1 || nota > 5) {
+        res.status(400).json({ mensagem: 'A nota deve estar entre 1 e 5.' });
         return;
+      }
+      avaliacao.nota = nota;
     }
-
-    try {
-        const usuario = await usuarioRepository.buscarPorEmail(email);
-
-        // Mensagem genérica de propósito: não revela se o e-mail existe ou não
-        if (!usuario) {
-            res.status(401).render('pages/login', {
-                title: 'Entrar',
-                erro: 'E-mail ou senha inválidos.',
-            });
-            return;
-        }
-
-        const senhaConfere = await bcrypt.compare(senha, usuario.senhaHash);
-        if (!senhaConfere) {
-            res.status(401).render('pages/login', {
-                title: 'Entrar',
-                erro: 'E-mail ou senha inválidos.',
-            });
-            return;
-        }
-
-        definirCookieSessao(res, {
-            id: usuario.id,
-            nome: usuario.nome,
-            role: usuario.role,
-        });
-
-        res.redirect(usuario.role === 'admin' ? '/painel-admin' : '/catalogo');
-    } catch (erro) {
-        console.error('Erro ao autenticar usuário:', erro);
-        res.status(500).render('pages/login', {
-            title: 'Entrar',
-            erro: 'Não foi possível entrar agora. Tente novamente.',
-        });
+    // Atualiza o comentário apenas se foi enviado
+    // OBS: diferente da rota POST, aqui não há validação de comentário vazio/em branco
+    if (comentario !== undefined) {
+      avaliacao.comentario = comentario;
     }
-});
-
-// Rota POST /registro: recebe os dados de cadastro do usuário e cria a conta
-/**
- * Recebe os dados de cadastro do usuário, cria a conta (com hash de senha
- * via bcrypt) e já inicia a sessão automaticamente.
- *
- * @route POST /registro
- * @param req - Requisição HTTP contendo `nome`, `email`, `senha` e
- * `confirmarSenha` no corpo.
- * @param res - Resposta HTTP com redirecionamento para `/catalogo` em caso
- * de sucesso, ou re-renderização de `/cadastro` com mensagem de erro.
- */
-router.post('/registro', async (req: Request, res: Response) => {
-    const { nome, email, senha, confirmarSenha } = req.body;
-
-    if (senha !== confirmarSenha) {
-        res.status(400).render('pages/registro', {
-            title: 'Cadastrar',
-            erro: 'As senhas informadas não conferem.',
-        });
-        return;
+   
+    res.json(avaliacao);
+  });
+   // Rota DELETE /:id: remove uma avaliação
+  // Restrita a administradores autenticados
+  /**
+   * Remove uma avaliação. Restrita a administradores autenticados.
+   *
+   * @route DELETE /:id
+   * @param req - Requisição autenticada contendo `id` nos parâmetros da rota.
+   * @param res - Resposta HTTP: erro 404 se a avaliação não existir, ou
+   * mensagem de confirmação da remoção.
+   */
+  router.delete('/:id', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res: Response) => {
+    const index = avaliacoes.findIndex((a) => a.id === req.params.id);
+   
+    if (index === -1) {
+      res.status(404).json({ mensagem: 'Avaliação não encontrada.' });
+      return;
     }
-
-    try {
-        Usuario.validarSenhaPlana(senha); // RNLF02 - valida antes de gerar o hash
-
-        const senhaHash = await bcrypt.hash(senha, 10);
-        const novoUsuario = new Usuario({
-            id: '', // gerado pelo repositório (randomUUID) em criar()
-            nome,
-            email,
-            senhaHash,
-        });
-
-        const usuarioCriado = await usuarioRepository.criar(novoUsuario);
-
-        definirCookieSessao(res, {
-            id: usuarioCriado.id,
-            nome: usuarioCriado.nome,
-            role: usuarioCriado.role,
-        });
-
-        res.redirect('/catalogo');
-    } catch (erro) {
-        // Cobre tanto validações da entidade (nome/e-mail/senha inválidos)
-        // quanto o RNLF01 (e-mail já cadastrado), lançados pelo repositório
-        const mensagem = erro instanceof Error ? erro.message : 'Não foi possível concluir o cadastro.';
-        res.status(400).render('pages/registro', {
-            title: 'Cadastrar',
-            erro: mensagem,
-        });
-    }
-});
-
-// Rota POST /logout: encerra a sessão do usuário
-/**
- * Encerra a sessão do usuário autenticado, removendo o cookie de sessão.
- *
- * @route POST /logout
- * @param _req - Requisição HTTP.
- * @param res - Resposta HTTP com redirecionamento para `/login`.
- */
-router.post('/logout', (_req: Request, res: Response) => {
-    res.clearCookie(AUTH_COOKIE_NAME);
-    res.redirect('/login');
-});
-
-// Exporta o router para ser montado na aplicação principal
-/**
- * Router de autenticação, a ser montado na aplicação principal.
- */
-export default router;
+   
+    avaliacoes.splice(index, 1);
+    res.json({ mensagem: 'Avaliação removida com sucesso.' });
+  });
+  // Exporta o router para ser montado na rota /avaliacoes da aplicação principal
+  /**
+   * Router de avaliações, a ser montado na rota `/avaliacoes` da aplicação principal.
+   */
+  export default router;
