@@ -65,6 +65,42 @@ img{
     display: block;
 }
 
+/* Texto de "estado vazio" (nenhum resultado/nada cadastrado ainda).
+   Reaproveitado em várias páginas: catálogo, detalhes, perfil, histórico. */
+.genero__vazio{
+    color: var(--secondary);
+    padding: var(--esp-4) 0;
+}
+
+/* Feedback (erro/sucesso/info) — ver partials/feedback.ejs.
+   Sem item dentro, a div fica sem padding/borda, ou seja, com altura 0 —
+   não precisa de nenhuma regra extra pra "esconder" o container vazio. */
+.feedback__item{
+    max-width: var(--container-max);
+    margin: var(--esp-3) auto 0;
+    padding: var(--esp-2) var(--esp-4);
+    border-radius: var(--raio-medio);
+    font-weight: 600;
+}
+
+.feedback__item--erro{
+    background: #fde2e1;
+    color: #7e0000;
+    border: 1px solid #f3b4b1;
+}
+
+.feedback__item--sucesso{
+    background: #e1f5e6;
+    color: #135c2c;
+    border: 1px solid #b3e0bf;
+}
+
+.feedback__item--info{
+    background: #e3ecf7;
+    color: #1c3f66;
+    border: 1px solid #b7cbe8;
+}
+
 /* Container central da página (usado por main e sections) */
 .container{
     width: 100%;

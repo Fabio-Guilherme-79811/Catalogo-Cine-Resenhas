@@ -1,0 +1,194 @@
+/* ===========================
+   Topo (capa + informações do filme)
+=========================== */
+
+.detalhes__topo{
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: var(--esp-5);
+    margin-bottom: var(--esp-5);
+}
+
+.detalhes__capa{
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: var(--raio-medio);
+    background-color: var(--secondary);
+}
+
+.detalhes__info{
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-2);
+}
+
+.detalhes__titulo{
+    font-size: 32px;
+}
+
+.detalhes__meta{
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--esp-3);
+    color: var(--secondary);
+    font-size: 14px;
+}
+
+.detalhes__meta span:not(:last-child)::after{
+    content: "•";
+    margin-left: var(--esp-3);
+    color: var(--secondary);
+}
+
+.detalhes__nota-media{
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: var(--esp-2);
+}
+
+.detalhes__sinopse{
+    max-width: 640px;
+}
+
+.detalhes__acoes{
+    display: flex;
+    gap: var(--esp-3);
+    margin-top: var(--esp-2);
+}
+
+/* ===========================
+   Seção de avaliação (formulário + resenhas)
+=========================== */
+
+.avaliar{
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: var(--esp-4);
+    align-items: start;
+}
+
+.avaliar__estrelas-linha{
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-1);
+}
+
+.estrelas{
+    color: var(--primary);
+    font-size: 18px;
+}
+
+.estrelas--interativo{
+    font-size: 28px;
+    letter-spacing: 4px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.estrelas--interativo i{
+    font-style: normal;
+}
+
+.avaliar__campo{
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-1);
+}
+
+/* ===========================
+   Resenhas da comunidade
+=========================== */
+
+.opinioes{
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-3);
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.opiniao{
+    border-bottom: 1px solid var(--background);
+    padding-bottom: var(--esp-3);
+}
+
+.opiniao:last-child{
+    border-bottom: none;
+}
+
+.opiniao__cabecalho{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--esp-1);
+}
+
+.opiniao__autor{
+    font-weight: 700;
+}
+
+.opiniao__texto{
+    color: var(--tertiary);
+}
+
+.opiniao__acoes{
+    display: flex;
+    gap: var(--esp-2);
+    margin-top: var(--esp-2);
+}
+
+.opiniao__acoes button{
+    background: none;
+    border: none;
+    color: var(--secondary);
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* ===========================
+   Responsivo
+=========================== */
+
+@media (max-width: 900px){
+    .avaliar{
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px){
+    .detalhes__topo{
+        grid-template-columns: 1fr;
+    }
+
+    .detalhes__capa{
+        max-width: 220px;
+        margin: 0 auto;
+    }
+
+    .detalhes__info{
+        text-align: center;
+        align-items: center;
+    }
+
+    .detalhes__meta{
+        justify-content: center;
+    }
+
+    .detalhes__acoes{
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .detalhes__acoes .btn{
+        text-align: center;
+    }
+
+    .estrelas--interativo{
+        font-size: 24px;
+    }
+}
