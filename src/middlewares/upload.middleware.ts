@@ -93,7 +93,7 @@ const storage = multer.diskStorage({
  *
  * @throws Error Caso o formato do arquivo não seja permitido.
  */
-function filtroDeArquivo(
+export function filtroDeArquivo(
   req: Request,
   file: ArquivoEnviado,
   cb: FileFilterCallback
