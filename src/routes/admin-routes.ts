@@ -20,7 +20,7 @@ router.use(isAuthenticated, isAdmin);
  */
 router.get('/', (req: AuthenticatedRequest, res: Response) =>{
     res.json({
-        mensagem: 'Bem-vindo ao portal administrativo, ${req.user?.nome}',
+        mensagem: `Bem-vindo ao portal administrativo, ${req.user?.nome}`,
         secoes: ['usuario', 'estatisticas', 'configuracoes'],
     });
 });
@@ -41,21 +41,15 @@ router.get('/usuarios', (req: AuthenticatedRequest, res: Response) => {
     res.json(usuarios);
 });
 
-// Rota GET /usuarios: (deveria ser detalhe de um usuário específico por :id,
-// mas o path está duplicado e sem parâmetro — ver observação abaixo)
+// Rota GET /usuarios/:id: retorna o detalhe de um usuário específico
 /**
  * Retorna o detalhe de um usuário específico (dado mockado/estático).
  *
- * @route GET /usuarios
+ * @route GET /usuarios/:id
  * @param req - Requisição autenticada, restrita a administradores.
  * @param res - Resposta HTTP com os dados do usuário.
- *
- * @remarks
- * O path desta rota está duplicado em relação à rota `GET /usuarios` acima
- * e não possui o parâmetro `:id` (ex: deveria ser `/usuarios/:id`). Como
- * está, `req.params.id` sempre será `undefined`.
  */
-router.get('/usuarios', (req: AuthenticatedRequest, res: Response) => {
+router.get('/usuarios/:id', (req: AuthenticatedRequest, res: Response) => {
     const {id} = req.params;
     res.json({id, nome: 'Usuário exemplo',email: 'exemplo@exemplo.com', role:'usuario' });
 });
@@ -64,16 +58,12 @@ router.get('/usuarios', (req: AuthenticatedRequest, res: Response) => {
 /**
  * Atualiza um usuário específico pelo id.
  *
- * @route PUT ./usuarios/:id
+ * @route PUT /usuarios/:id
  * @param req - Requisição autenticada contendo `id` nos parâmetros da rota
  * e os dados a atualizar em `req.body`.
  * @param res - Resposta HTTP com mensagem de confirmação e os dados atualizados.
- *
- * @remarks
- * O path `'./usuarios/:id'` começa com `./`, o que é incomum em rotas Express
- * (o esperado seria `/usuarios/:id`).
  */
-router.put('./usuarios/:id', (req:AuthenticatedRequest, res: Response) => {
+router.put('/usuarios/:id', (req:AuthenticatedRequest, res: Response) => {
     const {id} = req.params;
     const dados = req.body;
     res.json({ mensagem: `Usuário ${id} atualizado com sucesso.`, dados});

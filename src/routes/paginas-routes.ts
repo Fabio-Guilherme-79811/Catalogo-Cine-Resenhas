@@ -38,7 +38,7 @@ router.get('/cadastro', (_req: Request, res: Response) => {
 
 /**
  * GET /catalogo
- * Renderiza a página do catálogo com os filmes publicados.
+ * Renderiza a página do catálogo com os filmes publicados, agrupados por gênero.
  * Suporta filtro opcional por gênero via query string (?genero=Drama).
  *
  * @route GET /catalogo
@@ -53,7 +53,21 @@ router.get('/catalogo', (req: Request, res: Response) => {
     );
   }
 
-  res.render('pages/catalogo', { title: 'Catálogo', filmes: resultado });
+  const generosUnicos = [...new Set(resultado.map((f) => f.genero))];
+  const generos = generosUnicos.map((nome) => ({
+    nome,
+    filmes: resultado
+      .filter((f) => f.genero === nome)
+      .map((f) => ({
+        id: f.id,
+        titulo: f.titulo,
+        anoLancamento: f.anoLancamento,
+        capaUrl: f.posterUrl,
+        avaliacao: 0, // TODO: substituir por avaliação real quando o módulo de avaliações existir
+      })),
+  }));
+
+  res.render('pages/catalogo', { title: 'Catálogo', generos });
 });
 
 /**
