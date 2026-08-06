@@ -5,9 +5,9 @@ import { AuthenticatedRequest } from './auth-middleware';
  * Define os papéis de acesso disponíveis para usuários do sistema.
  *
  * - `admin`: usuário com permissões administrativas.
- * - `usuario`: usuário comum do sistema.
+ * - `comum`: usuário comum do sistema.
  */
-export type Role = 'admin' | 'usuario';
+export type Role = 'admin' | 'comum';
 
 /**
  * Cria um middleware de autorização baseado no papel do usuário.

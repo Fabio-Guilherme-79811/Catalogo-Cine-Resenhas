@@ -1,0 +1,52 @@
+<%- include('../partials/header', { title: title || 'Minhas avaliações - Cine-Resenhas', css: 'admin', sidebar: true, usuario: typeof usuario !== 'undefined' ? usuario : null }) %>
+
+<main>
+    <div class="admin">
+    
+        <section class="admin__conteudo">
+            <h1 class="admin__titulo">Minhas avaliações</h1>
+
+            <div class="admin__tabela-wrap">
+                <table class="admin__tabela">
+                    <thead>
+                        <tr>
+                            <th>Filme</th>
+                            <th>Nota</th>
+                            <th>Comentário</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (typeof avaliacoes !== 'undefined' && avaliacoes.length) { %>
+                            <% avaliacoes.forEach(function(avaliacao){ %>
+                                <tr data-avaliacao-id="<%= avaliacao.id %>">
+                                    <td>
+                                        <% if (avaliacao.filme) { %>
+                                            <a href="/filmes/<%= avaliacao.filme.id %>"><%= avaliacao.filme.titulo %></a>
+                                        <% } else { %>
+                                            Filme removido
+                                        <% } %>
+                                    </td>
+                                    <td>&#9733; <%= avaliacao.nota.toFixed(1) %></td>
+                                    <td><%= avaliacao.comentario || '-' %></td>
+                                    <td><%= new Date(avaliacao.dataCriacao).toLocaleDateString('pt-BR') %></td>
+                                    <td class="admin__tabela-acoes">
+                                        <% if (avaliacao.filme) { %>
+                                            <a class="btn btn-secundario" href="/filmes/<%= avaliacao.filme.id %>/avaliar">Editar</a>
+                                        <% } %>
+                                        <button type="button" class="btn btn-perigo btn-excluir-avaliacao" data-id="<%= avaliacao.id %>">Excluir</button>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr><td colspan="5">Você ainda não avaliou nenhum filme.</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</main>
+
+<%- include('../partials/footer', { js: '' }) %>

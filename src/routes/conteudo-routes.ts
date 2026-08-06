@@ -56,15 +56,31 @@ export const filmes: Filme[] = [
 /**
  * GET /conteudo/filmes
  * Lista o catálogo de filmes publicados. Rota pública.
- * Suporta filtro opcional por gênero via query string (?genero=Drama).
+ * Suporta filtro opcional por gênero via query string (?genero=Drama) e
+ * busca por título/sinopse via query string (?busca=termo).
+ *
+ * @remarks
+ * `busca` é usado pela busca com debounce no front-end (ver
+ * `public/js/search-debounce.js`), que consulta este endpoint via fetch
+ * conforme o usuário digita, sem recarregar a página.
  */
 router.get('/filmes', (req: Request, res: Response) => {
-  const { genero } = req.query;
+  const { genero, busca } = req.query;
 
   let resultado = filmes.filter((f) => f.publicado);
+
   if (genero) {
     resultado = resultado.filter(
       (f) => f.genero.toLowerCase() === String(genero).toLowerCase()
+    );
+  }
+
+  if (busca) {
+    const termo = String(busca).trim().toLowerCase();
+    resultado = resultado.filter(
+      (f) =>
+        f.titulo.toLowerCase().includes(termo) ||
+        f.sinopse.toLowerCase().includes(termo)
     );
   }
 

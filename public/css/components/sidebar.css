@@ -1,4 +1,3 @@
-
 /* ===========================
    Layout
 =========================== */
@@ -15,29 +14,119 @@
 .sidebar{
     position: fixed;
 
-    top: 60px;
+    top: var(--navbar-altura);
     left: 0;
 
     width: 60px;
-    height: calc(100vh - 60px);
+    height: calc(100vh - var(--navbar-altura));
+
+    display: flex;
+    flex-direction: column;
 
     background-color: #444a57;
 
     overflow-x: hidden;
 
-    transition: width .3s;
+    transition: width var(--transicao-normal);
 
     z-index: 999;
 }
 
 .sidebar:hover{
-    width: 288px;
+    width: 240px;
+}
+
+/* Reserva o espaço da faixa sempre visível (60px) pro conteúdo não ficar
+   escondido atrás da sidebar. Como a expansão no hover é só visual (a
+   sidebar fica por cima do conteúdo, sem empurrá-lo), não precisamos
+   recalcular esse valor quando ela expande. */
+body.tem-sidebar main{
+    margin-left: 60px;
+}
+
+/* Some com o botão de toggle: a sidebar usa só hover, então esse botão
+   (sem nenhum JS associado) só confundia. */
+.sidebar__toggle{
+    display: none;
+}
+
+/* ===========================
+   Perfil
+=========================== */
+
+.sidebar__perfil{
+    display: flex;
+    align-items: center;
+    gap: var(--esp-2);
+
+    padding: var(--esp-3);
+    white-space: nowrap;
+
+    border-bottom: 1px solid rgba(255, 255, 255, .15);
+}
+
+.sidebar__perfil-avatar{
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+
+    border-radius: 50%;
+    background-color: var(--primary);
+}
+
+.sidebar__perfil-nome{
+    color: var(--cor-texto-fundo-escuro);
+    font-weight: 600;
+
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity var(--transicao-rapida);
+}
+
+.sidebar:hover .sidebar__perfil-nome{
+    opacity: 1;
 }
 
 /* ===========================
    Menu
 =========================== */
 
-.sidebar-menu{
-    list-style: none;
+.sidebar__nav{
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar__link{
+    display: flex;
+    align-items: center;
+    gap: var(--esp-3);
+
+    padding: var(--esp-3);
+    white-space: nowrap;
+
+    color: var(--cor-texto-fundo-escuro);
+    text-decoration: none;
+
+    transition: background-color var(--transicao-rapida);
+}
+
+.sidebar__link:hover{
+    background-color: rgba(255, 255, 255, .1);
+}
+
+.sidebar__link-icone{
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.sidebar__link-texto{
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity var(--transicao-rapida);
+}
+
+.sidebar:hover .sidebar__link-texto{
+    opacity: 1;
 }
