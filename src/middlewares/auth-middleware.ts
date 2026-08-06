@@ -38,7 +38,7 @@ export interface AuthenticatedRequest extends Request{
         res: Response,
         next: NextFunction
     ): void {
-    
+
     const usuarioSimulado = req.headers['x-user-role'];
 
     if(!usuarioSimulado){
@@ -73,6 +73,7 @@ export interface AuthenticatedRequest extends Request{
     ): void {
         if(!req.user || req.user.role !== 'admin') {
             res.status(403).json ({ mensagem : 'Acsso restrito a administradores.'});
+            return;
         }
 
         next();
