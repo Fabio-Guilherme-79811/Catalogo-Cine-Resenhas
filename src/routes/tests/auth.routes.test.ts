@@ -3,21 +3,19 @@ import app from "../../app";
 
 describe("Auth routes", () => {
     // Testa se a rota de login redireciona corretamente para a página de login
-    test("GET/login deve redirecionar para a página de login", async () => {
-        const response = await request(app)
-            .get("/login");
+    test("GET /login deve retornar a página de login", async () => {
+    const response = await request(app)
+        .get("/login");
 
-        expect(response.statusCode).toBe(302);
-        console.log(response.headers.location);
-    });
-
+    expect(response.statusCode).toBe(200);
+});
      // Testa se a página de cadastro é acessada corretamente
-    test("GET/registro deve retornar a página de cadastro", async () => {
-        const response = await request(app)
-            .get("/cadastro");
+    test("GET /cadastro deve retornar a página de cadastro", async () => {
+    const response = await request(app)
+        .get("/cadastro");
 
-        expect(response.statusCode).toBe(302);
-    });
+    expect(response.statusCode).toBe(200);
+});
 
      // Testa se um novo usuário consegue se cadastrar com dados válidos
     test("POST/registro deve cadastrar usuário", async () => {
