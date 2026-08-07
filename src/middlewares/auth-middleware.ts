@@ -108,12 +108,6 @@ export function obterUsuarioDoToken(req: Request): UsuarioTokenPayload | null {
         res: Response,
         next: NextFunction
     ): void {
-<<<<<<< HEAD
-
-    const usuarioSimulado = req.headers['x-user-role'];
-=======
->>>>>>> e4c35194f894b5d01b2854ab33fac78d38dd63e9
-
     const usuario = obterUsuarioDoToken(req);
 
     if (!usuario) {
@@ -175,11 +169,7 @@ export function carregarUsuarioOpcional(
         next: NextFunction
     ): void {
         if(!req.user || req.user.role !== 'admin') {
-<<<<<<< HEAD
-            res.status(403).json ({ mensagem : 'Acsso restrito a administradores.'});
-=======
             res.status(403).json ({ mensagem : 'Acesso restrito a administradores.'});
->>>>>>> e4c35194f894b5d01b2854ab33fac78d38dd63e9
             return;
         }
 
