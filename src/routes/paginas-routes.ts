@@ -4,10 +4,12 @@ import { filmes } from './conteudo-routes';
 import { UsuarioRepository } from '../models/UsuarioRepository';
 import { AvaliacaoRepository } from '../models/AvaliacaoRepository';
 import { FavoritoRepository } from '../models/FavoritoRepository';
+import { VisitaRepository } from '../models/VisitaRepository';
 
 const usuarioRepository = new UsuarioRepository();
 const avaliacaoRepository = new AvaliacaoRepository();
 const favoritoRepository = new FavoritoRepository();
+const visitaRepository = new VisitaRepository();
 
 /**
  * Router responsável exclusivamente por renderizar as páginas (views EJS)
@@ -50,7 +52,7 @@ router.get('/cadastro', (_req: Request, res: Response) => {
  *
  * @route GET /catalogo
  */
-router.get('/catalogo', (req: Request, res: Response) => {
+router.get('/catalogo', async (req: Request, res: Response) => {
   const { genero, busca } = req.query;
 
   let resultado = filmes.filter((f) => f.publicado);
@@ -61,7 +63,41 @@ router.get('/catalogo', (req: Request, res: Response) => {
     );
   }
 
-<<<<<<< HEAD
+  if (busca) {
+    const termo = String(busca).trim().toLowerCase();
+    resultado = resultado.filter(
+      (f) =>
+        f.titulo.toLowerCase().includes(termo) ||
+        f.sinopse.toLowerCase().includes(termo)
+    );
+  }
+
+  // Calcula a média real de avaliações de cada filme (RNLF33), em vez de
+  // exibir uma nota fixa/zerada.
+  const mediasPorFilme = new Map<string, number>();
+  await Promise.all(
+    resultado.map(async (f) => {
+      mediasPorFilme.set(f.id, await avaliacaoRepository.calcularMediaDoFilme(f.id));
+    })
+  );
+
+  if (busca) {
+    // Modo "resultado de busca": lista simples, sem agrupar por gênero
+    // (ver catalogo.ejs, bloco `if (busca)`).
+    res.render('pages/catalogo', {
+      title: 'Catálogo',
+      busca: String(busca),
+      resultados: resultado.map((f) => ({
+        id: f.id,
+        titulo: f.titulo,
+        anoLancamento: f.anoLancamento,
+        capaUrl: f.posterUrl,
+        avaliacao: mediasPorFilme.get(f.id) ?? 0,
+      })),
+    });
+    return;
+  }
+
   const generosUnicos = [...new Set(resultado.map((f) => f.genero))];
   const generos = generosUnicos.map((nome) => ({
     nome,
@@ -72,34 +108,11 @@ router.get('/catalogo', (req: Request, res: Response) => {
         titulo: f.titulo,
         anoLancamento: f.anoLancamento,
         capaUrl: f.posterUrl,
-        avaliacao: 0, // TODO: substituir por avaliação real quando o módulo de avaliações existir
+        avaliacao: mediasPorFilme.get(f.id) ?? 0,
       })),
   }));
 
   res.render('pages/catalogo', { title: 'Catálogo', generos });
-=======
-  if (busca) {
-    const termo = String(busca).trim().toLowerCase();
-    resultado = resultado.filter(
-      (f) =>
-        f.titulo.toLowerCase().includes(termo) ||
-        f.sinopse.toLowerCase().includes(termo)
-    );
-  }
-
-  if (busca) {
-    // Modo "resultado de busca": lista simples, sem agrupar por gênero
-    // (ver catalogo.ejs, bloco `if (busca)`).
-    res.render('pages/catalogo', {
-      title: 'Catálogo',
-      busca: String(busca),
-      resultados: resultado,
-    });
-    return;
-  }
-
-  res.render('pages/catalogo', { title: 'Catálogo', filmes: resultado });
->>>>>>> e4c35194f894b5d01b2854ab33fac78d38dd63e9
 });
 
 /**
@@ -108,7 +121,7 @@ router.get('/catalogo', (req: Request, res: Response) => {
  *
  * @route GET /filmes/:id
  */
-router.get('/filmes/:id', (req: Request, res: Response) => {
+router.get('/filmes/:id', async (req: Request, res: Response) => {
   const filme = filmes.find((f) => f.id === req.params.id && f.publicado);
 
   if (!filme) {
@@ -116,7 +129,16 @@ router.get('/filmes/:id', (req: Request, res: Response) => {
     return;
   }
 
-  res.render('pages/detalhes', { title: filme.titulo, filme });
+  // Usuário pode não estar autenticado aqui (rota pública); nesse caso,
+  // simplesmente não há favorito para verificar.
+  const usuarioAutenticado = (req as AuthenticatedRequest).user;
+  let favoritado = false;
+  if (usuarioAutenticado) {
+    const favorito = await favoritoRepository.buscar(String(usuarioAutenticado.id), filme.id);
+    favoritado = Boolean(favorito);
+  }
+
+  res.render('pages/detalhes', { title: filme.titulo, filme, favoritado });
 });
 
 /**
@@ -133,21 +155,33 @@ router.get(
   '/painel-admin',
   isAuthenticated,
   isAdmin,
-  (req: AuthenticatedRequest, res: Response) => {
-    res.render('pages/admin-dashboard', {
-      title: 'Painel Administrativo',
-      usuario: req.user,
-      filmes,
-      totalFilmes: filmes.length,
-      // TODO: substituir por dados reais quando houver endpoint de estatísticas
-      // ligado ao repositório de usuários (hoje `admin-routes.ts` só expõe
-      // essas métricas mockadas em GET /admin/estatisticas).
-      estatisticas: {
-        totalUsuario: 0,
-        novosCadastrosSemana: 0,
-        visitasLandingPage: 0,
-      },
-    });
+  async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      // Estatísticas calculadas a partir dos dados reais persistidos
+      // (mesma lógica usada em GET /admin/estatisticas), em vez dos
+      // valores mockados/zerados que existiam antes aqui.
+      const usuarios = await usuarioRepository.listarTodos();
+      const seteDiasAtras = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const novosCadastrosSemana = usuarios.filter(
+        (usuario) => new Date(usuario.criadoEm).getTime() >= seteDiasAtras
+      ).length;
+      const visitasLandingPage = await visitaRepository.contarTotal();
+
+      res.render('pages/admin-dashboard', {
+        title: 'Painel Administrativo',
+        usuario: req.user,
+        filmes,
+        totalFilmes: filmes.length,
+        estatisticas: {
+          totalUsuario: usuarios.length,
+          novosCadastrosSemana,
+          visitasLandingPage,
+        },
+      });
+    } catch (erro) {
+      console.error('Erro ao carregar painel administrativo:', erro);
+      res.status(500).render('errors/500', { title: 'Erro ao carregar painel administrativo' });
+    }
   }
 );
 
