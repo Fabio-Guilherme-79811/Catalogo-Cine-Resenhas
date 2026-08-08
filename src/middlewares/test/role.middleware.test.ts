@@ -72,7 +72,7 @@ describe('Role middleware', () => {
             const req = criarRequestMock({
                 id: 1,
                 nome: 'Usuário Comum',
-                role: 'usuario',
+                role: 'comum',
             }) as AuthenticatedRequest;
             const res = criarResponseMock() as Response;
             const next: NextFunction = jest.fn();
@@ -110,11 +110,11 @@ describe('Role middleware', () => {
             const req = criarRequestMock({
                 id: 2,
                 nome: 'Usuário Comum',
-                role: 'usuario',
+                role: 'comum',
             }) as AuthenticatedRequest;
             const res = criarResponseMock() as Response;
             const next: NextFunction = jest.fn();
-            const middleware = hasRole('admin', 'usuario');
+            const middleware = hasRole('admin', 'comum');
 
             middleware(req, res, next);
 
@@ -152,7 +152,7 @@ describe('Role middleware', () => {
             const req = criarRequestMock({
                 id: 2,
                 nome: 'Usuário Comum',
-                role: 'usuario',
+                role: 'comum',
             }) as AuthenticatedRequest;
             const res = criarResponseMock() as Response;
             const next: NextFunction = jest.fn();
