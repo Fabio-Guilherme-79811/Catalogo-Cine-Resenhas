@@ -7,6 +7,7 @@ import userRoutes from './user-routes';
 import conteudoRoutes from './conteudo-routes';
 import configRoutes from './config-routes';
 import avaliacaoRoutes from './avaliacao-routes';
+import favoritoRoutes from './favorito-routes';
 
 /**
  * Router principal da aplicação
@@ -80,6 +81,12 @@ router.use('/config', configRoutes);
  * @see {@link avaliacaoRoutes}
  */
 router.use('/avaliacoes', avaliacaoRoutes);
+
+/**
+ * Rotas de favoritos, prefixadas com `/favoritos`.
+ * @see {@link favoritoRoutes}
+ */
+router.use('/favoritos', favoritoRoutes);
 
 /**
  * Router principal exportado, pronto para ser montado no arquivo
