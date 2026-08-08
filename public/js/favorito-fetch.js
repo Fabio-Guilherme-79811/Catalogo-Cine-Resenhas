@@ -18,11 +18,23 @@
     botao.classList.toggle("btn-favoritar--ativo", favoritado);
   }
 
+  // Reaproveita o mesmo spinner visual usado no botão de avaliação
+  // (classe `.btn--carregando`, definida em forms.css).
+  function iniciarCarregamento() {
+    botao.disabled = true;
+    botao.classList.add("btn--carregando");
+  }
+
+  function pararCarregamento() {
+    botao.disabled = false;
+    botao.classList.remove("btn--carregando");
+  }
+
   botao.addEventListener("click", async () => {
     const favoritadoAtualmente = botao.dataset.favoritado === "true";
     const metodo = favoritadoAtualmente ? "DELETE" : "POST";
 
-    botao.disabled = true;
+    iniciarCarregamento();
 
     try {
       const resposta = await fetch(`/favoritos/filme/${encodeURIComponent(filmeId)}`, {
@@ -48,7 +60,7 @@
       console.error("Erro ao favoritar/desfavoritar filme:", erro);
       window.alert("Não foi possível conectar ao servidor. Tente novamente.");
     } finally {
-      botao.disabled = false;
+      pararCarregamento();
     }
   });
 })();
