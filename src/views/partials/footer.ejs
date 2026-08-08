@@ -5,7 +5,10 @@
 <script src="/js/main.js"></script>
 
 <% if(typeof js !== "undefined" && js){ %>
-<script src="/js/<%= js %>"></script>
+    <% const scripts = Array.isArray(js) ? js : [js]; %>
+    <% scripts.forEach(function(arquivo){ %>
+        <script src="/js/<%= arquivo %>"></script>
+    <% }) %>
 <% } %>
 
 </body>
