@@ -1,6 +1,7 @@
 import request from 'supertest';
 import app from '../../app'; // ajuste este caminho conforme a localização real do seu app Express
 import { filmes, Filme } from '../conteudo-routes';
+import { criarUsuarioAutenticado } from './helpers/auth-test-helper';
 
 /**
  * Testes de integração para as rotas de renderização de páginas
@@ -12,9 +13,9 @@ import { filmes, Filme } from '../conteudo-routes';
  * reais contra a aplicação Express, verificando tanto o status code
  * quanto o conteúdo do HTML renderizado (`response.text`).
  *
- * A autenticação/autorização é simulada via o header `x-user-role`,
- * conforme implementado em `auth-middleware.ts` (`isAuthenticated`)
- * e `role.middleware.ts` / `isAdmin` (`admin-middleware.ts`).
+ * A autenticação/autorização usa o fluxo real de login (JWT via cookie,
+ * ver `criarUsuarioAutenticado`), e não mais um header `x-user-role`
+ * simulado, que nunca existiu na implementação real de `isAuthenticated`.
  */
 describe('Páginas routes', () => {
 
@@ -160,18 +161,22 @@ describe('Páginas routes', () => {
 
         // Testa se um usuário autenticado sem papel de admin é bloqueado
         test('deve retornar 403 quando o usuário autenticado não for admin', async () => {
+            const { cookie } = await criarUsuarioAutenticado(app, { role: 'comum' });
+
             const response = await request(app)
                 .get('/painel-admin')
-                .set('x-user-role', 'usuario');
+                .set('Cookie', cookie);
 
             expect(response.statusCode).toBe(403);
         });
 
         // Testa se um administrador consegue acessar o painel normalmente
         test('deve retornar 200 quando o usuário autenticado for admin', async () => {
+            const { cookie } = await criarUsuarioAutenticado(app, { role: 'admin' });
+
             const response = await request(app)
                 .get('/painel-admin')
-                .set('x-user-role', 'admin');
+                .set('Cookie', cookie);
 
             expect(response.statusCode).toBe(200);
         });
@@ -189,9 +194,11 @@ describe('Páginas routes', () => {
 
         // Testa se um administrador consegue acessar o formulário de novo filme
         test('deve retornar 200 e exibir o formulário vazio para um admin', async () => {
+            const { cookie } = await criarUsuarioAutenticado(app, { role: 'admin' });
+
             const response = await request(app)
                 .get('/painel-admin/filmes/novo')
-                .set('x-user-role', 'admin');
+                .set('Cookie', cookie);
 
             expect(response.statusCode).toBe(200);
         });
@@ -201,9 +208,11 @@ describe('Páginas routes', () => {
 
         // Testa se um administrador consegue acessar o formulário de edição com os dados do filme
         test('deve retornar 200 e exibir os dados do filme para edição quando o id for válido', async () => {
+            const { cookie } = await criarUsuarioAutenticado(app, { role: 'admin' });
+
             const response = await request(app)
                 .get('/painel-admin/filmes/1/editar')
-                .set('x-user-role', 'admin');
+                .set('Cookie', cookie);
 
             expect(response.statusCode).toBe(200);
             expect(response.text).toContain('Filme Exemplo 1');
@@ -211,9 +220,11 @@ describe('Páginas routes', () => {
 
         // Testa se um id inexistente retorna 404 mesmo para um admin
         test('deve retornar 404 quando o filme a ser editado não existir', async () => {
+            const { cookie } = await criarUsuarioAutenticado(app, { role: 'admin' });
+
             const response = await request(app)
                 .get('/painel-admin/filmes/id-inexistente/editar')
-                .set('x-user-role', 'admin');
+                .set('Cookie', cookie);
 
             expect(response.statusCode).toBe(404);
         });
