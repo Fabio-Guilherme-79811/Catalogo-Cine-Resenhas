@@ -2,12 +2,6 @@ const request = require("supertest");
 import app from "../../app";
 
 describe("Auth routes", () => {
-<<<<<<< HEAD
-    // Testa se a rota de login redireciona corretamente para a página de login
-    test("GET /login deve retornar a página de login", async () => {
-    const response = await request(app)
-        .get("/login");
-=======
     // GET /login sempre renderizou a página diretamente (200) — nunca
     // redirecionou. Este teste esperava um 302 que nunca correspondeu ao
     // comportamento real da rota.
@@ -17,26 +11,14 @@ describe("Auth routes", () => {
 
         expect(response.statusCode).toBe(200);
     });
->>>>>>> e4c35194f894b5d01b2854ab33fac78d38dd63e9
 
-    expect(response.statusCode).toBe(200);
-});
      // Testa se a página de cadastro é acessada corretamente
-<<<<<<< HEAD
-    test("GET /cadastro deve retornar a página de cadastro", async () => {
-    const response = await request(app)
-        .get("/cadastro");
-
-    expect(response.statusCode).toBe(200);
-});
-=======
     test("GET/cadastro deve retornar a página de cadastro", async () => {
         const response = await request(app)
             .get("/cadastro");
 
         expect(response.statusCode).toBe(200);
     });
->>>>>>> e4c35194f894b5d01b2854ab33fac78d38dd63e9
 
      // Testa se um novo usuário consegue se cadastrar com dados válidos.
      // O cadastro persiste de verdade (via UsuarioRepository) e já
@@ -56,8 +38,6 @@ describe("Auth routes", () => {
         expect(response.headers["set-cookie"]).toBeDefined();
     });
 
-<<<<<<< HEAD
-=======
     // Testa se o cadastro falha quando a confirmação de senha não confere
     test("POST/registro deve rejeitar senhas que não conferem", async () => {
         const response = await request(app)
@@ -102,6 +82,4 @@ describe("Auth routes", () => {
 
         expect(response.statusCode).toBe(401);
     });
-
->>>>>>> e4c35194f894b5d01b2854ab33fac78d38dd63e9
 });
