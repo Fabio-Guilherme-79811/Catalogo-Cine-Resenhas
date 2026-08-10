@@ -1,0 +1,103 @@
+<%
+    const editando = typeof filme !== 'undefined' && filme;
+%>
+<%- include('../partials/header', { title: (editando ? 'Editar filme' : 'Adicionar filme') + ' - Cine-Resenhas', css: 'admin', sidebar: true, usuario: typeof usuario !== 'undefined' ? usuario : null }) %>
+
+<main>
+    <div class="admin">
+        <aside class="admin__menu">
+            <a class="admin__menu-item" href="/admin">Dashboard</a>
+            <a class="admin__menu-item ativo" href="/admin/filmes">Filmes</a>
+            <a class="admin__menu-item" href="/admin/usuarios">Usuários</a>
+            <a class="admin__menu-item" href="/config">Configurações</a>
+        </aside>
+
+        <section class="admin__conteudo">
+            <h1 class="admin__titulo"><%= editando ? 'Editar filme' : 'Adicionar filme' %></h1>
+
+            <form
+                class="filme-form"
+                id="form-filme"
+                action="<%= editando ? '/admin/filmes/' + filme.id : '/admin/filmes' %>"
+                method="post"
+                enctype="multipart/form-data"
+                data-modo="<%= editando ? 'editar' : 'adicionar' %>"
+            >
+                <% if (editando) { %>
+                    <input type="hidden" name="_method" value="PUT">
+                <% } %>
+
+                <div class="filme-form__capa">
+                    <% if (editando) { %>
+                        <button type="button" class="btn btn-perigo filme-form__remover" id="btn-remover-titulo">Remover título</button>
+                    <% } %>
+
+                    <label class="upload-capa">
+                        <div class="upload-capa__area <%= editando && filme.capaUrl ? 'tem-imagem' : '' %>" id="upload-capa-area">
+                            <img class="upload-capa__preview" id="upload-capa-preview" src="<%= editando ? filme.capaUrl : '' %>" alt="Pré-visualização da capa">
+                            <span class="upload-capa__instrucao">Adicionar imagem de capa (PNG/JPEG)</span>
+                        </div>
+                        <input type="file" name="capa" id="input-capa" accept="image/png, image/jpeg">
+                    </label>
+                </div>
+
+                <div class="filme-form__campos">
+                    <div class="form__grupo">
+                        <label class="form__label" for="titulo">Título do filme</label>
+                        <input class="form__input" type="text" id="titulo" name="titulo" value="<%= editando ? filme.titulo : '' %>" required>
+                    </div>
+
+                    <div class="filme-form__linha">
+                        <div class="form__grupo">
+                            <label class="form__label" for="genero">Gênero</label>
+                            <select class="form__select" id="genero" name="genero" required>
+                                <option value="">Selecione o gênero</option>
+                                <% if (typeof generos !== 'undefined' && generos.length) { %>
+                                    <% generos.forEach(function(genero){ %>
+                                        <option value="<%= genero.id || genero %>" <%= editando && String(filme.genero) === String(genero.id || genero) ? 'selected' : '' %>>
+                                            <%= genero.nome || genero %>
+                                        </option>
+                                    <% }) %>
+                                <% } else { %>
+                                    <option value="Ação">Ação</option>
+                                    <option value="Drama">Drama</option>
+                                    <option value="Comédia">Comédia</option>
+                                    <option value="Terror">Terror</option>
+                                <% } %>
+                            </select>
+                        </div>
+
+                        <div class="form__grupo">
+                            <label class="form__label" for="duracao">Duração em minutos</label>
+                            <input class="form__input" type="number" min="1" id="duracao" name="duracao" value="<%= editando ? filme.duracao : '' %>" required>
+                        </div>
+                    </div>
+
+                    <div class="filme-form__linha">
+                        <div class="form__grupo">
+                            <label class="form__label" for="anoLancamento">Ano de lançamento</label>
+                            <input class="form__input" type="number" min="1888" id="anoLancamento" name="anoLancamento" value="<%= editando ? filme.anoLancamento : '' %>" required>
+                        </div>
+
+                        <div class="form__grupo">
+                            <label class="form__label" for="direcao">Direção</label>
+                            <input class="form__input" type="text" id="direcao" name="direcao" value="<%= editando ? (filme.direcao || filme.diretor) : '' %>" required>
+                        </div>
+                    </div>
+
+                    <div class="form__grupo">
+                        <label class="form__label" for="sinopse">Descrição do filme/sinopse</label>
+                        <textarea class="form__textarea" id="sinopse" name="sinopse" required><%= editando ? filme.sinopse : '' %></textarea>
+                    </div>
+
+                    <div class="filme-form__acoes">
+                        <a class="btn btn-secundario" href="/admin/filmes">Cancelar</a>
+                        <button class="btn btn-alerta" type="submit"><%= editando ? 'Atualizar filme' : 'Adicionar filme' %></button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+</main>
+
+<%- include('../partials/footer', { js: 'upload-preview.js' }) %>

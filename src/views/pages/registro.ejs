@@ -1,0 +1,59 @@
+<%- include('../partials/header', { title: 'Cadastrar - Cine-Resenhas', css: 'auth' }) %>
+
+<main>
+    <section class="auth">
+        <div class="auth__lado auth__lado--formulario">
+            <div class="painel painel--estreito">
+
+                <div class="auth__abas">
+                    <a class="auth__aba" href="/login">Entrar</a>
+                    <a class="auth__aba ativa" href="/cadastro">Cadastrar</a>
+                </div>
+
+                <form class="form" action="/registro" method="post" id="form-cadastro" >
+                    <div class="form__grupo">
+                        <label class="form__label" for="nome">Nome completo</label>
+                        <input class="form__input" type="text" id="nome" name="nome" placeholder="Seu nome" required autocomplete="name">
+                        <span class="form__erro" data-erro-para="nome"></span>
+                    </div>
+
+                    <div class="form__grupo">
+                        <label class="form__label" for="email">E-mail</label>
+                        <input class="form__input" type="email" id="email" name="email" placeholder="voce@exemplo.com" required autocomplete="email">
+                        <span class="form__erro" data-erro-para="email"></span>
+                    </div>
+
+                    <div class="form__grupo">
+                        <label class="form__label" for="senha">Senha</label>
+                        <input class="form__input" type="password" id="senha" name="senha" placeholder="Crie uma senha" required minlength="6" autocomplete="new-password">
+                        <span class="form__erro" data-erro-para="senha"></span>
+                    </div>
+
+                    <div class="form__grupo">
+                        <label class="form__label" for="confirmarSenha">Confirme sua senha</label>
+                        <input class="form__input" type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Repita a senha" required autocomplete="new-password">
+                        <span class="form__erro" data-erro-para="confirmarSenha"></span>
+                    </div>
+
+                    <button class="btn btn-primario btn-bloco" type="submit">Cadastrar-se</button>
+
+                    <p class="text-center">Já tem conta? <a class="form__link" href="/login">Entrar</a></p>
+                </form>
+
+            </div>
+        </div>
+
+        <div class="auth__lado auth__lado--destaque">
+            <article class="card-filme">
+                <img class="card-filme__capa" src="/uploads/capas/default-cover" alt="Destaque do catálogo">
+                <div class="card-filme__info">
+                    <p class="card-filme__titulo">Junte-se à comunidade</p>
+                </div>
+            </article>
+            <h2 class="auth__destaque-titulo">Avalie, comente e descubra</h2>
+            <p class="auth__destaque-texto">Crie sua conta gratuita e comece a construir seu catálogo pessoal de filmes.</p>
+        </div>
+    </section>
+</main>
+
+<%- include('../partials/footer', { js: '' }) %>

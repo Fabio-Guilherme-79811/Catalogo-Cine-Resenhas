@@ -1,0 +1,72 @@
+[[
+    {
+      "id": "1",
+      "titulo": "Interestelar",
+      "sinopse": "Uma equipe de astronautas atravessa um buraco de minhoca em busca de um novo lar para a humanidade.",
+      "capaUrl": "/images/interestelar.jpg",
+      "generoId": "1",
+      "subGenerosIds": ["2", "3"],
+      "anoLancamento": 2014,
+      "diretor": "Christopher Nolan",
+      "tipo": "Filme",
+      "duracao": 169,
+      "direcao": "filmes",
+      "avaliacao": 4.9
+    },
+    {
+      "id": "2",
+      "titulo": "O Senhor dos Anéis: A Sociedade do Anel",
+      "sinopse": "Um jovem hobbit inicia uma jornada para destruir um poderoso anel antes que ele caia nas mãos do mal.",
+      "capaUrl": "/images/sociedade-do-anel.jpg",
+      "generoId": "2",
+      "subGenerosIds": ["4", "5"],
+      "anoLancamento": 2001,
+      "diretor": "Peter Jackson",
+      "tipo": "Filme",
+      "duracao": 178,
+      "direcao": "filmes",
+      "avaliacao": 4.8
+    },
+    {
+      "id": "3",
+      "titulo": "Homem-Aranha: Através do Aranhaverso",
+      "sinopse": "Miles Morales embarca em uma aventura pelo multiverso ao lado de diferentes versões do Homem-Aranha.",
+      "capaUrl": "/images/aranhaverso.jpg",
+      "generoId": "3",
+      "subGenerosIds": ["6", "7"],
+      "anoLancamento": 2023,
+      "diretor": "Joaquim Dos Santos",
+      "tipo": "Filme",
+      "duracao": 140,
+      "direcao": "filmes",
+      "avaliacao": 4.7
+    },
+    {
+      "id": "4",
+      "titulo": "Breaking Bad",
+      "sinopse": "Um professor de química decide fabricar metanfetamina após descobrir uma doença terminal.",
+      "capaUrl": "/images/breaking-bad.jpg",
+      "generoId": "4",
+      "subGenerosIds": ["8"],
+      "anoLancamento": 2008,
+      "diretor": "Vince Gilligan",
+      "tipo": "Série",
+      "duracao": 49,
+      "direcao": "series",
+      "avaliacao": 5.0
+    },
+    {
+      "id": "5",
+      "titulo": "Arcane",
+      "sinopse": "Duas irmãs acabam em lados opostos de um conflito entre a cidade rica de Piltover e a subterrânea Zaun.",
+      "capaUrl": "/images/arcane.jpg",
+      "generoId": "5",
+      "subGenerosIds": ["9", "10"],
+      "anoLancamento": 2021,
+      "diretor": "Pascal Charrue",
+      "tipo": "Série",
+      "duracao": 42,
+      "direcao": "series",
+      "avaliacao": 4.9
+    }
+  ]]

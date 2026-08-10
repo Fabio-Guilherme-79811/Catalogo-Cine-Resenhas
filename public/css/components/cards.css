@@ -1,0 +1,80 @@
+/* ===========================
+   Card de filme
+   Usado em: catalogo.ejs, detalhes (sugestões), perfil.ejs (favoritos),
+   login.ejs/registro.ejs (destaque).
+=========================== */
+
+.card-filme-link{
+    display: block;
+    flex-shrink: 0;
+    width: var(--largura-card);
+}
+
+.card-filme{
+    position: relative;
+    border-radius: var(--raio-medio);
+    overflow: hidden;
+    background-color: var(--secondary);
+    color: var(--cor-texto-fundo-escuro);
+    transition: transform var(--transicao-rapida);
+}
+
+.card-filme-link:hover .card-filme{
+    transform: translateY(-4px);
+}
+
+.card-filme__capa{
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    background-color: var(--background);
+}
+
+.card-filme__nota{
+    position: absolute;
+    top: var(--esp-2);
+    right: var(--esp-2);
+
+    background: rgba(0, 0, 0, .65);
+    color: var(--cor-texto-fundo-escuro);
+    padding: 2px var(--esp-2);
+    border-radius: var(--raio-pequeno);
+    font-size: 13px;
+}
+
+.card-filme__info{
+    padding: var(--esp-2) var(--esp-3);
+}
+
+.card-filme__titulo{
+    font-weight: 700;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-filme__meta{
+    font-size: 12px;
+    opacity: .8;
+}
+
+/* Grid de cards usada em: catalogo (resultado de busca), perfil (favoritos) */
+.catalogo__grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--largura-card), 1fr));
+    gap: var(--esp-3);
+}
+
+/* Carrossel horizontal (linha de filmes por gênero) */
+.genero__carrossel{
+    display: flex;
+    gap: var(--esp-3);
+    overflow-x: auto;
+    padding-bottom: var(--esp-2);
+    scroll-snap-type: x proximity;
+}
+
+.genero__carrossel .card-filme-link{
+    scroll-snap-align: start;
+}

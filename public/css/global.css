@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300..800&display=swap');
+
+/* Variáveis */
+:root{
+    /* fontes */
+    --fonte: "Open Sans", sans-serif;
+    --cor-texto-fundo-escuro: #ffffff;
+    --cor-texto-fundo-claro: #000000;
+
+    /* Cores */
+    --primary: #d00000;
+    --secondary: #485060;
+    --tertiary: #000000;
+    --quartenary: #7e0000;
+    --background: #d4d4d4;
+    /* Placeholders de wireframe (temporário, até entrar conteúdo real) */
+    --cor-imagem: #ffc107;
+    --cor-texto-bloco: #2400ff;
+    --cor-detalhe: #4cff6e;
+    --cor-botao: #ff7a00;
+
+    /* bordas */
+    --raio-pequeno: 4px;
+    --raio-medio: 8px;
+    --raio-grande: 16px;
+
+    /* tamanhos */
+    --container-max: 1200px;
+    --navbar-altura: 70px;
+    --largura-card: 280px;
+
+    /* transições */
+    --transicao-rapida: 0.2s ease;
+    --transicao-normal: 0.3s ease;
+    --transicao-lenta: 0.5s ease;
+
+    /* espaçamentos */
+    --esp-1: 4px;
+    --esp-2: 8px;
+    --esp-3: 16px;
+    --esp-4: 24px;
+    --esp-5: 32px;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: var(--fonte);
+    background-color: var(--background);
+    color: var(--tertiary);
+    line-height: 1.5;
+}
+
+a{
+    color: inherit;
+    text-decoration: none;
+}
+
+img{
+    max-width: 100%;
+    display: block;
+}
+
+/* Texto de "estado vazio" (nenhum resultado/nada cadastrado ainda).
+   Reaproveitado em várias páginas: catálogo, detalhes, perfil, histórico. */
+.genero__vazio{
+    color: var(--secondary);
+    padding: var(--esp-4) 0;
+}
+
+/* Feedback (erro/sucesso/info) — ver partials/feedback.ejs.
+   Sem item dentro, a div fica sem padding/borda, ou seja, com altura 0 —
+   não precisa de nenhuma regra extra pra "esconder" o container vazio. */
+.feedback__item{
+    max-width: var(--container-max);
+    margin: var(--esp-3) auto 0;
+    padding: var(--esp-2) var(--esp-4);
+    border-radius: var(--raio-medio);
+    font-weight: 600;
+}
+
+.feedback__item--erro{
+    background: #fde2e1;
+    color: #7e0000;
+    border: 1px solid #f3b4b1;
+}
+
+.feedback__item--sucesso{
+    background: #e1f5e6;
+    color: #135c2c;
+    border: 1px solid #b3e0bf;
+}
+
+.feedback__item--info{
+    background: #e3ecf7;
+    color: #1c3f66;
+    border: 1px solid #b7cbe8;
+}
+
+/* Container central da página (usado por main e sections) */
+.container{
+    width: 100%;
+    max-width: var(--container-max);
+    padding: 0 var(--esp-4);
+    margin: 0 auto;
+}
+
+main{
+    width: 100%;
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--esp-5) var(--esp-4);
+}
+
+/* Botão padrão */
+.btn{
+    display: inline-block;
+    border: 2px solid var(--tertiary);
+    border-radius: var(--raio-grande);
+    padding: var(--esp-2) var(--esp-4);
+    cursor: pointer;
+    transition: var(--transicao-rapida);
+    background-color: var(--background);
+    color: var(--tertiary);
+    font-family: var(--fonte);
+}
+
+.btn:hover{
+    opacity: .9;
+    background-color: var(--secondary);
+    color: var(--cor-texto-fundo-escuro);
+}
+
+.btn:focus-visible{
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}

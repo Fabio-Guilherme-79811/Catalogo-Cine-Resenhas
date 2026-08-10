@@ -1,0 +1,62 @@
+[
+    {
+      "id": "1",
+      "nome": "Ficção Científica",
+      "descricao": "Filmes e séries com temas científicos e futuristas.",
+      "ativo": true
+    },
+    {
+      "id": "2",
+      "nome": "Aventura",
+      "descricao": "Histórias com jornadas, exploração e grandes desafios.",
+      "ativo": true
+    },
+    {
+      "id": "3",
+      "nome": "Ação",
+      "descricao": "Conteúdos com combates, perseguições e muita adrenalina.",
+      "ativo": true
+    },
+    {
+      "id": "4",
+      "nome": "Fantasia",
+      "descricao": "Mundos fictícios, magia e criaturas fantásticas.",
+      "ativo": true
+    },
+    {
+      "id": "5",
+      "nome": "Drama",
+      "descricao": "Narrativas focadas em conflitos emocionais e pessoais.",
+      "ativo": true
+    },
+    {
+      "id": "6",
+      "nome": "Animação",
+      "descricao": "Conteúdos produzidos por técnicas de animação.",
+      "ativo": true
+    },
+    {
+      "id": "7",
+      "nome": "Super-Herói",
+      "descricao": "Filmes e séries baseados em heróis e quadrinhos.",
+      "ativo": true
+    },
+    {
+      "id": "8",
+      "nome": "Crime",
+      "descricao": "Histórias envolvendo organizações criminosas e investigações.",
+      "ativo": true
+    },
+    {
+      "id": "9",
+      "nome": "Steampunk",
+      "descricao": "Universos com tecnologia inspirada na era do vapor.",
+      "ativo": true
+    },
+    {
+      "id": "10",
+      "nome": "Suspense",
+      "descricao": "Conteúdos voltados para tensão, mistério e expectativa.",
+      "ativo": true
+    }
+  ]

@@ -1,0 +1,54 @@
+<%- include('../partials/header', { title: 'Entrar - Cine-Resenhas', css: 'auth' }) %>
+
+<main>
+    <section class="auth">
+        <div class="auth__lado auth__lado--formulario">
+            <div class="painel painel--estreito">
+
+                <div class="auth__abas">
+                    <a class="auth__aba ativa" href="/login">Entrar</a>
+                    <a class="auth__aba" href="/cadastro">Cadastrar</a>
+                </div>
+
+                <form class="form" action="/entrar" method="post" id="form-login" >
+                    <div class="form__grupo">
+                        <label class="form__label" for="email">E-mail</label>
+                        <input class="form__input" type="email" id="email" name="email" placeholder="voce@exemplo.com" required autocomplete="email">
+                        <span class="form__erro" data-erro-para="email"></span>
+                    </div>
+
+                    <div class="form__grupo">
+                        <label class="form__label" for="senha">Senha</label>
+                        <input class="form__input" type="password" id="senha" name="senha" placeholder="Sua senha" required autocomplete="current-password">
+                        <span class="form__erro" data-erro-para="senha"></span>
+                    </div>
+
+                    <div class="form__grupo form__grupo--linha">
+                        <label class="form__label" style="display:flex; align-items:center; gap:8px;">
+                            <input type="checkbox" name="lembrar"> Lembrar de mim
+                        </label>
+                        <a class="form__link" href="/recuperar-senha">Esqueceu a senha?</a>
+                    </div>
+
+                    <button class="btn btn-primario btn-bloco" type="submit">Entrar</button>
+
+                    <p class="text-center">Ainda não tem conta? <a class="form__link" href="/cadastro">Cadastre-se</a></p>
+                </form>
+
+            </div>
+        </div>
+
+        <div class="auth__lado auth__lado--destaque">
+            <article class="card-filme">
+                <img class="card-filme__capa" src="/uploads/capas/default-cover" alt="Destaque do catálogo">
+                <div class="card-filme__info">
+                    <p class="card-filme__titulo">Descubra seu próximo filme</p>
+                </div>
+            </article>
+            <h2 class="auth__destaque-titulo">Sua resenha é a nossa também!</h2>
+            <p class="auth__destaque-texto">Entre para avaliar filmes, montar sua lista e acompanhar as resenhas da comunidade.</p>
+        </div>
+    </section>
+</main>
+
+<%- include('../partials/footer', { js: '' }) %>

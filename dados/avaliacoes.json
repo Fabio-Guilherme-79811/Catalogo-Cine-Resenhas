@@ -1,0 +1,26 @@
+[
+    {
+      "id": "1",
+      "filmeId": "1",
+      "usuarioId": "admin",
+      "nota": 5,
+      "comentario": "Excelente filme. Recomendo para todos!",
+      "dataCriacao": "2026-08-04T19:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "filmeId": "2",
+      "usuarioId": "admin",
+      "nota": 4.5,
+      "comentario": "Muito bom, com ótima direção e atuações.",
+      "dataCriacao": "2026-08-04T19:05:00.000Z"
+    },
+    {
+      "id": "3",
+      "filmeId": "3",
+      "usuarioId": "admin",
+      "nota": 4,
+      "comentario": "Filme interessante, vale a pena assistir.",
+      "dataCriacao": "2026-08-04T19:10:00.000Z"
+    }
+  ]
