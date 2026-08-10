@@ -1,0 +1,332 @@
+/* ===========================
+   Layout base (área admin / área da conta)
+   Usado por: admin-dashboard, admin-filme-form, config, perfil,
+   avaliacoes e historico.
+=========================== */
+
+.admin{
+    display: flex;
+    gap: var(--esp-4);
+    align-items: flex-start;
+}
+
+.admin__menu{
+    flex: 0 0 220px;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-1);
+
+    background: var(--cor-texto-fundo-escuro);
+    border-radius: var(--raio-medio);
+    padding: var(--esp-2);
+
+    position: sticky;
+    top: calc(var(--navbar-altura) + var(--esp-3));
+}
+
+.admin__menu-item{
+    display: block;
+    padding: var(--esp-2) var(--esp-3);
+    border-radius: var(--raio-pequeno);
+
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+
+    transition: background-color var(--transicao-rapida);
+}
+
+.admin__menu-item:hover{
+    background-color: var(--background);
+}
+
+.admin__menu-item.ativo{
+    background-color: var(--primary);
+    color: var(--cor-texto-fundo-escuro);
+    font-weight: 600;
+}
+
+.admin__menu-rodape{
+    margin-top: auto;
+}
+
+.admin__conteudo{
+    flex: 1;
+    min-width: 0;
+
+    background: var(--cor-texto-fundo-escuro);
+    border-radius: var(--raio-medio);
+    padding: var(--esp-4);
+}
+
+.admin__titulo{
+    margin-bottom: var(--esp-4);
+}
+
+.admin__form{
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-3);
+}
+
+/* ===========================
+   Cards de estatística (admin-dashboard)
+=========================== */
+
+.admin__stats{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--esp-3);
+    margin-bottom: var(--esp-5);
+}
+
+.admin__stat-card{
+    background: var(--background);
+    border-radius: var(--raio-medio);
+    padding: var(--esp-3);
+    text-align: center;
+}
+
+.admin__stat-valor{
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.admin__stat-label{
+    font-size: 13px;
+    color: var(--secondary);
+}
+
+/* ===========================
+   Tabela (admin-dashboard, avaliacoes, historico)
+=========================== */
+
+.admin__tabela-wrap{
+    overflow-x: auto;
+}
+
+.admin__tabela{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin__tabela th,
+.admin__tabela td{
+    padding: var(--esp-2) var(--esp-3);
+    text-align: left;
+    border-bottom: 1px solid var(--background);
+    white-space: nowrap;
+}
+
+.admin__tabela td:nth-child(3){
+    white-space: normal;
+    max-width: 320px;
+}
+
+.admin__tabela-acoes{
+    display: flex;
+    gap: var(--esp-2);
+}
+
+/* ===========================
+   Toggle (config)
+=========================== */
+
+.toggle{
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.toggle input{
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle__trilho{
+    position: absolute;
+    inset: 0;
+    background-color: #ccc;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color var(--transicao-rapida);
+}
+
+.toggle__trilho::before{
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 18px;
+    height: 18px;
+    background-color: var(--cor-texto-fundo-escuro);
+    border-radius: 50%;
+    transition: transform var(--transicao-rapida);
+}
+
+.toggle input:checked + .toggle__trilho{
+    background-color: var(--primary);
+}
+
+.toggle input:checked + .toggle__trilho::before{
+    transform: translateX(20px);
+}
+
+/* ===========================
+   Formulário de filme (admin-filme-form)
+=========================== */
+
+.filme-form{
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: var(--esp-4);
+}
+
+.filme-form__capa{
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-2);
+}
+
+.filme-form__remover{
+    align-self: flex-start;
+}
+
+.upload-capa{
+    display: block;
+    cursor: pointer;
+}
+
+.upload-capa input[type="file"]{
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+}
+
+.upload-capa__area{
+    position: relative;
+    aspect-ratio: 2 / 3;
+    border: 2px dashed var(--secondary);
+    border-radius: var(--raio-medio);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--esp-3);
+
+    background-color: var(--background);
+    overflow: hidden;
+}
+
+.upload-capa__area:hover{
+    border-color: var(--primary);
+}
+
+.upload-capa__preview{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.upload-capa__area.tem-imagem .upload-capa__preview{
+    display: block;
+}
+
+.upload-capa__area.tem-imagem .upload-capa__instrucao{
+    display: none;
+}
+
+.upload-capa__instrucao{
+    font-size: 13px;
+    color: var(--secondary);
+}
+
+.filme-form__campos{
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-3);
+}
+
+.filme-form__linha{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--esp-3);
+}
+
+.filme-form__acoes{
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--esp-3);
+    margin-top: var(--esp-2);
+}
+
+/* ===========================
+   Cartão de perfil (perfil.ejs)
+=========================== */
+
+.admin__form p{
+    padding: var(--esp-2) 0;
+}
+
+/* ===========================
+   Responsivo
+=========================== */
+
+@media (max-width: 900px){
+    .filme-form{
+        grid-template-columns: 1fr;
+    }
+
+    .upload-capa__area{
+        max-width: 220px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px){
+    .admin{
+        flex-direction: column;
+    }
+
+    .admin__menu{
+        position: static;
+        flex: 1 1 auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .admin__stats{
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filme-form__linha{
+        grid-template-columns: 1fr;
+    }
+
+    .filme-form__acoes{
+        flex-direction: column-reverse;
+    }
+
+    .filme-form__acoes .btn{
+        text-align: center;
+    }
+
+    .admin__tabela-acoes{
+        flex-direction: column;
+    }
+}

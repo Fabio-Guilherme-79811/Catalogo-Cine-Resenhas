@@ -4,8 +4,11 @@
 
 <script src="/js/main.js"></script>
 
-<% if(js){ %>
-<script src="/js/<%= js %>"></script>
+<% if(typeof js !== "undefined" && js){ %>
+    <% const scripts = Array.isArray(js) ? js : [js]; %>
+    <% scripts.forEach(function(arquivo){ %>
+        <script src="/js/<%= arquivo %>"></script>
+    <% }) %>
 <% } %>
 
 </body>

@@ -56,19 +56,40 @@ export const filmes: Filme[] = [
 /**
  * GET /conteudo/filmes
  * Lista o catálogo de filmes publicados. Rota pública.
- * Suporta filtro opcional por gênero via query string (?genero=Drama).
+ * Suporta filtro opcional por gênero via query string (?genero=Drama) e
+ * busca por título/sinopse via query string (?busca=termo).
+ *
+ * @remarks
+ * `busca` é usado pela busca com debounce no front-end (ver
+ * `public/js/search-debounce.js`), que consulta este endpoint via fetch
+ * conforme o usuário digita, sem recarregar a página.
  */
 router.get('/filmes', (req: Request, res: Response) => {
-  const { genero } = req.query;
+  try {
+    const { genero, busca } = req.query;
 
-  let resultado = filmes.filter((f) => f.publicado);
-  if (genero) {
-    resultado = resultado.filter(
-      (f) => f.genero.toLowerCase() === String(genero).toLowerCase()
-    );
+    let resultado = filmes.filter((f) => f.publicado);
+
+    if (genero) {
+      resultado = resultado.filter(
+        (f) => f.genero.toLowerCase() === String(genero).toLowerCase()
+      );
+    }
+
+    if (busca) {
+      const termo = String(busca).trim().toLowerCase();
+      resultado = resultado.filter(
+        (f) =>
+          f.titulo.toLowerCase().includes(termo) ||
+          f.sinopse.toLowerCase().includes(termo)
+      );
+    }
+
+    res.json(resultado);
+  } catch (erro) {
+    console.error('Erro ao listar filmes do catálogo:', erro);
+    res.status(500).json({ mensagem: 'Não foi possível listar os filmes do catálogo.' });
   }
-
-  res.json(resultado);
 });
 
 /**
@@ -76,14 +97,19 @@ router.get('/filmes', (req: Request, res: Response) => {
  * Detalhe de um filme específico do catálogo. Rota pública.
  */
 router.get('/filmes/:id', (req: Request, res: Response) => {
-  const filme = filmes.find((f) => f.id === req.params.id && f.publicado);
+  try {
+    const filme = filmes.find((f) => f.id === req.params.id && f.publicado);
 
-  if (!filme) {
-    res.status(404).json({ mensagem: 'Filme não encontrado.' });
-    return;
+    if (!filme) {
+      res.status(404).json({ mensagem: 'Filme não encontrado.' });
+      return;
+    }
+
+    res.json(filme);
+  } catch (erro) {
+    console.error('Erro ao buscar filme:', erro);
+    res.status(500).json({ mensagem: 'Não foi possível buscar o filme.' });
   }
-
-  res.json(filme);
 });
 
 /**
@@ -91,27 +117,32 @@ router.get('/filmes/:id', (req: Request, res: Response) => {
  * Adiciona um novo filme ao catálogo. Restrito a administradores.
  */
 router.post('/filmes', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res: Response) => {
-  const { titulo, sinopse, genero, anoLancamento, posterUrl, publicado } = req.body;
+  try {
+    const { titulo, sinopse, genero, anoLancamento, posterUrl, publicado } = req.body;
 
-  if (!titulo || !sinopse || !genero || !anoLancamento) {
-    res.status(400).json({
-      mensagem: 'Informe título, sinopse, gênero e ano de lançamento do filme.',
-    });
-    return;
+    if (!titulo || !sinopse || !genero || !anoLancamento) {
+      res.status(400).json({
+        mensagem: 'Informe título, sinopse, gênero e ano de lançamento do filme.',
+      });
+      return;
+    }
+
+    const novoFilme: Filme = {
+      id: String(filmes.length + 1),
+      titulo,
+      sinopse,
+      genero,
+      anoLancamento,
+      posterUrl,
+      publicado: publicado !== undefined ? Boolean(publicado) : true,
+    };
+
+    filmes.push(novoFilme);
+    res.status(201).json(novoFilme);
+  } catch (erro) {
+    console.error('Erro ao adicionar filme:', erro);
+    res.status(500).json({ mensagem: 'Não foi possível adicionar o filme.' });
   }
-
-  const novoFilme: Filme = {
-    id: String(filmes.length + 1),
-    titulo,
-    sinopse,
-    genero,
-    anoLancamento,
-    posterUrl,
-    publicado: publicado !== undefined ? Boolean(publicado) : true,
-  };
-
-  filmes.push(novoFilme);
-  res.status(201).json(novoFilme);
 });
 
 /**
@@ -119,22 +150,27 @@ router.post('/filmes', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res
  * Atualiza os dados de um filme do catálogo. Restrito a administradores.
  */
 router.put('/filmes/:id', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res: Response) => {
-  const filme = filmes.find((f) => f.id === req.params.id);
+  try {
+    const filme = filmes.find((f) => f.id === req.params.id);
 
-  if (!filme) {
-    res.status(404).json({ mensagem: 'Filme não encontrado.' });
-    return;
+    if (!filme) {
+      res.status(404).json({ mensagem: 'Filme não encontrado.' });
+      return;
+    }
+
+    const { titulo, sinopse, genero, anoLancamento, posterUrl, publicado } = req.body;
+    if (titulo !== undefined) filme.titulo = titulo;
+    if (sinopse !== undefined) filme.sinopse = sinopse;
+    if (genero !== undefined) filme.genero = genero;
+    if (anoLancamento !== undefined) filme.anoLancamento = anoLancamento;
+    if (posterUrl !== undefined) filme.posterUrl = posterUrl;
+    if (publicado !== undefined) filme.publicado = Boolean(publicado);
+
+    res.json(filme);
+  } catch (erro) {
+    console.error('Erro ao atualizar filme:', erro);
+    res.status(500).json({ mensagem: 'Não foi possível atualizar o filme.' });
   }
-
-  const { titulo, sinopse, genero, anoLancamento, posterUrl, publicado } = req.body;
-  if (titulo !== undefined) filme.titulo = titulo;
-  if (sinopse !== undefined) filme.sinopse = sinopse;
-  if (genero !== undefined) filme.genero = genero;
-  if (anoLancamento !== undefined) filme.anoLancamento = anoLancamento;
-  if (posterUrl !== undefined) filme.posterUrl = posterUrl;
-  if (publicado !== undefined) filme.publicado = Boolean(publicado);
-
-  res.json(filme);
 });
 
 /**
@@ -142,15 +178,20 @@ router.put('/filmes/:id', isAuthenticated, isAdmin, (req: AuthenticatedRequest, 
  * Remove um filme do catálogo. Restrito a administradores.
  */
 router.delete('/filmes/:id', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res: Response) => {
-  const index = filmes.findIndex((f) => f.id === req.params.id);
+  try {
+    const index = filmes.findIndex((f) => f.id === req.params.id);
 
-  if (index === -1) {
-    res.status(404).json({ mensagem: 'Filme não encontrado.' });
-    return;
+    if (index === -1) {
+      res.status(404).json({ mensagem: 'Filme não encontrado.' });
+      return;
+    }
+
+    filmes.splice(index, 1);
+    res.json({ mensagem: 'Filme removido do catálogo com sucesso.' });
+  } catch (erro) {
+    console.error('Erro ao remover filme:', erro);
+    res.status(500).json({ mensagem: 'Não foi possível remover o filme.' });
   }
-
-  filmes.splice(index, 1);
-  res.json({ mensagem: 'Filme removido do catálogo com sucesso.' });
 });
 
 /**
@@ -164,20 +205,25 @@ router.post(
   isAdmin,
   upload.single('poster'),
   (req: RequisicaoComArquivo, res: Response) => {
-    const filme = filmes.find((f) => f.id === req.params.id);
+    try {
+      const filme = filmes.find((f) => f.id === req.params.id);
 
-    if (!filme) {
-      res.status(404).json({ mensagem: 'Filme não encontrado.' });
-      return;
+      if (!filme) {
+        res.status(404).json({ mensagem: 'Filme não encontrado.' });
+        return;
+      }
+
+      if (!req.file) {
+        res.status(400).json({ mensagem: 'Nenhum arquivo enviado. Use o campo "poster".' });
+        return;
+      }
+
+      filme.posterUrl = montarUrlArquivo(req.file.filename);
+      res.json({ mensagem: 'Pôster atualizado com sucesso.', filme });
+    } catch (erro) {
+      console.error('Erro ao fazer upload do pôster:', erro);
+      res.status(500).json({ mensagem: 'Não foi possível atualizar o pôster do filme.' });
     }
-
-    if (!req.file) {
-      res.status(400).json({ mensagem: 'Nenhum arquivo enviado. Use o campo "poster".' });
-      return;
-    }
-
-    filme.posterUrl = montarUrlArquivo(req.file.filename);
-    res.json({ mensagem: 'Pôster atualizado com sucesso.', filme });
   }
 );
 

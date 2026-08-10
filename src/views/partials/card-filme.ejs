@@ -1,0 +1,10 @@
+<a class="card-filme-link" href="/filmes/<%= filme.id %>">
+    <article class="card-filme">
+        <img class="card-filme__capa" src="<%= filme.capaUrl %>" alt="Capa de <%= filme.titulo %>">
+        <span class="card-filme__nota">&#9733; <%= (filme.avaliacao || 0).toFixed(1) %></span>
+        <div class="card-filme__info">
+            <p class="card-filme__titulo"><%= filme.titulo %></p>
+            <p class="card-filme__meta"><%= filme.anoLancamento %></p>
+        </div>
+    </article>
+</a>

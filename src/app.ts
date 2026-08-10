@@ -13,8 +13,8 @@
  */
 
 import express, {Request,Response, NextFunction,Application}  from 'express';
-import landingRoutes from './routes/landing-routes';
-import authRoutes from './routes/auth-routes';
+import routes from "./routes/index-routes";
+import { carregarUsuarioOpcional } from "./middlewares/auth-middleware";
 
 /**
  * Instância principal da aplicação Express.
@@ -25,7 +25,9 @@ const app: Application = express();
  * Permite receber requisições com corpo em formato JSON.
  */
 app.use(express.json());
-
+//Vizualizar ejs//
+app.set("view engine", "ejs");
+app.set("views", "./src/views");
 /**
  * Permite receber dados enviados por formulários HTML.
  */
@@ -41,13 +43,15 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.static("public"));
 
 /**
- * Rotas relacionadas à página inicial da aplicação.
+ * Lê o cookie de sessão (se existir) em TODA requisição e disponibiliza
+ * `res.locals.usuario` para as views EJS (ex: nav.ejs decide se mostra
+ * "Entrar/Cadastrar" ou o menu do usuário logado). Não bloqueia rotas
+ * públicas — para isso, usar `isAuthenticated` na rota específica.
  */
-app.use("/", landingRoutes);
+app.use(carregarUsuarioOpcional);
 
-/**
- * Rotas relacionadas à autenticação de usuários.
- */
-app.use("/", authRoutes);
+/*Rota para as páginas*/
+app.use("/", routes);
+
 
 export default app;
