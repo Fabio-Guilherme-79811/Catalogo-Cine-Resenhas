@@ -66,6 +66,130 @@ Cine-Resenhas/
   ├── package.json
   └── README.md
 ```
+## Arquitetura e Diagramas UML
+  O projeto segue uma arquitetura em camadas inspirada no padrão **MVC**, com forte uso de **Orientação a Objetos** no Back-end:
+
+  - **Entities (`src/entities/`)** — Classes de domínio (`Filme`, `Genero`, `Avaliacao`, `Usuario`), responsáveis por encapsular atributos privados, validações internas e conversão `fromJSON()` / `toJSON()`.
+  - **Models / Repositories (`src/models/`)** — Camada de persistência, implementando o **Repository Pattern** sobre os arquivos `.json` da pasta `dados/`, isolando o restante da aplicação do formato de armazenamento.
+  - **Routes / Controllers (`src/routes/`)** — Roteadores do Express que recebem as requisições, aplicam os middlewares necessários e orquestram entidades e repositórios para montar a resposta (JSON ou renderização EJS).
+  - **Middlewares (`src/middlewares/`)** — Autenticação (`isAuthenticated`), autorização por papel (`isAdmin`), carregamento opcional de usuário (`carregarUsuarioOpcional`) e upload de arquivos (`Multer`).
+  - **Views (`src/views/`)** — Templates EJS renderizados no servidor para as páginas navegáveis do sistema.
+
+  ### Diagramas
+  Os diagramas UML do projeto (casos de uso, classes e sequência) ficam versionados em `docs/`.
+
+  | Diagrama | Descrição | Status |
+  | :--- | :--- | :--- |
+  | Diagrama de Casos de Uso | Interações entre usuário/admin e as funcionalidades do sistema (catálogo, avaliações, favoritos, painel admin) | ✅ Disponível em `docs/caso-de-uso.png` |
+  | Diagrama de Sequência — GET Filmes | Fluxo de requisição da listagem de filmes do catálogo | ✅ Disponível em `docs/sequencia-get-filmes.png` |
+  | Diagrama de Classes (Entities) | Relacionamento entre `Filme`, `Genero`, `Avaliacao` e `Usuario` | 🔲 Pendente |
+  | Diagrama de Componentes (Back-end) | Relação entre Routes, Middlewares e Repositories | 🔲 Pendente |
+  | Diagrama de Fluxo de Telas (Front-end) | Navegação entre as views EJS do sistema | 🔲 Pendente |
+
+  **Nota** — Os diagramas complementares de Front-end e Back-end ainda estão em elaboração e serão adicionados à pasta `docs/` nas próximas atualizações da documentação.
+
+
+## Tabela de Rotas da API
+  Todas as rotas abaixo são montadas a partir da raiz (`/`) pelo `index-routes.ts`. Rotas marcadas como **Autenticado** exigem sessão de usuário ativa (`isAuthenticated`); rotas marcadas como **Admin** exigem, além da autenticação, o papel de administrador (`isAdmin`).
+
+  ### Autenticação (`/`)
+  | Método | Rota | Descrição | Acesso |
+  | :--- | :--- | :--- | :--- |
+  | POST | `/entrar` | Autentica o usuário e inicia a sessão | Público |
+  | POST | `/registro` | Cadastra um novo usuário | Público |
+  | POST | `/logout` | Encerra a sessão do usuário autenticado | Público |
+
+  ### Conteúdo / Filmes (`/conteudo`)
+  | Método | Rota | Descrição | Acesso |
+  | :--- | :--- | :--- | :--- |
+  | GET | `/conteudo/filmes` | Lista os filmes do catálogo, com suporte a busca via query string | Público |
+  | GET | `/conteudo/filmes/:id` | Retorna o detalhe de um filme específico | Público |
+  | POST | `/conteudo/filmes` | Cadastra um novo filme | Admin |
+  | PUT | `/conteudo/filmes/:id` | Atualiza os dados de um filme | Admin |
+  | DELETE | `/conteudo/filmes/:id` | Remove um filme do catálogo | Admin |
+  | POST | `/conteudo/filmes/:id/poster` | Faz upload da capa do filme (`multipart/form-data`, campo `poster`) | Admin |
+
+  ### Avaliações (`/avaliacoes`)
+  | Método | Rota | Descrição | Acesso |
+  | :--- | :--- | :--- | :--- |
+  | GET | `/avaliacoes/filme/:filmeId` | Lista as avaliações de um filme | Público |
+  | GET | `/avaliacoes/filme/:filmeId/media` | Retorna a média e o total de avaliações de um filme | Público |
+  | POST | `/avaliacoes/filme/:filmeId` | Cria uma nova avaliação (nota + comentário) para o filme | Autenticado |
+  | PUT | `/avaliacoes/:id` | Edita uma avaliação existente (autor, dentro da janela de edição, ou admin) | Autenticado |
+  | DELETE | `/avaliacoes/:id` | Remove uma avaliação | Admin |
+
+  ### Favoritos (`/favoritos`)
+  | Método | Rota | Descrição | Acesso |
+  | :--- | :--- | :--- | :--- |
+  | GET | `/favoritos/filme/:filmeId` | Verifica se o filme está favoritado pelo usuário autenticado | Autenticado |
+  | POST | `/favoritos/filme/:filmeId` | Adiciona o filme aos favoritos (operação idempotente) | Autenticado |
+  | DELETE | `/favoritos/filme/:filmeId` | Remove o filme dos favoritos | Autenticado |
+
+  ### Usuário (`/usuario`)
+  | Método | Rota | Descrição | Acesso |
+  | :--- | :--- | :--- | :--- |
+  | GET | `/usuario/perfil` | Retorna os dados do perfil do usuário autenticado | Autenticado |
+  | PUT | `/usuario/perfil` | Atualiza os dados do perfil | Autenticado |
+  | PUT | `/usuario/senha` | Atualiza a senha do usuário | Autenticado |
+  | DELETE | `/usuario/conta` | Remove a conta do usuário autenticado | Autenticado |
+
+  ### Administração (`/admin`)
+  | Método | Rota | Descrição | Acesso |
+  | :--- | :--- | :--- | :--- |
+  | GET | `/admin` | Retorna as seções disponíveis do painel administrativo | Admin |
+  | GET | `/admin/usuarios` | Lista todos os usuários cadastrados | Admin |
+  | GET | `/admin/usuarios/:id` | Retorna o detalhe de um usuário | Admin |
+  | PUT | `/admin/usuarios/:id` | Atualiza os dados de um usuário | Admin |
+  | DELETE | `/admin/usuario/:id` | Remove um usuário | Admin |
+  | GET | `/admin/estatisticas` | Retorna estatísticas do sistema (usuários, cadastros na semana, visitas) | Admin |
+
+  ### Configurações (`/config`)
+  | Método | Rota | Descrição | Acesso |
+  | :--- | :--- | :--- | :--- |
+  | GET | `/config` | Retorna as configurações públicas do site (nome, descrição, cor, manutenção) | Público |
+  | GET | `/config/completo` | Retorna o objeto de configuração completo | Admin |
+  | PUT | `/config` | Atualiza as configurações do site | Admin |
+  | PUT | `/config/manutencao` | Ativa/desativa o modo de manutenção | Admin |
+
+
+## Guia de Navegação do Sistema
+  Rotas de página (renderização EJS), agrupadas por fluxo de navegação:
+
+  ### Área Pública
+  | Rota | Página | Descrição |
+  | :--- | :--- | :--- |
+  | `/` | Landing Page | Página inicial com CTAs de login e cadastro |
+  | `/login` | Login | Formulário de autenticação |
+  | `/cadastro` | Cadastro | Formulário de registro de novos usuários |
+  | `/catalogo` | Catálogo | Filmes publicados, agrupados por gênero, com busca e filtro (`?genero=`, `?busca=`) |
+  | `/filmes/:id` | Detalhes do Filme | Sinopse, avaliações e opção de favoritar (favoritar exige login) |
+
+  ### Área do Usuário Autenticado
+  | Rota | Página | Descrição |
+  | :--- | :--- | :--- |
+  | `/usuario/perfil` | Meu Perfil | Dados cadastrais e filmes favoritados |
+  | `/usuario/avaliacoes` | Minhas Avaliações | Avaliações feitas pelo usuário, com dados do filme avaliado |
+  | `/usuario/historico` | Histórico | Linha do tempo de atividade (avaliações recentes) |
+  | `/config` | Configurações | Preferências da conta do usuário logado |
+
+  ### Área Administrativa (restrita a `role: admin`)
+  | Rota | Página | Descrição |
+  | :--- | :--- | :--- |
+  | `/painel-admin` | Painel Administrativo | Estatísticas do sistema e listagem de filmes |
+  | `/painel-admin/filmes/novo` | Novo Filme | Formulário de cadastro de filme |
+  | `/painel-admin/filmes/:id/editar` | Editar Filme | Formulário de edição de um filme existente |
+
+  ### Fluxo de Navegação (visão geral)
+```
+Landing (/) ──► Login (/login) ──► Catálogo (/catalogo) ──► Detalhes do Filme (/filmes/:id)
+      │                                   │                          │
+      └──► Cadastro (/cadastro)           ├──► Meu Perfil            ├──► Avaliar / Favoritar
+                                           ├──► Minhas Avaliações     
+                                           ├──► Histórico
+                                           └──► Painel Admin (se admin) ──► Novo Filme / Editar Filme
+```
+
+
 ## Guia de Execução 
   ### Pré-Requisitos 
    -Node.js (versão 22 ou superior)
@@ -90,7 +214,33 @@ npm test
 ``` 
 
 
+## Suíte de Testes do Sistema
+  A suíte utiliza **Jest** e reúne mais de **240 casos de teste** unitários e de integração, cobrindo entidades, repositórios, middlewares e rotas. Os arquivos de teste ficam junto ao código que testam, em pastas `__tests__`/`tests`/`test`.
 
+  | Camada | Local | Cobertura |
+  | :--- | :--- | :--- |
+  | Entities | `src/entities/tests/` | `Filme`, `Genero`, `Avaliacao`, `Usuario` — validações, getters/setters e `fromJSON()`/`toJSON()` |
+  | Models (Repositories) | `src/models/tests/` | `ConteudoRepository`, `UsuarioRepository` — persistência em JSON |
+  | Interfaces dos Repositories | `src/models/interfaces/tests/` | `IConteudoRepository`, `IAvaliacaoRepository`, `IGeneroRepository` |
+  | Middlewares | `src/middlewares/test/` | Autenticação (`auth`), autorização por papel (`role`) e upload de arquivos (`upload`) |
+  | Rotas | `src/routes/tests/` | `admin`, `auth`, `avaliacao`, `config`, `conteudo`, `index`, `landing`, `paginas`, `user` |
+
+  ### Comandos
+```bash
+# Executar toda a suíte de testes
+npm test
+
+# Executar em modo watch (reexecuta ao salvar arquivos)
+npx jest --watch
+
+# Executar um arquivo/rota específica
+npx jest src/routes/tests/avaliacao.routes.test.ts
+
+# Executar com relatório de cobertura
+npx jest --coverage
+```
+
+  **Configuração** — Definida em `jest.config.js`, na raiz do projeto.
 
 
 
