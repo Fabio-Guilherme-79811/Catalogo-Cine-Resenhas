@@ -36,9 +36,13 @@
 ## Estrutura de Pastas
 ```
 Cine-Resenhas/  
-  ├── docs/                      # Diagramas UML e documentação complementar
+  ├── assets/                    # Diagramas UML e prints do sistema (usados no README)
   │   ├── caso-de-uso.png
-  │   └── sequencia-get-filmes.png
+  │   ├── diagrama-classes.png
+  │   ├── diagrama-componentes.png
+  │   ├── sequencia-get-filmes.png
+  │   ├── sequencia-login.png
+  │   └── fluxo-telas.png
   ├── dados/                     # Persistência em arquivos JSON
   │   ├── filmes.json
   │   ├── generos.json
@@ -76,17 +80,37 @@ Cine-Resenhas/
   - **Views (`src/views/`)** — Templates EJS renderizados no servidor para as páginas navegáveis do sistema.
 
   ### Diagramas
-  Os diagramas UML do projeto (casos de uso, classes e sequência) ficam versionados em `docs/`.
+  Os diagramas UML do projeto ficam versionados em `assets/`.
 
-  | Diagrama | Descrição | Status |
-  | :--- | :--- | :--- |
-  | Diagrama de Casos de Uso | Interações entre usuário/admin e as funcionalidades do sistema (catálogo, avaliações, favoritos, painel admin) | ✅ Disponível em `docs/caso-de-uso.png` |
-  | Diagrama de Sequência — GET Filmes | Fluxo de requisição da listagem de filmes do catálogo | ✅ Disponível em `docs/sequencia-get-filmes.png` |
-  | Diagrama de Classes (Entities) | Relacionamento entre `Filme`, `Genero`, `Avaliacao` e `Usuario` | 🔲 Pendente |
-  | Diagrama de Componentes (Back-end) | Relação entre Routes, Middlewares e Repositories | 🔲 Pendente |
-  | Diagrama de Fluxo de Telas (Front-end) | Navegação entre as views EJS do sistema | 🔲 Pendente |
+  #### Diagrama de Casos de Uso
+  Interações do Visitante, Usuário autenticado e Administrador (com herança de permissões) com as funcionalidades do sistema.
 
-  **Nota** — Os diagramas complementares de Front-end e Back-end ainda estão em elaboração e serão adicionados à pasta `docs/` nas próximas atualizações da documentação.
+  ![Diagrama de Caso de Uso](assets/caso-de-uso.png)
+
+  #### Diagrama de Classes (Entities + Repositories)
+  Atributos, métodos e relacionamentos entre `Filme/Conteudo`, `Genero`, `Avaliacao`, `Favorito`, `Usuario` e seus respectivos repositories.
+
+  ![Diagrama de Classes](assets/diagrama-classes.png)
+
+  #### Diagrama de Componentes (Back-end)
+  Relação entre Routes, Middlewares, Repositories, Entities e a persistência em JSON.
+
+  ![Diagrama de Componentes](assets/diagrama-componentes.png)
+
+  #### Diagrama de Sequência — GET Filmes
+  Fluxo de requisição da listagem de filmes do catálogo.
+
+  ![Diagrama de Sequência - GET Filmes](assets/sequencia-get-filmes.png)
+
+  #### Diagrama de Sequência — Login
+  Fluxo de autenticação, da submissão do formulário à criação da sessão.
+
+  ![Diagrama de Sequência - Login](assets/sequencia-login.png)
+
+  #### Diagrama de Fluxo de Telas (Front-end)
+  Navegação entre as páginas (views EJS) do sistema, por área (pública, usuário, admin).
+
+  ![Diagrama de Fluxo de Telas](assets/fluxo-telas.png)
 
 
 ## Tabela de Rotas da API
@@ -188,6 +212,25 @@ Landing (/) ──► Login (/login) ──► Catálogo (/catalogo) ──► D
                                            ├──► Histórico
                                            └──► Painel Admin (se admin) ──► Novo Filme / Editar Filme
 ```
+
+
+## Prints do Sistema
+  Capturas de tela das principais páginas do sistema, disponíveis em `assets/`.
+
+  #### Landing Page
+  Página inicial pública, com destaque para filmes em alta e CTAs de login e cadastro.
+
+  ![Landing Page](assets/Captura%20de%20tela%202026-08-10%20194023.png)
+
+  #### Login / Cadastro
+  Formulário de autenticação com abas para entrar ou criar uma nova conta.
+
+  ![Login e Cadastro](assets/Captura%20de%20tela%202026-08-10%20194034.png)
+
+  #### Configurações
+  Página de configurações da conta do usuário autenticado (notificações, perfil público e autenticação em duas etapas).
+
+  ![Configurações](assets/Captura%20de%20tela%202026-08-10%20194112.png)
 
 
 ## Guia de Execução 
