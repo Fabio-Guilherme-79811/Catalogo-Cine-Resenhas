@@ -12,6 +12,7 @@
     --secondary: #485060;
     --tertiary: #000000;
     --quartenary: #7e0000;
+    --fifth: #ffffff;
     --background: #17161c;
     /* Placeholders de wireframe (temporário, até entrar conteúdo real) */
     --cor-imagem: #ffc107;
@@ -51,7 +52,7 @@
 body{
     font-family: var(--fonte);
     background-color: var(--background);
-    color: var(--tertiary);
+    color: var(--fifth);
     line-height: 1.5;
 }
 
