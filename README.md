@@ -241,7 +241,7 @@ Landing (/) ──► Login (/login) ──► Catálogo (/catalogo) ──► D
    1. Clonar o Repositório:
 ```bash
 git clone https://github.com/Fabio-Guilherme-79811/Catalogo-Cine-Resenhas.git
-cd larp-flix
+cd Catalogo-Cine-Resenhas
 ```
    2. Instalar as Depêndencias:
 ```
