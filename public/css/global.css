@@ -13,6 +13,7 @@
     --tertiary: #000000;
     --quartenary: #7e0000;
     --fifth: #ffffff;
+    --sixth: #cc0000;
     --background: #17161c;
     /* Placeholders de wireframe (temporário, até entrar conteúdo real) */
     --cor-imagem: #ffc107;
@@ -57,7 +58,6 @@ body{
 }
 
 a{
-    color: inherit;
     text-decoration: none;
 }
 
@@ -65,7 +65,9 @@ img{
     max-width: 100%;
     display: block;
 }
-
+p{
+    color: var(--sixth);
+}
 /* Texto de "estado vazio" (nenhum resultado/nada cadastrado ainda).
    Reaproveitado em várias páginas: catálogo, detalhes, perfil, histórico. */
 .genero__vazio{

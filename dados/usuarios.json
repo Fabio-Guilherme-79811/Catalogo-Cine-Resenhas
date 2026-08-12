@@ -14,5 +14,13 @@
     "senhaHash": "$2b$10$7WWSZi03nbdpbVY.otpYlOGYT8HoH7dE1.Z3Xp60nuWXK.emlp0Py",
     "role": "comum",
     "criadoEm": "2026-08-04T19:59:57.037Z"
+  },
+  {
+    "id": "fd55e4da-febb-47d8-b84d-8334d1a55555",
+    "nome": "dadondis",
+    "email": "adonisbezerr5@gmail.com",
+    "senhaHash": "$2b$10$2t7zv5vLYkp3iZ8R3SiSYebI4NbmHdtqua8aOHbVufJCPdaO4jO5i",
+    "role": "comum",
+    "criadoEm": "2026-08-12T14:47:40.897Z"
   }
 ]
