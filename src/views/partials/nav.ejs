@@ -38,6 +38,16 @@
         </form>
 
         <nav class="navbar__acoes">
+            <button
+                type="button"
+                class="navbar__tema-botao"
+                id="btn-tema"
+                aria-label="Ativar modo claro"
+                title="Alternar modo claro/escuro"
+            >
+                <span class="navbar__tema-icone" id="icone-tema" aria-hidden="true">&#127769;</span>
+            </button>
+
             <% if (usuarioAtual) { %>
                 <div class="navbar__usuario" id="menu-usuario">
                     <button class="navbar__usuario-botao" id="btn-usuario" aria-expanded="false">
