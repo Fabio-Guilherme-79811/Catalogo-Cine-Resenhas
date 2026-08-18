@@ -18,6 +18,7 @@
     gap: var(--esp-1);
 
     background: var(--cor-texto-fundo-escuro);
+    color: var(--tertiary);
     border-radius: var(--raio-medio);
     padding: var(--esp-2);
 
@@ -60,6 +61,7 @@
     min-width: 0;
 
     background: var(--cor-texto-fundo-escuro);
+    color: var(--tertiary);
     border-radius: var(--raio-medio);
     padding: var(--esp-4);
 }
