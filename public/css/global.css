@@ -44,6 +44,20 @@
     --esp-5: 32px;
 }
 
+/*
+ * Modo claro (opcional, ativado via [data-theme="light"] no <html>,
+ * alternado pelo botão de sol/lua na navbar — ver public/js/theme-toggle.js).
+ *
+ * Só redefine as variáveis que representam "fundo da página" e "texto
+ * padrão do corpo" — o resto do site (navbar vermelha, cards, botões)
+ * já é construído em cima de variáveis e se adapta sozinho.
+ */
+[data-theme="light"]{
+    --background: #eef0f3;
+    --fifth: #17161c;
+    --secondary: #5b6472;
+}
+
 *{
     margin: 0;
     padding: 0;
@@ -55,6 +69,7 @@ body{
     background-color: var(--background);
     color: var(--fifth);
     line-height: 1.5;
+    transition: background-color var(--transicao-normal), color var(--transicao-normal);
 }
 
 a{

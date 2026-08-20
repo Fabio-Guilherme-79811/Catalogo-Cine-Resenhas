@@ -116,6 +116,37 @@
 /* ===== Ações (login / usuário) ===== */
 .navbar__acoes{
     margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--esp-2);
+}
+
+/* ===== Alternador de tema (claro/escuro) ===== */
+.navbar__tema-botao{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+
+    background: none;
+    border: 2px solid var(--cor-texto-fundo-escuro);
+    border-radius: 50%;
+    color: var(--cor-texto-fundo-escuro);
+    font-size: 16px;
+    cursor: pointer;
+    transition: var(--transicao-rapida);
+}
+
+.navbar__tema-botao:hover{
+    background-color: var(--cor-texto-fundo-escuro);
+    color: var(--primary);
+}
+
+.navbar__tema-botao:focus-visible{
+    outline: 2px solid var(--cor-texto-fundo-escuro);
+    outline-offset: 2px;
 }
 
 .navbar__link-auth{
