@@ -8,7 +8,7 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   eslintConfigPrettier,
   {
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'public/**'],
+    ignores: ['dist/**', 'node_modules/**', 'coverage/**', 'public/**','jest.config.js'],
   },
   {
     files: ['src/**/*.ts'],
