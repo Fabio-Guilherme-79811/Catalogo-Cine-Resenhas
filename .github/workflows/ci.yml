@@ -25,15 +25,21 @@ jobs:
       - name: Instalar dependências (exatamente do package-lock.json)
         run: npm ci
 
+      - name: Rodar ESLint
+        run: npm run lint
+
       - name: Checar erros de TypeScript
         run: npx tsc --noEmit
 
-      - name: Rodar testes Jest com cobertura
-        run: npx jest --coverage
+      - name: Build (compilar TypeScript -> dist/)
+        run: npm run build
 
-      # Falha o CI se a cobertura cair abaixo do limite definido.
-      # Ajusta os números no jest.config.js (coverageThreshold) se quiser
-      # usar isso pra travar o diferencial de 80%+ coverage.
+      # Falha o CI se a cobertura cair abaixo do limite definido em
+      # jest.config.js (coverageThreshold) — hoje calibrado pra cobertura
+      # atual do projeto, sobe aos poucos até 80%+ (diferencial do documento).
+      - name: Rodar testes Jest com cobertura
+        run: npm run test:coverage
+
       - name: Upload do relatório de cobertura (artefato do workflow)
         uses: actions/upload-artifact@v4
         with:
