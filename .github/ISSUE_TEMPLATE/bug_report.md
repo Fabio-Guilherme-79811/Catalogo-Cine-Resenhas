@@ -2,7 +2,7 @@
 
 name: Bug
 about: Reportar um problema encontrado no sistema
-title: "\[BUG] "
+title: "[BUG] "
 labels: bug
 assignees: ''
 ---
@@ -22,7 +22,7 @@ Ex: `POST /conteudo/filmes`, tela de catálogo, etc.
 
 **Prioridade**
 
-* \[ ] Bloqueia outras tarefas
-* \[ ] Importante, mas não bloqueia
-* \[ ] Pode esperar
+* [ ] Bloqueia outras tarefas
+* [ ] Importante, mas não bloqueia
+* [ ] Pode esperar
 
