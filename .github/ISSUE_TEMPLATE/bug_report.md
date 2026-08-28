@@ -1,4 +1,4 @@
-\---
+---
 
 name: Bug
 about: Reportar um problema encontrado no sistema

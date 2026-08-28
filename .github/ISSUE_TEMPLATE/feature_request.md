@@ -1,4 +1,4 @@
-\---
+---
 
 name: Tarefa / Feature
 about: Nova funcionalidade ou tarefa do cronograma
