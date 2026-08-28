@@ -1,4 +1,4 @@
-import {Router, Response} from 'express';
+import { Router, Response } from 'express';
 import { isAuthenticated, AuthenticatedRequest } from '../middlewares/auth-middleware';
 
 const router = Router();
@@ -14,11 +14,11 @@ router.use(isAuthenticated);
  * @param res - Resposta HTTP com o objeto  `{ id, nome, role }` do usuário logado
  */
 router.get('/perfil', (req: AuthenticatedRequest, res: Response) => {
-    res.json({
-        id: req.user?.id,
-        nome: req.user?.nome,
-        role: req.user?.role,
-    });
+  res.json({
+    id: req.user?.id,
+    nome: req.user?.nome,
+    role: req.user?.role,
+  });
 });
 
 /**
@@ -29,11 +29,11 @@ router.get('/perfil', (req: AuthenticatedRequest, res: Response) => {
  * @param res - Resposta HTTP com mensagem de confirmação e os dados enviados.
  */
 router.put('/perfil', (req: AuthenticatedRequest, res: Response) => {
-    const dados = req.body;
-    res.json({
-        mensagem: `Perfil de ${req.user?.nome} atualizado com sucesso.`,
-        dados,
-    });
+  const dados = req.body;
+  res.json({
+    mensagem: `Perfil de ${req.user?.nome} atualizado com sucesso.`,
+    dados,
+  });
 });
 
 /**
@@ -46,14 +46,14 @@ router.put('/perfil', (req: AuthenticatedRequest, res: Response) => {
  */
 // Permite alterar a senha do usuário
 router.put('/senha', (req: AuthenticatedRequest, res: Response) => {
-    const {senhaAtual, novaSenha} = req.body;
+  const { senhaAtual, novaSenha } = req.body;
 
-    if (!senhaAtual || !novaSenha) {
-        res.status(400).json({mensagem: 'Informe a senha atual e a nova senha.'});
-        return;
-    }
+  if (!senhaAtual || !novaSenha) {
+    res.status(400).json({ mensagem: 'Informe a senha atual e a nova senha.' });
+    return;
+  }
 
-    res.json({mensagem:'Senha atualizada com sucesso.'});
+  res.json({ mensagem: 'Senha atualizada com sucesso.' });
 });
 
 /**
@@ -64,8 +64,8 @@ router.put('/senha', (req: AuthenticatedRequest, res: Response) => {
  * @param res - Resposta HTTP com mensagem de confimação da remoç
  */
 // Remove a conta do usuário autenticado
-router.delete('/conta', (req:AuthenticatedRequest, res: Response) => {
-    res.json({ mensagem: `Conta de ${req.user?.nome} removida com sucesso.`});
-})
+router.delete('/conta', (req: AuthenticatedRequest, res: Response) => {
+  res.json({ mensagem: `Conta de ${req.user?.nome} removida com sucesso.` });
+});
 
 export default router;

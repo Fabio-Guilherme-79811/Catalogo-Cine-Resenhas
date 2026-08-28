@@ -40,16 +40,16 @@ export type Role = 'admin' | 'comum';
 export function hasRole(...papeisPermitidos: Role[]) {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
     if (!req.user) {
-        /**
-         * Verifica se existe um usuário autenticado na requisição.
-         */
+      /**
+       * Verifica se existe um usuário autenticado na requisição.
+       */
       res.status(401).json({ mensagem: 'Usuário não autenticado.' });
       return;
     }
 
-     /**
-         * Verifica se o papel do usuário está entre os papéis permitidos.
-         */
+    /**
+     * Verifica se o papel do usuário está entre os papéis permitidos.
+     */
     if (!papeisPermitidos.includes(req.user.role)) {
       res.status(403).json({
         mensagem: `Acesso restrito. Papéis permitidos: ${papeisPermitidos.join(', ')}.`,

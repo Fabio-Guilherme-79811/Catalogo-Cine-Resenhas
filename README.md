@@ -220,17 +220,17 @@ Landing (/) ──► Login (/login) ──► Catálogo (/catalogo) ──► D
   #### Landing Page
   Página inicial pública, com destaque para filmes em alta e CTAs de login e cadastro.
 
-  ![Landing Page](assets/Captura%20de%20tela%202026-08-10%20194023.png)
+  ![Landing Page](assets/print-sistema1.png)
 
   #### Login / Cadastro
   Formulário de autenticação com abas para entrar ou criar uma nova conta.
 
-  ![Login e Cadastro](assets/Captura%20de%20tela%202026-08-10%20194034.png)
+  ![Login e Cadastro](assets/print-sistema2.png)
 
   #### Configurações
   Página de configurações da conta do usuário autenticado (notificações, perfil público e autenticação em duas etapas).
 
-  ![Configurações](assets/Captura%20de%20tela%202026-08-10%20194112.png)
+  ![Configurações](assets/print-sistema3.png)
 
 
 ## Guia de Execução 
@@ -241,7 +241,7 @@ Landing (/) ──► Login (/login) ──► Catálogo (/catalogo) ──► D
    1. Clonar o Repositório:
 ```bash
 git clone https://github.com/Fabio-Guilherme-79811/Catalogo-Cine-Resenhas.git
-cd larp-flix
+cd Catalogo-Cine-Resenhas
 ```
    2. Instalar as Depêndencias:
 ```

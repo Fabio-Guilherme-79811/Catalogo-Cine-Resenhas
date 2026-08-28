@@ -21,5 +21,5 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
  * Inicializa o servidor e começa a aceitar requisições HTTP.
  */
 app.listen(PORT, () => {
-    console.log(`Server rodando na porta http://localhost:${PORT}`);
+  console.log(`Server rodando na porta http://localhost:${PORT}`);
 });

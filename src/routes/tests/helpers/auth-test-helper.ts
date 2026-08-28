@@ -16,27 +16,27 @@ import { UsuarioRepository } from '../../../models/UsuarioRepository';
  * fiéis ao comportamento em produção.
  */
 export async function criarUsuarioAutenticado(
-    app: import('express').Application,
-    opcoes: { role?: 'admin' | 'comum'; nome?: string } = {}
+  app: import('express').Application,
+  opcoes: { role?: 'admin' | 'comum'; nome?: string } = {},
 ): Promise<{ usuario: Usuario; cookie: string }> {
-    const usuarioRepository = new UsuarioRepository();
-    const senha = 'senha123';
-    const senhaHash = await bcrypt.hash(senha, 10);
-    const email = `${opcoes.role ?? 'comum'}-${Date.now()}-${Math.random().toString(36).slice(2)}@email.com`;
+  const usuarioRepository = new UsuarioRepository();
+  const senha = 'senha123';
+  const senhaHash = await bcrypt.hash(senha, 10);
+  const email = `${opcoes.role ?? 'comum'}-${Date.now()}-${Math.random().toString(36).slice(2)}@email.com`;
 
-    const usuario = await usuarioRepository.criar(
-        new Usuario({
-            id: '',
-            nome: opcoes.nome ?? (opcoes.role === 'admin' ? 'Admin Teste' : 'Usuário Teste'),
-            email,
-            senhaHash,
-            role: opcoes.role ?? 'comum',
-        })
-    );
+  const usuario = await usuarioRepository.criar(
+    new Usuario({
+      id: '',
+      nome: opcoes.nome ?? (opcoes.role === 'admin' ? 'Admin Teste' : 'Usuário Teste'),
+      email,
+      senhaHash,
+      role: opcoes.role ?? 'comum',
+    }),
+  );
 
-    const resposta = await request(app).post('/entrar').send({ email, senha });
-    const cookies = resposta.headers['set-cookie'];
-    const cookie = Array.isArray(cookies) ? cookies[0] : String(cookies);
+  const resposta = await request(app).post('/entrar').send({ email, senha });
+  const cookies = resposta.headers['set-cookie'];
+  const cookie = Array.isArray(cookies) ? cookies[0] : String(cookies);
 
-    return { usuario, cookie };
+  return { usuario, cookie };
 }
