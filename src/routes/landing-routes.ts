@@ -1,4 +1,4 @@
-import {Router, Request, Response} from 'express';
+import { Router, Request, Response } from 'express';
 import { APP_URLS } from '../config/Urls';
 // Cria uma instância de Router do Express para agrupar as rotas deste módulo
 const router = Router();
@@ -12,21 +12,21 @@ const router = Router();
  * @param res - resposta HTTP contendo o indentificador da página, título e os
  * CTAs (call-to-action) de login e cadastro, com seus respectivos labels e URLs
  */
-router.get("/", (_req: Request, res: Response) => {
-    res.render("pages/index", {
-        title: "Bem-Vindo!",
-        css: "index",
-        cta: {
-            login: {
-                label: "Entrar",
-                url: APP_URLS.LOGIN
-            },
-            register: {
-                label: "Cadastrar",
-                url: APP_URLS.REGISTER
-            }
-        }
-    });
+router.get('/', (_req: Request, res: Response) => {
+  res.render('pages/index', {
+    title: 'Bem-Vindo!',
+    css: 'index',
+    cta: {
+      login: {
+        label: 'Entrar',
+        url: APP_URLS.LOGIN,
+      },
+      register: {
+        label: 'Cadastrar',
+        url: APP_URLS.REGISTER,
+      },
+    },
+  });
 });
 
 // As rotas GET /login e GET /register que existiam aqui foram removidas:

@@ -36,12 +36,9 @@ class AvaliacaoRepositoryInMemory implements IAvaliacaoRepository {
   /**
    * Busca a avaliação de um usuário específico para um determinado filme.
    */
-  async buscarPorUsuarioEFilme(
-    usuarioId: string,
-    filmeId: string
-  ): Promise<Avaliacao | null> {
+  async buscarPorUsuarioEFilme(usuarioId: string, filmeId: string): Promise<Avaliacao | null> {
     const avaliacao = this.items.find(
-      (item) => item.usuarioId === usuarioId && item.filmeId === filmeId
+      (item) => item.usuarioId === usuarioId && item.filmeId === filmeId,
     );
     return avaliacao || null;
   }
@@ -83,9 +80,7 @@ class AvaliacaoRepositoryInMemory implements IAvaliacaoRepository {
    * Retorna 0 se não houver nenhuma avaliação para o filme.
    */
   async calcularMediaDoFilme(filmeId: string): Promise<number> {
-    const avaliacoesDoFilme = this.items.filter(
-      (item) => item.filmeId === filmeId
-    );
+    const avaliacoesDoFilme = this.items.filter((item) => item.filmeId === filmeId);
 
     if (avaliacoesDoFilme.length === 0) {
       return 0;
@@ -221,15 +216,9 @@ describe('IAvaliacaoRepository Testes', () => {
   // Testes para o método calcularMediaDoFilme
   describe('calcularMediaDoFilme', () => {
     it('deve calcular a média das notas de um filme corretamente', async () => {
-      await repository.criarOuAtualizar(
-        criarAvaliacaoMock({ id: '1', filmeId: 'f1', nota: 4 })
-      );
-      await repository.criarOuAtualizar(
-        criarAvaliacaoMock({ id: '2', filmeId: 'f1', nota: 5 })
-      );
-      await repository.criarOuAtualizar(
-        criarAvaliacaoMock({ id: '3', filmeId: 'f1', nota: 3 })
-      );
+      await repository.criarOuAtualizar(criarAvaliacaoMock({ id: '1', filmeId: 'f1', nota: 4 }));
+      await repository.criarOuAtualizar(criarAvaliacaoMock({ id: '2', filmeId: 'f1', nota: 5 }));
+      await repository.criarOuAtualizar(criarAvaliacaoMock({ id: '3', filmeId: 'f1', nota: 3 }));
 
       const media = await repository.calcularMediaDoFilme('f1');
 
@@ -243,8 +232,6 @@ describe('IAvaliacaoRepository Testes', () => {
     });
   });
 
-
-  
   // Testes para o método remover
   describe('remover', () => {
     it('deve remover uma avaliação e retornar true', async () => {
@@ -264,5 +251,3 @@ describe('IAvaliacaoRepository Testes', () => {
     });
   });
 });
-
-

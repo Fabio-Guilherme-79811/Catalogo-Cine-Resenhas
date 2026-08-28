@@ -1,4 +1,4 @@
-import {Router} from 'express';
+import { Router } from 'express';
 import paginasRoutes from './paginas-routes';
 import landingRoutes from './landing-routes';
 import authRoutes from './auth-routes';
@@ -11,11 +11,11 @@ import favoritoRoutes from './favorito-routes';
 
 /**
  * Router principal da aplicação
- * 
- * Agrega (monta) todas as sub-rotas dos diferentes módulos em seus 
+ *
+ * Agrega (monta) todas as sub-rotas dos diferentes módulos em seus
  * respectivos prefixos, centralizando o roteamento em um único ponto
  * de entrada a ser utilizado pelo servidor da aplicação
- * 
+ *
  * @remarks
  * A ordem de montagem importa apenas em casos de conflito de rotas
  * (ex: middlewares aplicados na raiz que afetam rotas subsequentes)

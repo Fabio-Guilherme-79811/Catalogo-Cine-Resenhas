@@ -71,17 +71,13 @@ router.get('/filmes', (req: Request, res: Response) => {
     let resultado = filmes.filter((f) => f.publicado);
 
     if (genero) {
-      resultado = resultado.filter(
-        (f) => f.genero.toLowerCase() === String(genero).toLowerCase()
-      );
+      resultado = resultado.filter((f) => f.genero.toLowerCase() === String(genero).toLowerCase());
     }
 
     if (busca) {
       const termo = String(busca).trim().toLowerCase();
       resultado = resultado.filter(
-        (f) =>
-          f.titulo.toLowerCase().includes(termo) ||
-          f.sinopse.toLowerCase().includes(termo)
+        (f) => f.titulo.toLowerCase().includes(termo) || f.sinopse.toLowerCase().includes(termo),
       );
     }
 
@@ -177,22 +173,27 @@ router.put('/filmes/:id', isAuthenticated, isAdmin, (req: AuthenticatedRequest, 
  * DELETE /conteudo/filmes/:id
  * Remove um filme do catálogo. Restrito a administradores.
  */
-router.delete('/filmes/:id', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res: Response) => {
-  try {
-    const index = filmes.findIndex((f) => f.id === req.params.id);
+router.delete(
+  '/filmes/:id',
+  isAuthenticated,
+  isAdmin,
+  (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const index = filmes.findIndex((f) => f.id === req.params.id);
 
-    if (index === -1) {
-      res.status(404).json({ mensagem: 'Filme não encontrado.' });
-      return;
+      if (index === -1) {
+        res.status(404).json({ mensagem: 'Filme não encontrado.' });
+        return;
+      }
+
+      filmes.splice(index, 1);
+      res.json({ mensagem: 'Filme removido do catálogo com sucesso.' });
+    } catch (erro) {
+      console.error('Erro ao remover filme:', erro);
+      res.status(500).json({ mensagem: 'Não foi possível remover o filme.' });
     }
-
-    filmes.splice(index, 1);
-    res.json({ mensagem: 'Filme removido do catálogo com sucesso.' });
-  } catch (erro) {
-    console.error('Erro ao remover filme:', erro);
-    res.status(500).json({ mensagem: 'Não foi possível remover o filme.' });
-  }
-});
+  },
+);
 
 /**
  * POST /conteudo/filmes/:id/poster
@@ -224,8 +225,7 @@ router.post(
       console.error('Erro ao fazer upload do pôster:', erro);
       res.status(500).json({ mensagem: 'Não foi possível atualizar o pôster do filme.' });
     }
-  }
+  },
 );
-
 
 export default router;

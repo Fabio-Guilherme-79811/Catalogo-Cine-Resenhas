@@ -1,0 +1,21 @@
+# CODEOWNERS
+# Define quem precisa aprovar PRs que mexem em certas pastas.
+# Troque @USUARIO-DO-LIDER pelo usuário GitHub real do líder técnico.
+# Isso só funciona de verdade se "Require review from Code Owners"
+# estiver marcado em Settings > Branches > Branch protection rules.
+
+# Configuração de repositório e CI: só o líder técnico mexe
+/.github/                    @Fabio-Guilherme-79811 
+
+# Estrutura central (entidades, models, middlewares, app.ts):
+# mudanças aqui afetam todo mundo, exigem review do líder técnico
+/src/entities/               @Fabio-Guilherme-79811  @Nize0 
+/src/models/                 @Fabio-Guilherme-79811  @Nize0 
+/src/middlewares/            @Fabio-Guilherme-79811  @Nize0 
+/src/app.ts                  @Fabio-Guilherme-79811  @Nize0 
+/src/server.ts               @Fabio-Guilherme-79811  @Nize0 
+
+# Configurações de build/teste/dependências
+/package.json                @Fabio-Guilherme-79811 
+/tsconfig.json               @Fabio-Guilherme-79811 
+/jest.config.js              @Fabio-Guilherme-79811  @JF-hash 

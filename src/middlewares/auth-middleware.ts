@@ -1,4 +1,4 @@
-import {Request, Response, NextFunction} from 'express';
+import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 /**
@@ -17,30 +17,29 @@ export const AUTH_COOKIE_NAME = 'token';
  * Formato dos dados do usuário armazenados dentro do token JWT.
  */
 export interface UsuarioTokenPayload {
-    id: string;
-    nome: string;
-    role: 'admin' | 'comum';
+  id: string;
+  nome: string;
+  role: 'admin' | 'comum';
 }
 
 /**
  * Extensão da interface Request do Express contendo
  * informações do usuário autenticado.
  */
-export interface AuthenticatedRequest extends Request{
-    /**
-     * Dados do usuário autenticado na requisição.
-     */
-    user?:{
-        /** Identificador do usuário. */
-        id: number | string;
+export interface AuthenticatedRequest extends Request {
+  /**
+   * Dados do usuário autenticado na requisição.
+   */
+  user?: {
+    /** Identificador do usuário. */
+    id: number | string;
 
-        /** Nome do usuário. */
-        nome: string;
+    /** Nome do usuário. */
+    nome: string;
 
-        /** Papel de acesso do usuário. */
-        role: 'admin' | 'comum';
-    };
-
+    /** Papel de acesso do usuário. */
+    role: 'admin' | 'comum';
+  };
 }
 
 /**
@@ -54,18 +53,18 @@ export interface AuthenticatedRequest extends Request{
  * @returns Um objeto com os pares nome/valor dos cookies enviados.
  */
 export function parseCookies(req: Request): Record<string, string> {
-    const header = req.headers.cookie;
-    const cookies: Record<string, string> = {};
+  const header = req.headers.cookie;
+  const cookies: Record<string, string> = {};
 
-    if (!header) return cookies;
+  if (!header) return cookies;
 
-    header.split(';').forEach((parte) => {
-        const [nome, ...resto] = parte.trim().split('=');
-        if (!nome) return;
-        cookies[nome] = decodeURIComponent(resto.join('='));
-    });
+  header.split(';').forEach((parte) => {
+    const [nome, ...resto] = parte.trim().split('=');
+    if (!nome) return;
+    cookies[nome] = decodeURIComponent(resto.join('='));
+  });
 
-    return cookies;
+  return cookies;
 }
 
 /**
@@ -77,16 +76,16 @@ export function parseCookies(req: Request): Record<string, string> {
  * @returns Os dados do usuário decodificados do token, ou `null`.
  */
 export function obterUsuarioDoToken(req: Request): UsuarioTokenPayload | null {
-    const cookies = parseCookies(req);
-    const token = cookies[AUTH_COOKIE_NAME];
+  const cookies = parseCookies(req);
+  const token = cookies[AUTH_COOKIE_NAME];
 
-    if (!token) return null;
+  if (!token) return null;
 
-    try {
-        return jwt.verify(token, JWT_SECRET) as UsuarioTokenPayload;
-    } catch {
-        return null;
-    }
+  try {
+    return jwt.verify(token, JWT_SECRET) as UsuarioTokenPayload;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -103,21 +102,21 @@ export function obterUsuarioDoToken(req: Request): UsuarioTokenPayload | null {
  * @param res Resposta HTTP utilizada para redirecionamento.
  * @param next Função para continuar a execução do próximo middleware.
  */
-    export function isAuthenticated(
-        req: AuthenticatedRequest,
-        res: Response,
-        next: NextFunction
-    ): void {
-    const usuario = obterUsuarioDoToken(req);
+export function isAuthenticated(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): void {
+  const usuario = obterUsuarioDoToken(req);
 
-    if (!usuario) {
-        res.redirect('/login');
-        return;
-    }
+  if (!usuario) {
+    res.redirect('/login');
+    return;
+  }
 
-    req.user = usuario;
+  req.user = usuario;
 
-    next();
+  next();
 }
 
 /**
@@ -131,25 +130,25 @@ export function obterUsuarioDoToken(req: Request): UsuarioTokenPayload | null {
  * qualquer página, mesmo nas que não exigem login.
  */
 export function carregarUsuarioOpcional(
-    req: AuthenticatedRequest,
-    res: Response,
-    next: NextFunction
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
 ): void {
-    const usuario = obterUsuarioDoToken(req);
+  const usuario = obterUsuarioDoToken(req);
 
-    if (usuario) {
-        req.user = usuario;
-        res.locals.usuario = usuario;
-        // nav.ejs (navbar + sidebar) usa o nome `usuarioAtual` — mantido
-        // igual a `res.locals.usuario` pra não quebrar quem já lê um ou
-        // outro nome.
-        res.locals.usuarioAtual = usuario;
-    } else {
-        res.locals.usuario = null;
-        res.locals.usuarioAtual = null;
-    }
+  if (usuario) {
+    req.user = usuario;
+    res.locals.usuario = usuario;
+    // nav.ejs (navbar + sidebar) usa o nome `usuarioAtual` — mantido
+    // igual a `res.locals.usuario` pra não quebrar quem já lê um ou
+    // outro nome.
+    res.locals.usuarioAtual = usuario;
+  } else {
+    res.locals.usuario = null;
+    res.locals.usuarioAtual = null;
+  }
 
-    next();
+  next();
 }
 
 /**
@@ -163,15 +162,11 @@ export function carregarUsuarioOpcional(
  * @param res Resposta HTTP.
  * @param next Função para continuar a execução do próximo middleware.
  */
-    export function isAdmin(
-        req: AuthenticatedRequest,
-        res: Response,
-        next: NextFunction
-    ): void {
-        if(!req.user || req.user.role !== 'admin') {
-            res.status(403).json ({ mensagem : 'Acesso restrito a administradores.'});
-            return;
-        }
+export function isAdmin(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
+  if (!req.user || req.user.role !== 'admin') {
+    res.status(403).json({ mensagem: 'Acesso restrito a administradores.' });
+    return;
+  }
 
-        next();
-    }
+  next();
+}
