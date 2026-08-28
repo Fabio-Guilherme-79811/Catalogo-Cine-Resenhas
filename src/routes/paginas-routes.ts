@@ -58,17 +58,13 @@ router.get('/catalogo', async (req: Request, res: Response) => {
   let resultado = filmes.filter((f) => f.publicado);
 
   if (genero) {
-    resultado = resultado.filter(
-      (f) => f.genero.toLowerCase() === String(genero).toLowerCase()
-    );
+    resultado = resultado.filter((f) => f.genero.toLowerCase() === String(genero).toLowerCase());
   }
 
   if (busca) {
     const termo = String(busca).trim().toLowerCase();
     resultado = resultado.filter(
-      (f) =>
-        f.titulo.toLowerCase().includes(termo) ||
-        f.sinopse.toLowerCase().includes(termo)
+      (f) => f.titulo.toLowerCase().includes(termo) || f.sinopse.toLowerCase().includes(termo),
     );
   }
 
@@ -78,7 +74,7 @@ router.get('/catalogo', async (req: Request, res: Response) => {
   await Promise.all(
     resultado.map(async (f) => {
       mediasPorFilme.set(f.id, await avaliacaoRepository.calcularMediaDoFilme(f.id));
-    })
+    }),
   );
 
   if (busca) {
@@ -163,7 +159,7 @@ router.get(
       const usuarios = await usuarioRepository.listarTodos();
       const seteDiasAtras = Date.now() - 7 * 24 * 60 * 60 * 1000;
       const novosCadastrosSemana = usuarios.filter(
-        (usuario) => new Date(usuario.criadoEm).getTime() >= seteDiasAtras
+        (usuario) => new Date(usuario.criadoEm).getTime() >= seteDiasAtras,
       ).length;
       const visitasLandingPage = await visitaRepository.contarTotal();
 
@@ -182,7 +178,7 @@ router.get(
       console.error('Erro ao carregar painel administrativo:', erro);
       res.status(500).render('errors/500', { title: 'Erro ao carregar painel administrativo' });
     }
-  }
+  },
 );
 
 /**
@@ -202,7 +198,7 @@ router.get(
       filme: null,
       usuario: req.user,
     });
-  }
+  },
 );
 
 /**
@@ -229,7 +225,7 @@ router.get(
       filme,
       usuario: req.user,
     });
-  }
+  },
 );
 
 /**
@@ -244,35 +240,29 @@ router.get(
  *
  * @route GET /usuario/perfil
  */
-router.get(
-  '/usuario/perfil',
-  isAuthenticated,
-  async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const usuarioCompleto = await usuarioRepository.buscarPorId(String(req.user?.id));
+router.get('/usuario/perfil', isAuthenticated, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const usuarioCompleto = await usuarioRepository.buscarPorId(String(req.user?.id));
 
-      if (!usuarioCompleto) {
-        res.status(404).render('errors/404', { title: 'Usuário não encontrado' });
-        return;
-      }
-
-      const favoritos = await favoritoRepository.listarPorUsuario(usuarioCompleto.id);
-      const filmesFavoritos = filmes.filter((f) =>
-        favoritos.some((fav) => fav.filmeId === f.id)
-      );
-
-      res.render('pages/perfil', {
-        title: 'Meu perfil',
-        usuario: req.user,
-        perfil: usuarioCompleto.toPublicJSON(),
-        filmesFavoritos,
-      });
-    } catch (erro) {
-      console.error('Erro ao carregar perfil:', erro);
-      res.status(500).render('errors/500', { title: 'Erro ao carregar perfil' });
+    if (!usuarioCompleto) {
+      res.status(404).render('errors/404', { title: 'Usuário não encontrado' });
+      return;
     }
+
+    const favoritos = await favoritoRepository.listarPorUsuario(usuarioCompleto.id);
+    const filmesFavoritos = filmes.filter((f) => favoritos.some((fav) => fav.filmeId === f.id));
+
+    res.render('pages/perfil', {
+      title: 'Meu perfil',
+      usuario: req.user,
+      perfil: usuarioCompleto.toPublicJSON(),
+      filmesFavoritos,
+    });
+  } catch (erro) {
+    console.error('Erro ao carregar perfil:', erro);
+    res.status(500).render('errors/500', { title: 'Erro ao carregar perfil' });
   }
-);
+});
 
 /**
  * GET /usuario/avaliacoes
@@ -304,7 +294,7 @@ router.get(
       console.error('Erro ao carregar avaliações:', erro);
       res.status(500).render('errors/500', { title: 'Erro ao carregar avaliações' });
     }
-  }
+  },
 );
 
 /**
@@ -342,7 +332,7 @@ router.get(
       console.error('Erro ao carregar histórico:', erro);
       res.status(500).render('errors/500', { title: 'Erro ao carregar histórico' });
     }
-  }
+  },
 );
 
 /**
@@ -358,16 +348,12 @@ router.get(
  *
  * @route GET /config
  */
-router.get(
-  '/config',
-  isAuthenticated,
-  (req: AuthenticatedRequest, res: Response) => {
-    res.render('pages/config', {
-      title: 'Configurações',
-      usuario: req.user,
-    });
-  }
-);
+router.get('/config', isAuthenticated, (req: AuthenticatedRequest, res: Response) => {
+  res.render('pages/config', {
+    title: 'Configurações',
+    usuario: req.user,
+  });
+});
 
 /**
  * Router de páginas, a ser montado na raiz (`/`) da aplicação principal,

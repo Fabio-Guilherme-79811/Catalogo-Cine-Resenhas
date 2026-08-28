@@ -12,9 +12,9 @@
  * O servidor HTTP é iniciado separadamente no arquivo server.ts.
  */
 
-import express, {Request,Response, NextFunction,Application}  from 'express';
-import routes from "./routes/index-routes";
-import { carregarUsuarioOpcional } from "./middlewares/auth-middleware";
+import express, { Request, Response, NextFunction, Application } from 'express';
+import routes from './routes/index-routes';
+import { carregarUsuarioOpcional } from './middlewares/auth-middleware';
 
 /**
  * Instância principal da aplicação Express.
@@ -26,12 +26,12 @@ const app: Application = express();
  */
 app.use(express.json());
 //Vizualizar ejs//
-app.set("view engine", "ejs");
-app.set("views", "./src/views");
+app.set('view engine', 'ejs');
+app.set('views', './src/views');
 /**
  * Permite receber dados enviados por formulários HTML.
  */
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({ extended: true }));
 
 /**
  * Disponibiliza arquivos estáticos da pasta public.
@@ -40,7 +40,7 @@ app.use(express.urlencoded({extended:true}));
  * /css/style.css
  * /images/logo.png
  */
-app.use(express.static("public"));
+app.use(express.static('public'));
 
 /**
  * Lê o cookie de sessão (se existir) em TODA requisição e disponibiliza
@@ -51,7 +51,6 @@ app.use(express.static("public"));
 app.use(carregarUsuarioOpcional);
 
 /*Rota para as páginas*/
-app.use("/", routes);
-
+app.use('/', routes);
 
 export default app;

@@ -31,13 +31,13 @@ const AUTH_BASE_URL = process.env.AUTH_BASE_URL || '';
  * Gera o cookie de sessão (JWT) para um usuário autenticado.
  */
 function definirCookieSessao(res: Response, payload: UsuarioTokenPayload): void {
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '2h' });
+  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '2h' });
 
-    res.cookie(AUTH_COOKIE_NAME, token, {
-        httpOnly: true,
-        sameSite: 'lax',
-        maxAge: 2 * 60 * 60 * 1000, // 2h, em ms — precisa bater com o expiresIn acima
-    });
+  res.cookie(AUTH_COOKIE_NAME, token, {
+    httpOnly: true,
+    sameSite: 'lax',
+    maxAge: 2 * 60 * 60 * 1000, // 2h, em ms — precisa bater com o expiresIn acima
+  });
 }
 
 // Rota POST /entrar: autentica o usuário (login)
@@ -50,51 +50,51 @@ function definirCookieSessao(res: Response, payload: UsuarioTokenPayload): void 
  * em caso de sucesso; re-renderiza `/login` com mensagem de erro caso contrário.
  */
 router.post('/entrar', async (req: Request, res: Response) => {
-    const { email, senha } = req.body;
+  const { email, senha } = req.body;
 
-    if (!email || !senha) {
-        res.status(400).render('pages/login', {
-            title: 'Entrar',
-            erro: 'Informe e-mail e senha.',
-        });
-        return;
+  if (!email || !senha) {
+    res.status(400).render('pages/login', {
+      title: 'Entrar',
+      erro: 'Informe e-mail e senha.',
+    });
+    return;
+  }
+
+  try {
+    const usuario = await usuarioRepository.buscarPorEmail(email);
+
+    // Mensagem genérica de propósito: não revela se o e-mail existe ou não
+    if (!usuario) {
+      res.status(401).render('pages/login', {
+        title: 'Entrar',
+        erro: 'E-mail ou senha inválidos.',
+      });
+      return;
     }
 
-    try {
-        const usuario = await usuarioRepository.buscarPorEmail(email);
-
-        // Mensagem genérica de propósito: não revela se o e-mail existe ou não
-        if (!usuario) {
-            res.status(401).render('pages/login', {
-                title: 'Entrar',
-                erro: 'E-mail ou senha inválidos.',
-            });
-            return;
-        }
-
-        const senhaConfere = await bcrypt.compare(senha, usuario.senhaHash);
-        if (!senhaConfere) {
-            res.status(401).render('pages/login', {
-                title: 'Entrar',
-                erro: 'E-mail ou senha inválidos.',
-            });
-            return;
-        }
-
-        definirCookieSessao(res, {
-            id: usuario.id,
-            nome: usuario.nome,
-            role: usuario.role,
-        });
-
-        res.redirect(usuario.role === 'admin' ? '/painel-admin' : '/catalogo');
-    } catch (erro) {
-        console.error('Erro ao autenticar usuário:', erro);
-        res.status(500).render('pages/login', {
-            title: 'Entrar',
-            erro: 'Não foi possível entrar agora. Tente novamente.',
-        });
+    const senhaConfere = await bcrypt.compare(senha, usuario.senhaHash);
+    if (!senhaConfere) {
+      res.status(401).render('pages/login', {
+        title: 'Entrar',
+        erro: 'E-mail ou senha inválidos.',
+      });
+      return;
     }
+
+    definirCookieSessao(res, {
+      id: usuario.id,
+      nome: usuario.nome,
+      role: usuario.role,
+    });
+
+    res.redirect(usuario.role === 'admin' ? '/painel-admin' : '/catalogo');
+  } catch (erro) {
+    console.error('Erro ao autenticar usuário:', erro);
+    res.status(500).render('pages/login', {
+      title: 'Entrar',
+      erro: 'Não foi possível entrar agora. Tente novamente.',
+    });
+  }
 });
 
 // Rota POST /registro: recebe os dados de cadastro do usuário e cria a conta
@@ -109,45 +109,45 @@ router.post('/entrar', async (req: Request, res: Response) => {
  * de sucesso, ou re-renderização de `/cadastro` com mensagem de erro.
  */
 router.post('/registro', async (req: Request, res: Response) => {
-    const { nome, email, senha, confirmarSenha } = req.body;
+  const { nome, email, senha, confirmarSenha } = req.body;
 
-    if (senha !== confirmarSenha) {
-        res.status(400).render('pages/registro', {
-            title: 'Cadastrar',
-            erro: 'As senhas informadas não conferem.',
-        });
-        return;
-    }
+  if (senha !== confirmarSenha) {
+    res.status(400).render('pages/registro', {
+      title: 'Cadastrar',
+      erro: 'As senhas informadas não conferem.',
+    });
+    return;
+  }
 
-    try {
-        Usuario.validarSenhaPlana(senha); // RNLF02 - valida antes de gerar o hash
+  try {
+    Usuario.validarSenhaPlana(senha); // RNLF02 - valida antes de gerar o hash
 
-        const senhaHash = await bcrypt.hash(senha, 10);
-        const novoUsuario = new Usuario({
-            id: '', // gerado pelo repositório (randomUUID) em criar()
-            nome,
-            email,
-            senhaHash,
-        });
+    const senhaHash = await bcrypt.hash(senha, 10);
+    const novoUsuario = new Usuario({
+      id: '', // gerado pelo repositório (randomUUID) em criar()
+      nome,
+      email,
+      senhaHash,
+    });
 
-        const usuarioCriado = await usuarioRepository.criar(novoUsuario);
+    const usuarioCriado = await usuarioRepository.criar(novoUsuario);
 
-        definirCookieSessao(res, {
-            id: usuarioCriado.id,
-            nome: usuarioCriado.nome,
-            role: usuarioCriado.role,
-        });
+    definirCookieSessao(res, {
+      id: usuarioCriado.id,
+      nome: usuarioCriado.nome,
+      role: usuarioCriado.role,
+    });
 
-        res.redirect('/catalogo');
-    } catch (erro) {
-        // Cobre tanto validações da entidade (nome/e-mail/senha inválidos)
-        // quanto o RNLF01 (e-mail já cadastrado), lançados pelo repositório
-        const mensagem = erro instanceof Error ? erro.message : 'Não foi possível concluir o cadastro.';
-        res.status(400).render('pages/registro', {
-            title: 'Cadastrar',
-            erro: mensagem,
-        });
-    }
+    res.redirect('/catalogo');
+  } catch (erro) {
+    // Cobre tanto validações da entidade (nome/e-mail/senha inválidos)
+    // quanto o RNLF01 (e-mail já cadastrado), lançados pelo repositório
+    const mensagem = erro instanceof Error ? erro.message : 'Não foi possível concluir o cadastro.';
+    res.status(400).render('pages/registro', {
+      title: 'Cadastrar',
+      erro: mensagem,
+    });
+  }
 });
 
 // Rota POST /logout: encerra a sessão do usuário
@@ -159,8 +159,8 @@ router.post('/registro', async (req: Request, res: Response) => {
  * @param res - Resposta HTTP com redirecionamento para `/login`.
  */
 router.post('/logout', (_req: Request, res: Response) => {
-    res.clearCookie(AUTH_COOKIE_NAME);
-    res.redirect('/login');
+  res.clearCookie(AUTH_COOKIE_NAME);
+  res.redirect('/login');
 });
 
 // Exporta o router para ser montado na aplicação principal

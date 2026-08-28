@@ -17,20 +17,19 @@ import app from '../../app'; // ajuste este caminho conforme a localização rea
  * pegar justamente esse tipo de regressão de ordem de montagem.
  */
 describe('Ordem de montagem das rotas (index-routes)', () => {
+  // Testa se GET /login renderiza a página de login (200), e não é
+  // interceptado por um possível redirecionamento vindo de outro router
+  test('GET /login deve renderizar a página de login, não redirecionar', async () => {
+    const response = await request(app).get('/login');
 
-    // Testa se GET /login renderiza a página de login (200), e não é
-    // interceptado por um possível redirecionamento vindo de outro router
-    test('GET /login deve renderizar a página de login, não redirecionar', async () => {
-        const response = await request(app).get('/login');
+    expect(response.statusCode).toBe(200);
+  });
 
-        expect(response.statusCode).toBe(200);
-    });
+  // Testa se GET /cadastro renderiza a página de cadastro (200), e não é
+  // interceptado por um possível redirecionamento vindo de outro router
+  test('GET /cadastro deve renderizar a página de cadastro, não redirecionar', async () => {
+    const response = await request(app).get('/cadastro');
 
-    // Testa se GET /cadastro renderiza a página de cadastro (200), e não é
-    // interceptado por um possível redirecionamento vindo de outro router
-    test('GET /cadastro deve renderizar a página de cadastro, não redirecionar', async () => {
-        const response = await request(app).get('/cadastro');
-
-        expect(response.statusCode).toBe(200);
-    });
+    expect(response.statusCode).toBe(200);
+  });
 });
