@@ -50,9 +50,13 @@ function makeApp(): Express {
 }
 
 // Header pronto para simular um usuário administrador
-const adminHeader = { 'x-mock-user': JSON.stringify({ id: 'admin1', nome: 'Admin', role: 'admin' }) };
+const adminHeader = {
+  'x-mock-user': JSON.stringify({ id: 'admin1', nome: 'Admin', role: 'admin' }),
+};
 // Header pronto para simular um segundo usuário comum, diferente do padrão
-const outroUsuarioHeader = { 'x-mock-user': JSON.stringify({ id: 'user2', nome: 'Outro Usuário', role: 'user' }) };
+const outroUsuarioHeader = {
+  'x-mock-user': JSON.stringify({ id: 'user2', nome: 'Outro Usuário', role: 'user' }),
+};
 
 describe('Rotas de Avaliações', () => {
   let app: Express;
@@ -121,7 +125,13 @@ describe('Rotas de Avaliações', () => {
 
     it('cria a avaliação com sucesso e retorna 201 com os dados corretos', async () => {
       // Usuário único, só para não colidir com o teste de duplicidade abaixo
-      const header = { 'x-mock-user': JSON.stringify({ id: `post-ok-${Date.now()}`, nome: 'Usuário Teste', role: 'user' }) };
+      const header = {
+        'x-mock-user': JSON.stringify({
+          id: `post-ok-${Date.now()}`,
+          nome: 'Usuário Teste',
+          role: 'user',
+        }),
+      };
 
       const res = await request(app)
         .post('/avaliacoes/filme/1')
@@ -139,7 +149,13 @@ describe('Rotas de Avaliações', () => {
     });
 
     it('retorna 409 ao tentar avaliar o mesmo filme duas vezes com o mesmo usuário', async () => {
-      const header = { 'x-mock-user': JSON.stringify({ id: `post-duplicado-${Date.now()}`, nome: 'Usuário Teste', role: 'user' }) };
+      const header = {
+        'x-mock-user': JSON.stringify({
+          id: `post-duplicado-${Date.now()}`,
+          nome: 'Usuário Teste',
+          role: 'user',
+        }),
+      };
 
       // Primeira avaliação (deve ter sucesso)
       await request(app)
@@ -254,16 +270,12 @@ describe('Rotas de Avaliações', () => {
     });
 
     it('retorna 404 ao tentar excluir uma avaliação inexistente (como admin)', async () => {
-      const res = await request(app)
-        .delete('/avaliacoes/id-inexistente')
-        .set(adminHeader);
+      const res = await request(app).delete('/avaliacoes/id-inexistente').set(adminHeader);
       expect(res.status).toBe(404);
     });
 
     it('permite que um admin exclua a avaliação com sucesso', async () => {
-      const res = await request(app)
-        .delete(`/avaliacoes/${avaliacaoId}`)
-        .set(adminHeader);
+      const res = await request(app).delete(`/avaliacoes/${avaliacaoId}`).set(adminHeader);
 
       expect(res.status).toBe(200);
       expect(res.body.mensagem).toMatch(/removida/i);

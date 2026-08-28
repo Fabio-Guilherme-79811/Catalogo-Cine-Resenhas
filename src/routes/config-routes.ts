@@ -11,11 +11,11 @@ const router = Router();
  * de configuração.
  */
 const config = {
-    nomeSite: 'Cine-resenhas',
-    descricao: 'Sua resenha é a nossa também!',
-    corPrimaria: '#e54646',
-    modoManutencao: false,
-    emailSuporte: 'suporte@exemplo.com',
+  nomeSite: 'Cine-resenhas',
+  descricao: 'Sua resenha é a nossa também!',
+  corPrimaria: '#e54646',
+  modoManutencao: false,
+  emailSuporte: 'suporte@exemplo.com',
 };
 
 /**
@@ -28,8 +28,8 @@ const config = {
  * e `modoManutencao`.
  */
 router.get('/', (req: Request, res: Response) => {
-    const { nomeSite, descricao, corPrimaria, modoManutencao } = config;
-    res.json({ nomeSite, descricao, corPrimaria, modoManutencao });
+  const { nomeSite, descricao, corPrimaria, modoManutencao } = config;
+  res.json({ nomeSite, descricao, corPrimaria, modoManutencao });
 });
 
 /**
@@ -41,7 +41,7 @@ router.get('/', (req: Request, res: Response) => {
  * @param res - Resposta HTTP com o objeto `config` completo.
  */
 router.get('/completo', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res: Response) => {
-    res.json(config);
+  res.json(config);
 });
 
 /**
@@ -60,11 +60,11 @@ router.get('/completo', isAuthenticated, isAdmin, (req: AuthenticatedRequest, re
  * o `Object.assign`.
  */
 router.put('/', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res: Response) => {
-    const atualizacoes = req.body;
+  const atualizacoes = req.body;
 
-    Object.assign(config, atualizacoes);
+  Object.assign(config, atualizacoes);
 
-    res.json({ mensagem: 'Configurações atualizadas com sucesso.', config });
+  res.json({ mensagem: 'Configurações atualizadas com sucesso.', config });
 });
 
 /**
@@ -77,15 +77,15 @@ router.put('/', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res: Respo
  * ou mensagem de confirmação indicando o novo estado do modo de manutenção.
  */
 router.put('/manutencao', isAuthenticated, isAdmin, (req: AuthenticatedRequest, res: Response) => {
-    const { ativo } = req.body;
- /** Validação: o campo "ativo" precisa ser um booleano explícito */
-    if (typeof ativo !== 'boolean') {
-        res.status(400).json({ mensagem: 'Informe o campo "ativo" como true ou false.' });
-        return;
-    }
+  const { ativo } = req.body;
+  /** Validação: o campo "ativo" precisa ser um booleano explícito */
+  if (typeof ativo !== 'boolean') {
+    res.status(400).json({ mensagem: 'Informe o campo "ativo" como true ou false.' });
+    return;
+  }
 
-    config.modoManutencao = ativo;
-    res.json({ mensagem: `Modo de manutenção ${ativo ? 'ativado' : 'desativado'}.` });
+  config.modoManutencao = ativo;
+  res.json({ mensagem: `Modo de manutenção ${ativo ? 'ativado' : 'desativado'}.` });
 });
 /**
  * Router de configuração, a ser montado na rota `/config` da aplicação principal.

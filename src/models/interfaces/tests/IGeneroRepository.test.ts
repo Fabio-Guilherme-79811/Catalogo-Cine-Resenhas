@@ -39,9 +39,7 @@ class GeneroRepositoryInMemory implements IGeneroRepository {
    * Retorna o gênero encontrado ou null caso não exista.
    */
   async buscarPorNome(nome: string): Promise<Genero | null> {
-    const genero = this.items.find(
-      (item) => item.nome.toLowerCase() === nome.toLowerCase()
-    );
+    const genero = this.items.find((item) => item.nome.toLowerCase() === nome.toLowerCase());
     return genero || null;
   }
 
@@ -196,9 +194,6 @@ describe('IGeneroRepository Testes', () => {
     });
   });
 
-
-
-  
   // Testes para o método remover
   describe('remover', () => {
     it('deve remover um gênero existente e retornar true', async () => {
@@ -218,4 +213,3 @@ describe('IGeneroRepository Testes', () => {
     });
   });
 });
-

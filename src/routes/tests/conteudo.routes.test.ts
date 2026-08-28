@@ -18,9 +18,8 @@ jest.mock('../../middlewares/auth-middleware', () => ({
 const app = express();
 app.use(express.json());
 app.use('/', conteudoRoutes);
- // Recarrega os filmes antes de cada teste para evitar que um teste afete o outro
+// Recarrega os filmes antes de cada teste para evitar que um teste afete o outro
 describe('Conteudo Routes', () => {
-
   beforeEach(() => {
     filmes.length = 0;
 
@@ -40,10 +39,10 @@ describe('Conteudo Routes', () => {
         genero: 'Ação',
         anoLancamento: 2023,
         publicado: false,
-      }
+      },
     );
   });
-    // Verifica se a API retorna apenas filmes publicados
+  // Verifica se a API retorna apenas filmes publicados
   test('GET /filmes deve listar somente filmes publicados', async () => {
     const res = await request(app).get('/filmes');
 
@@ -74,14 +73,12 @@ describe('Conteudo Routes', () => {
   });
 
   test('POST /filmes deve criar um novo filme', async () => {
-    const res = await request(app)
-      .post('/filmes')
-      .send({
-        titulo: 'Novo Filme',
-        sinopse: 'Teste',
-        genero: 'Comédia',
-        anoLancamento: 2025,
-      });
+    const res = await request(app).post('/filmes').send({
+      titulo: 'Novo Filme',
+      sinopse: 'Teste',
+      genero: 'Comédia',
+      anoLancamento: 2025,
+    });
 
     expect(res.status).toBe(201);
     expect(res.body.titulo).toBe('Novo Filme');
@@ -89,32 +86,26 @@ describe('Conteudo Routes', () => {
   });
 
   test('POST /filmes deve retornar 400 quando faltar campos obrigatórios', async () => {
-    const res = await request(app)
-      .post('/filmes')
-      .send({
-        titulo: 'Novo Filme',
-      });
+    const res = await request(app).post('/filmes').send({
+      titulo: 'Novo Filme',
+    });
 
     expect(res.status).toBe(400);
   });
-  
+
   test('PUT /filmes/:id deve atualizar um filme', async () => {
-    const res = await request(app)
-      .put('/filmes/1')
-      .send({
-        titulo: 'Título Atualizado',
-      });
+    const res = await request(app).put('/filmes/1').send({
+      titulo: 'Título Atualizado',
+    });
 
     expect(res.status).toBe(200);
     expect(res.body.titulo).toBe('Título Atualizado');
   });
 
   test('PUT /filmes/:id deve retornar 404 quando filme não existir', async () => {
-    const res = await request(app)
-      .put('/filmes/999')
-      .send({
-        titulo: 'Teste',
-      });
+    const res = await request(app).put('/filmes/999').send({
+      titulo: 'Teste',
+    });
 
     expect(res.status).toBe(404);
   });
@@ -131,5 +122,4 @@ describe('Conteudo Routes', () => {
 
     expect(res.status).toBe(404);
   });
-
 });
