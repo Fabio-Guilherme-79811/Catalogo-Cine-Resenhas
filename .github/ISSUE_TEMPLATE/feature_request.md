@@ -1,8 +1,8 @@
-\---
+---
 
 name: Tarefa / Feature
 about: Nova funcionalidade ou tarefa do cronograma
-title: "\[TASK] "
+title: "[TASK] "
 labels: enhancement
 assignees: ''
 ---
@@ -11,10 +11,10 @@ assignees: ''
 
 **Responsável (papel)**
 
-* \[ ] Líder técnico
-* \[ ] Back-end
-* \[ ] Front-end
-* \[ ] QA / Testes
+* [ ] Líder técnico
+* [ ] Back-end
+* [ ] Front-end
+* [ ] QA / Testes
 
 **Aula/prazo do cronograma relacionado**
 
