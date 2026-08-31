@@ -1,18 +1,1 @@
-version: 2
-updates:
-  # Dependências npm (produção e dev)
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-    open-pull-requests-limit: 5
-    commit-message:
-      prefix: "chore"
-      include: "scope"
 
-  # Atualização das próprias GitHub Actions usadas no CI
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
